@@ -17,7 +17,7 @@ namespace stressTools{
                                    const floatType &previousTime, const floatVector &previousStrain, 
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
                                    const floatType &alpha,
-                                   floatVector &stress){
+                                   floatVector &stress, floatVector &currentStateVariables){
         /*!
          * Compute the stress for linear viscoelasticity based on the potential function
          * rho^0 \Psi = E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ})
@@ -34,6 +34,7 @@ namespace stressTools{
          *         Gs: The stiffness values
          * :const floatType &alpha: The integration parameter (0 for implicit, 1 for explicit)
          * :floatVector &stress: The computed stress in the reference configuration (i.e. the same configuration as the strain)
+         * :floatVector &currentStateVariables: The current values of the state variables
          */
 
         floatType dt = currentTime - previousTime;
@@ -62,9 +63,11 @@ namespace stressTools{
         //Set the initial value of the factor
         floatType factor;
         floatType taui;
-        floatType Gi
+        floatType Gi;
         floatVector Xip(dim, 0), Xic(dim, 0);
         currentStateVariables.resize(0);
+
+        std::vector< unsigned int > indices(dim, 0);
 
         for (unsigned int i=1; i<nTerms+1; i++){
             //Get the parameters
@@ -74,8 +77,13 @@ namespace stressTools{
             //Get the factor
             factor = taui/(taui + dt*(1 - alpha));
 
+            //Set the indices of the previous values of the state variables
+            for (unsigned int j=dim*i, k=0; j<dim*(i+1); j++, k++){
+                indices[k] = j;
+            }
+
             //Get the previous values of the state variables
-            vectorTools::getValuesByIndex(previousStateVariables, indices, Xi_i);
+            vectorTools::getValuesByIndex(previousStateVariables, indices, Xip);
 
             //Compute the new state-variable values
             Xic = factor*(Xip + (dt/taui)*(currentStrain + alpha*(previousStrain - Xip - currentStrain)));
@@ -94,7 +102,7 @@ namespace stressTools{
                                    const floatType &previousTime, const floatVector &previousStrain,
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
                                    const floatType &alpha,
-                                   floatVector &stress, floatMatrix &dstressdstrain){
+                                   floatVector &stress, floatVector &currentStateVariables, floatMatrix &dstressdstrain){
         /*!
          * Compute the stress for linear viscoelasticity based on the potential function
          * rho^0 \Psi = E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ})
@@ -111,26 +119,30 @@ namespace stressTools{
          *         Gs: The stiffness values
          * :const floatType &alpha: The integration parameter (0 for implicit, 1 for explicit)
          * :floatVector &stress: The computed stress in the reference configuration (i.e. the same configuration as the strain)
+         * :floatVector &currentStateVariables: The current values of the state variables
          * :floatMatrix &dstressdstrain: The derivative of the stress in the reference configuration 
          *     w.r.t. the strain in the reference configuration.
          */
 
         errorOut lVresult = linearViscoelasticity(currentTime, currentStrain, previousTime, previousStrain, previousStateVariables,
-            materialParameters, alpha, stress);
+            materialParameters, alpha, stress, currentStateVariables);
 
         //Error handling
         if (! lVresult){
-            errorOut result("linearViscoelasticity with Jacobian", "error in computation of stress");
+            errorOut result( "linearViscoelasticity with Jacobian", "error in computation of stress");
             result->addNext(lVresult);
             return result;
         }
 
+        //Compute the change in time
+        float dt = currentTime - previousTime;
+
         //Compute the jacobian
-        floatMatrix eye = vectorTools::eye(currentStrain.size());
+        floatMatrix eye = vectorTools::eye<floatType>(currentStrain.size());
         
         //Compute the "infinite" term
         dstressdstrain = materialParameters[0]*eye;
-        floatType factor, taui, Gi;
+        floatType taui, Gi;
         unsigned int nTerms = (materialParameters.size() - 1)/2;
 
         //Add the contributions from the other terms
