@@ -1,0 +1,3 @@
+Tools for computing stress-strain behaviors. The stress functions should be 
+able to return the stress and the jacobian w.r.t. the strain metric of 
+interest.
