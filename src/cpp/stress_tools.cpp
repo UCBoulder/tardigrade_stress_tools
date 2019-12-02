@@ -129,7 +129,7 @@ namespace stressTools{
 
         //Error handling
         if (! lVresult){
-            errorOut result( "linearViscoelasticity with Jacobian", "error in computation of stress");
+            errorOut result = new errorNode( "linearViscoelasticity with Jacobian", "error in computation of stress");
             result->addNext(lVresult);
             return result;
         }

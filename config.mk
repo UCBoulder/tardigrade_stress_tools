@@ -18,6 +18,13 @@ EIGEN=-I/projects/nathanm/usr/local/include/eigen-git-mirror
 # Set the root directory
 ROOTDIR=/projects/nathanm/constitutive_models
 
+# The python command
+PYTHON=/apps/anaconda3/bin/python
+
+# Relative paths. Assumes that from the root directory all other 
+# required libraries (with the same name as their git project) 
+# have been co-located.
+
 # Add the location of the error_tools to the include and library
 ERRORSOURCE = $(ROOTDIR)/error_tools/src/cpp/error_tools.cpp
 ERRORHEADER = $(ROOTDIR)/error_tools/src/cpp/error_tools.h
@@ -36,5 +43,3 @@ CTHEADER = $(ROOTDIR)/constitutive_tools/src/cpp/constitutive_tools.h
 INC+=-I$(ROOTDIR)/constitutive_tools/src/cpp
 LIB+=-L$(ROOTDIR)/constitutive_tools/src/cpp
 
-# The python command
-PYTHON=/apps/anaconda3/bin/python
