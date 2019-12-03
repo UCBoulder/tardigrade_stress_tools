@@ -225,7 +225,12 @@ int testLinearViscoelasticity(std::ofstream &results){
     }
 
     floatVector stresspp;
-    constitutiveTools::rotateMatrix(rotatedStress, QT, stresspp);
+    res = constitutiveTools::rotateMatrix(rotatedStress, QT, stresspp);
+    if (res){
+        res->print();
+        results << "testLinearViscoelasticity (test 5) & False\n";
+        return 1;
+    }
 
     if (!vectorTools::fuzzyEquals(stress, stresspp)){
         results << "testLinearViscoelasticity (test 5) & False\n";
