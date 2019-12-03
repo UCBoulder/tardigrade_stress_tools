@@ -5,6 +5,7 @@
 #include<fstream>
 #include<iostream>
 
+typedef constitutiveTools::errorOut errorOut;
 typedef constitutiveTools::floatType floatType;
 typedef constitutiveTools::floatVector floatVector;
 typedef constitutiveTools::floatMatrix floatMatrix;
@@ -85,11 +86,16 @@ int testLinearViscoelasticity(std::ofstream &results){
     //!Test for passing the state variables through properly
     currentTime = previousTime;
 
-    stressTools::linearViscoelasticity( currentTime,  currentStrain,
-                                       previousTime, previousStrain,
-                                       previousStateVariables,
-                                       materialParameters, alpha,
-                                       stress, currentStateVariables);
+    errorOut res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+                                                      previousTime, previousStrain,
+                                                      previousStateVariables,
+                                                      materialParameters, alpha,
+                                                      stress, currentStateVariables);
+
+    if (res){
+        results << "testLinearViscoelasticity (test 2) & False\n";
+        return 1;
+    }
 
     if (!vectorTools::fuzzyEquals(previousStateVariables, currentStateVariables)){
         results << "testLinearViscoelasticity (test 2) & False\n";
@@ -101,11 +107,17 @@ int testLinearViscoelasticity(std::ofstream &results){
 
     currentTime = 1e10;
 
-    stressTools::linearViscoelasticity( currentTime,  currentStrain,
-                                       previousTime, previousStrain,
-                                       previousStateVariables,
-                                       materialParameters, 0.,
-                                       stress, currentStateVariables);
+    res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+                                             previousTime, previousStrain,
+                                             previousStateVariables,
+                                             materialParameters, 0.,
+                                             stress, currentStateVariables);
+
+    if (res){
+        res->print();
+        results << "testLinearViscoelasticity (test 3) & False\n";
+        return 1;
+    }
 
     if (!vectorTools::fuzzyEquals(currentStrain*materialParameters[0], stress)){
         results << "testLinearViscoelasticity (test 3) & False\n";
@@ -134,16 +146,35 @@ int testLinearViscoelasticity(std::ofstream &results){
                      -0.37866166,  0.31242661, -0.87120891,
                       0.80901699, -0.3454915 , -0.47552826};
 
+    floatVector QT(Q.size(), 0);
+    for (unsigned int i=0; i<3; i++){
+        for (unsigned int j=0; j<3; j++){
+            QT[3*j + i] = Q[3*i + j];
+        }
+    }
+
     //!Rotate the previous strain
     floatVector rotatedPreviousStrain(currentStrain.size(), 0);
-    constitutiveTools::rotateMatrix(previousStrain, Q, rotatedPreviousStrain);
+    res = constitutiveTools::rotateMatrix(previousStrain, Q, rotatedPreviousStrain);
+
+    if (res){
+        res->print();
+        results << "testLinearViscoelasticity (test 5) & False\n";
+        return 1;
+    }
 
     //!Rotate the current strain
     floatVector rotatedCurrentStrain(currentStrain.size(), 0);
-    constitutiveTools::rotateMatrix(currentStrain, Q, rotatedCurrentStrain);
+    res = constitutiveTools::rotateMatrix(currentStrain, Q, rotatedCurrentStrain);
+
+    if (res){
+        res->print();
+        results << "testLinearViscoelasticity (test 5) & False\n";
+        return 1;
+    }
 
     //!Rotate the previous state variables
-    floatVector rotatedPreviousStateVariables(previousStateVariables.size(), 0);
+    floatVector rotatedPreviousStateVariables;
     for (unsigned int i=0; i<previousStateVariables.size()/dim; i++){
         std::vector< unsigned int > indices(dim, 0);
         floatVector subv, rotatedSubv;
@@ -153,7 +184,12 @@ int testLinearViscoelasticity(std::ofstream &results){
         }
 
         vectorTools::getValuesByIndex(previousStateVariables, indices, subv);
-        constitutiveTools::rotateMatrix(subv, Q, rotatedSubv);
+        res = constitutiveTools::rotateMatrix(subv, Q, rotatedSubv);
+        if (res){
+            res->print();
+            results << "testLinearViscoelasticity (test 5) & False\n";
+            return 1;
+        }
         rotatedPreviousStateVariables = vectorTools::appendVectors({rotatedPreviousStateVariables, rotatedSubv});
     }
 
@@ -162,21 +198,62 @@ int testLinearViscoelasticity(std::ofstream &results){
     floatVector rotatedStress;
     floatVector rotatedCurrentStateVariables;
 
-    stressTools::linearViscoelasticity( currentTime,  rotatedCurrentStrain,
-                                       previousTime, rotatedPreviousStrain,
-                                       rotatedPreviousStateVariables,
-                                       materialParameters, alpha,
-                                       rotatedStress, rotatedCurrentStateVariables);
+    //Calculate the rotated stress
+    res = stressTools::linearViscoelasticity( currentTime,  rotatedCurrentStrain,
+                                             previousTime, rotatedPreviousStrain,
+                                             rotatedPreviousStateVariables,
+                                             materialParameters, alpha,
+                                             rotatedStress, rotatedCurrentStateVariables);
 
-    //Calculate the initial values
-    stressTools::linearViscoelasticity( currentTime,  currentStrain,
-                                       previousTime, previousStrain,
-                                       previousStateVariables,
-                                       materialParameters, alpha,
-                                       stress, currentStateVariables);
+    if (res){
+        res->print();
+        results << "testLinearViscoelasticity (test 5) & False\n";
+        return 1;
+    }
 
-    std::cout << "rotatedStress: "; vectorTools::print(rotatedStress);
-    std::cout << "stress: "; vectorTools::print(stress);
+    //Re-calculate the initial values
+    res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+                                             previousTime, previousStrain,
+                                             previousStateVariables,
+                                             materialParameters, alpha,
+                                             stress, currentStateVariables);
+
+    if (res){
+        res->print();
+        results << "testLinearViscoelasticity (test 5) & False\n";
+        return 1;
+    }
+
+    floatVector stresspp;
+    constitutiveTools::rotateMatrix(rotatedStress, QT, stresspp);
+
+    if (!vectorTools::fuzzyEquals(stress, stresspp)){
+        results << "testLinearViscoelasticity (test 5) & False\n";
+        return 1;
+    }
+
+    for (unsigned int i=0; i<rotatedCurrentStateVariables.size()/dim; i++){
+        std::vector< unsigned int > indices(dim, 0);
+        floatVector rCSV, CSV, CSVpp;
+
+        for (unsigned int j=0; j<dim; j++){
+            indices[j] = i*dim + j;
+        }
+
+        vectorTools::getValuesByIndex(rotatedCurrentStateVariables, indices, rCSV);
+        vectorTools::getValuesByIndex(currentStateVariables, indices, CSV);
+
+        res = constitutiveTools::rotateMatrix(rCSV, QT, CSVpp);
+        if (res){
+            res->print();
+            results << "testLinearViscoelasticity (test 5) & False\n";
+            return 1;
+        }
+        if (!vectorTools::fuzzyEquals(CSVpp, CSV)){
+            results << "testLinearViscoelasticity (test 5) & False\n";
+            return 1;
+        }
+    }
 
     results << "testLinearViscoelasticity & True\n";
     return 0;
