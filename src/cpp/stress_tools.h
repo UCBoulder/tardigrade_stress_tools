@@ -27,13 +27,13 @@ namespace stressTools{
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
                                    const floatType &previousTime, const floatVector &previousStrain, 
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
-                                   const floatVector &integrationParameters,
+                                   const floatType &alpha,
                                    floatVector &stress, floatVector &currentStateVariables);
 
     errorOut linearViscoelasticty(const floatType &currentTime, const floatVector &currentStrain, 
                                    const floatType &previousTime, const floatVector &previousStrain,                                       
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
-                                   const floatVector &integrationParameters,
+                                   const floatType &alpha,
                                    floatVector &stress, floatVector &currentStateVariables, floatMatrix &dstressdstrain);
 
 }
