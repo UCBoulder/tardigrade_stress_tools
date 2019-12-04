@@ -78,7 +78,7 @@ namespace stressTools{
             factor = taui/(taui + dt*(1 - alpha));
 
             //Set the indices of the previous values of the state variables
-            for (unsigned int j=dim*i, k=0; j<dim*(i+1); j++, k++){
+            for (unsigned int j=dim*(i-1), k=0; j<dim*i; j++, k++){
                 indices[k] = j;
             }
 
@@ -92,7 +92,7 @@ namespace stressTools{
             stress += Gi*(currentStrain - Xic);
 
             //Save the new value of the state variable
-            vectorTools::appendVectors({currentStateVariables, Xic});
+            currentStateVariables = vectorTools::appendVectors({currentStateVariables, Xic});
         }
 
         return NULL;
