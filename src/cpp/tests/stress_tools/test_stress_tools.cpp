@@ -260,6 +260,45 @@ int testLinearViscoelasticity(std::ofstream &results){
         }
     }
 
+    //Test the implementation of the jacobian
+    floatType eps = 1e-6;
+    floatVector deltaStress;
+
+    floatMatrix jacobian;
+
+    //Compute the jacobian
+    res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+                                             previousTime, previousStrain,
+                                             previousStateVariables,
+                                             materialParameters, alpha,
+                                             stress, currentStateVariables, jacobian);
+
+    for (unsigned int i=0; i<currentStrain.size(); i++){
+        floatVector deltaStrain(currentStrain.size(), 0);
+        deltaStrain[i] = fabs(eps*currentStrain[i]);
+
+        res = stressTools::linearViscoelasticity( currentTime,  currentStrain + deltaStrain,
+                                                 previousTime, previousStrain,
+                                                 previousStateVariables,
+                                                 materialParameters, alpha,
+                                                 deltaStress, currentStateVariables);
+        if (res){
+            res->print();
+            results << "testLinearViscoelasticity (test 5) & False\n";
+            return 1;
+        }
+
+        //Compare the values in the column to the jacobian's values
+        for (unsigned int j=0; j<deltaStress.size(); j++){
+            if (! vectorTools::fuzzyEquals(jacobian[j][i], (deltaStress[j] - stress[j])/deltaStrain[i])){
+                results << "testLinearViscoelasticity (test 5) & False\n";
+                return 1;
+            }
+        }
+    }
+
+    floatVector deltaStrain(currentStrain.size(), 0);
+
     results << "testLinearViscoelasticity & True\n";
     return 0;
 }

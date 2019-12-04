@@ -128,7 +128,7 @@ namespace stressTools{
             materialParameters, alpha, stress, currentStateVariables);
 
         //Error handling
-        if (! lVresult){
+        if (lVresult){
             errorOut result = new errorNode( "linearViscoelasticity with Jacobian", "error in computation of stress");
             result->addNext(lVresult);
             return result;
@@ -142,14 +142,15 @@ namespace stressTools{
         
         //Compute the "infinite" term
         dstressdstrain = materialParameters[0]*eye;
-        floatType taui, Gi;
+        floatType taui, Gi, factor;
         unsigned int nTerms = (materialParameters.size() - 1)/2;
 
         //Add the contributions from the other terms
         for (unsigned int i=1; i<nTerms+1; i++){
             taui = materialParameters[i];
             Gi = materialParameters[i+nTerms];
-            dstressdstrain += Gi*(1 - dt/(taui - dt*(1-alpha))*(1-alpha))*eye;
+            factor = taui/(taui + dt*(1 - alpha));
+            dstressdstrain += Gi*(1 - factor*(1 - alpha)*dt/taui)*eye;
         }
 
         return NULL;
