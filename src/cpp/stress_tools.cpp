@@ -155,4 +155,75 @@ namespace stressTools{
 
         return NULL;
     }
+
+    errorOut volumetricNeoHookean(const floatVector &deformationGradient, const floatType &bulkModulus,
+                                  floatType &pressure){
+        /*!
+         * Compute the volumetric part of a Neo-Hookean material model response of the form
+         * U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))
+         * where J is the determinant of the deformation gradient. Note that this stress is in 
+         * the reference configuration.
+         * 
+         * :param const floatVector &deformationGradient: The deformation gradient
+         * :param const floatType &bulkModulus: The bulk modulus
+         * :param floatType &pressure: The pressure in the current configuration
+         */
+
+        //Check the size of the deformation gradient
+        if (deformationGradient.size() != 9){
+            return new errorNode("volumetricNeoHookean", "deformation gradient must have nine terms");
+        }
+
+        //Compute the determinant of the deformation gradient
+        floatType J;
+        J = vectorTools::determinant(deformationGradient, 3, 3);
+
+        //Error handling
+        if (J<=0){
+             return new errorNode("volumetricNeoHookean", "determinant is less than or equal zero");
+        }
+
+        //Compute the pressure
+        pressure = 0.5*bulkModulus*(J - 1/J);
+
+        return NULL;
+    }
+
+    errorOut volumetricNeoHookean(const floatVector &deformationGradient, const floatType &bulkModulus,
+                                  floatType &pressure, floatType &dpressuredJ){
+        /*!
+         * Compute the volumetric part of a Neo-Hookean material model response of the form
+         * U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))
+         * where J is the determinant of the deformation gradient. Note that this stress is in 
+         * the reference configuration.
+         * 
+         * :param const floatVector &deformationGradient: The deformation gradient
+         * :param const floatType &bulkModulus: The bulk modulus
+         * :param floatVector &pressure: The pressure in the current configuration
+         */
+
+        //Check the size of the deformation gradient
+        if (deformationGradient.size() != 9){
+            return new errorNode("volumetricNeoHookean", "deformation gradient must have nine terms");
+        }
+
+        //Compute the determinant of the deformation gradient
+        floatType J;
+        J = vectorTools::determinant(deformationGradient, 3, 3);
+
+        //Error handling
+        if (J<=0){
+             return new errorNode("volumetricNeoHookean", "determinant is less than or equal zero");
+        }
+
+        //Compute the pressure
+        pressure = 0.5*bulkModulus*(J - 1/J);
+
+        //Compute the derivative of the pressure w.r.t. J
+        dpressuredJ = 0.5*bulkModulus*(1 + 1/(J*J));
+
+        return NULL;
+    }
+
+
 }
