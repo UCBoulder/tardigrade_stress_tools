@@ -38,10 +38,10 @@ namespace stressTools{
                                    floatVector &stress, floatVector &currentStateVariables, floatMatrix &dstressdstrain);
 
     errorOut volumetricNeoHookean(const floatVector &deformationGradient, const floatType &bulkModulus,
-                                  floatType &pressure);
+                                  floatType &meanStress);
 
     errorOut volumetricNeoHookean(const floatVector &deformationGradient, const floatType &bulkModulus,
-                                  floatType &pressure, floatType &dpressuredJ);
+                                  floatType &meanStress, floatType &dmeanStressdJ);
 
 }
 
