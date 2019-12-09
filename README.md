@@ -21,3 +21,4 @@ directory as this repo.
 * eigen: https://gitlab.com/libeigen/eigen
 * constitutive\_tools: https://xcp-stash.lanl.gov/projects/MM/repos/constitutive_tools
 * error\_tools: https://xcp-stash.lanl.gov/projects/MM/repos/error_tools
+* stress\_tools: https://xcp-stash.lanl.gov/projects/MM/repos/stress_tools
