@@ -155,4 +155,80 @@ namespace stressTools{
 
         return NULL;
     }
+
+    errorOut volumetricNeoHookean(const floatVector &deformationGradient, const floatType &bulkModulus,
+                                  floatType &meanStress){
+        /*!
+         * Compute the volumetric part of a Neo-Hookean material model response of the form
+         * U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))
+         * where J is the determinant of the deformation gradient.
+         * 
+         * :param const floatVector &deformationGradient: The deformation gradient
+         * :param const floatType &bulkModulus: The bulk modulus
+         * :param floatType &meanStress: The meanStress NOTE: It is up to the user to determine 
+         *     which configuration this mean stress is defined within. If it is the reference 
+         *     configuration a mapping may be necessary going into a different configuration.
+         * 
+         */
+
+        //Check the size of the deformation gradient
+        if (deformationGradient.size() != 9){
+            return new errorNode("volumetricNeoHookean", "deformation gradient must have nine terms");
+        }
+
+        //Compute the determinant of the deformation gradient
+        floatType J;
+        J = vectorTools::determinant(deformationGradient, 3, 3);
+
+        //Error handling
+        if (J<=0){
+             return new errorNode("volumetricNeoHookean", "determinant is less than or equal zero");
+        }
+
+        //Compute the meanStress
+        meanStress = 0.5*bulkModulus*(J - 1/J);
+
+        return NULL;
+    }
+
+    errorOut volumetricNeoHookean(const floatVector &deformationGradient, const floatType &bulkModulus,
+                                  floatType &meanStress, floatType &dmeanStressdJ){
+        /*!
+         * Compute the volumetric part of a Neo-Hookean material model response of the form
+         * U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))
+         * where J is the determinant of the deformation gradient.
+         * 
+         * :param const floatVector &deformationGradient: The deformation gradient
+         * :param const floatType &bulkModulus: The bulk modulus
+         * :param floatType &meanStress: The meanStress NOTE: It is up to the user to determine 
+         *     which configuration this mean stress is defined within. If it is the reference 
+         *     configuration a mapping may be necessary going into a different configuration.
+         * :param floatType &dmeanStressdJ: The derivative of the mean stress w.r.t. the jacobian 
+         *     of deformation.
+         */
+
+        //Check the size of the deformation gradient
+        if (deformationGradient.size() != 9){
+            return new errorNode("volumetricNeoHookean", "deformation gradient must have nine terms");
+        }
+
+        //Compute the determinant of the deformation gradient
+        floatType J;
+        J = vectorTools::determinant(deformationGradient, 3, 3);
+
+        //Error handling
+        if (J<=0){
+             return new errorNode("volumetricNeoHookean", "determinant is less than or equal zero");
+        }
+
+        //Compute the meanStress
+        meanStress = 0.5*bulkModulus*(J - 1/J);
+
+        //Compute the derivative of the meanStress w.r.t. J
+        dmeanStressdJ = 0.5*bulkModulus*(1 + 1/(J*J));
+
+        return NULL;
+    }
+
+
 }

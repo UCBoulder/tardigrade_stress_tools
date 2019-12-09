@@ -303,6 +303,112 @@ int testLinearViscoelasticity(std::ofstream &results){
     return 0;
 }
 
+int testVolumetricNeoHookean(std::ofstream &results){
+    /*!
+     * Test the computation of the mean stress (-pressure) using a Neo-Hookean model
+     * 
+     * :param std::ofstream &results: The output file
+     */
+
+    //Define the bulk modulus
+    floatType bulkModulus = 150.;
+
+    //Define the deformation gradient
+    floatVector deformationGradient = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+
+    //Run the test when there is no deformation
+    floatType meanStress;
+
+    errorOut res = stressTools::volumetricNeoHookean(deformationGradient, bulkModulus, meanStress);
+    if (res){
+        res->print();
+        results << "testVolumetricNeoHookean (test 1) & False\n";
+        return 1;
+    }
+
+    if (! vectorTools::fuzzyEquals(meanStress, 0.)){
+        results << "testVolumetricNeoHookean (test 1) & False\n";
+        return 1;
+    }
+
+    //Test the meanStress computation as compared to the expected value
+    deformationGradient = {0.39874077,  0.11561812, -0.75485222,
+                           0.14034205,  0.15851022,  1.29640525,
+                           0.26235075, -0.26051883,  0.45378251};
+
+    floatType J = 0.25430054895115856;
+
+    res = stressTools::volumetricNeoHookean(deformationGradient, bulkModulus, meanStress);
+    if (res){
+        res->print();
+        results << "testVolumetricNeoHookean (test 2) & False\n";
+        return 1;
+    }
+
+    if (! vectorTools::fuzzyEquals(meanStress, 0.5*bulkModulus*(J - 1/J))){
+        std::cout << "meanStress: " << meanStress << "\n";
+        std::cout << "expected:   " << 0.5*bulkModulus*(J - 1)/J << "\n";
+        results << "testVolumetricNeoHookean (test 2) & False\n";
+        return 1;
+    }
+
+    //Test the meanStress computation subject to a rotation
+    deformationGradient = {-0.2350804 ,  0.16410551, -1.13402371,
+                            0.1296644 , -0.22975865, -1.03460443,
+                           -0.4188584 , -0.16322821,  0.31618178};
+
+    res = stressTools::volumetricNeoHookean(deformationGradient, bulkModulus, meanStress);
+    if (res){
+        res->print();
+        results << "testVolumetricNeoHookean (test 3) & False\n";
+        return 1;
+    }
+
+    if (! vectorTools::fuzzyEquals(meanStress, 0.5*bulkModulus*(J - 1/J))){
+        results << "testVolumetricNeoHookean (test 3) & False\n";
+        return 1;
+    }
+
+    //Test the computation of the derivative of the mean stress w.r.t. J
+    floatType jacobianMeanStress;
+    floatType dmeanStressdJ;
+    res = stressTools::volumetricNeoHookean(deformationGradient, bulkModulus, jacobianMeanStress, dmeanStressdJ);
+    if (res){
+        res->print();
+        results << "testVolumetricNeoHookean (test 4) & False\n";
+        return 1;
+    }
+
+    //Make sure the mean stress is identical
+    if (!vectorTools::fuzzyEquals(jacobianMeanStress, meanStress)){
+        results << "testVolumetricNeoHookean (test 4) & False\n";
+        return 1;
+    }
+
+    //Make sure the jacobian is correct
+    floatType ms;
+    floatType eps = 1e-6;
+    floatVector dmeanStressdF(deformationGradient.size(), 0);
+    for (unsigned int i=0; i<deformationGradient.size(); i++){
+        floatVector delta(deformationGradient.size(), 0);
+        delta[i] = fabs(eps*deformationGradient[i]);
+        stressTools::volumetricNeoHookean(deformationGradient + delta, bulkModulus, ms);
+
+        dmeanStressdF[i] = (ms - meanStress)/delta[i];
+    }
+
+    floatVector dJdF = vectorTools::computeDDetAdJ(deformationGradient, 3, 3);
+
+    if (!vectorTools::fuzzyEquals(dmeanStressdJ*dJdF, dmeanStressdF)){
+        results << "testVolumentricNeoHookean (test 4) & False\n";
+        return 1;
+    }
+
+    results << "testVolumetricNeoHookean & True\n";
+    return 0;
+
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the 
@@ -317,6 +423,7 @@ int main(){
 
     //Run the tests
     testLinearViscoelasticity(results);
+    testVolumetricNeoHookean(results);
 
     //Close the results file
     results.close();

@@ -12,6 +12,7 @@
 #ifndef STRESS_TOOLS_H
 #define STRESS_TOOLS_H
 
+#define USE_EIGEN
 #include<vector_tools.h>
 #include<error_tools.h>
 #include<constitutive_tools.h>
@@ -35,6 +36,12 @@ namespace stressTools{
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
                                    const floatType &alpha,
                                    floatVector &stress, floatVector &currentStateVariables, floatMatrix &dstressdstrain);
+
+    errorOut volumetricNeoHookean(const floatVector &deformationGradient, const floatType &bulkModulus,
+                                  floatType &meanStress);
+
+    errorOut volumetricNeoHookean(const floatVector &deformationGradient, const floatType &bulkModulus,
+                                  floatType &meanStress, floatType &dmeanStressdJ);
 
 }
 
