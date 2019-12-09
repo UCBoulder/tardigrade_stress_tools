@@ -37,6 +37,12 @@ namespace stressTools{
                                    const floatType &alpha,
                                    floatVector &stress, floatVector &currentStateVariables, floatMatrix &dstressdstrain);
 
+    errorOut volumetricNeoHookean(const floatType &jacobian, const floatType &bulkModulus,
+                                  floatType &meanStress);
+
+    errorOut volumetricNeoHookean(const floatType &jacobian, const floatType &bulkModulus,
+                                  floatType &meanStress, floatType &dmeanStressdJ);
+
     errorOut volumetricNeoHookean(const floatVector &deformationGradient, const floatType &bulkModulus,
                                   floatType &meanStress);
 
