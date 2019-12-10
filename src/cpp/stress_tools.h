@@ -26,16 +26,19 @@ namespace stressTools{
     typedef constitutiveTools::floatMatrix floatMatrix; //!Define a matrix of floats
 
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
-                                   const floatType &previousTime, const floatVector &previousStrain, 
+                                   const floatType &previousTime, const floatVector &previousStrain,
+                                   const floatType &currentRateModifier, const floatType &previousRateModifier, 
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
                                    const floatType &alpha,
                                    floatVector &stress, floatVector &currentStateVariables);
 
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
-                                   const floatType &previousTime, const floatVector &previousStrain,                                       
+                                   const floatType &previousTime, const floatVector &previousStrain,               
+                                   const floatType &currentRateModifier, const floatType &previousRateModifier,                        
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
                                    const floatType &alpha,
-                                   floatVector &stress, floatVector &currentStateVariables, floatMatrix &dstressdstrain);
+                                   floatVector &stress, floatVector &currentStateVariables, floatMatrix &dstressdstrain,
+                                   floatVector &dstressdrateModifier);
 
     errorOut volumetricNeoHookean(const floatType &jacobian, const floatType &bulkModulus,
                                   floatType &meanStress);

@@ -15,6 +15,7 @@ namespace stressTools{
 
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
                                    const floatType &previousTime, const floatVector &previousStrain, 
+                                   const floatType &currentRateModifier, const floatType &previousRateModifier,
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
                                    const floatType &alpha,
                                    floatVector &stress, floatVector &currentStateVariables){
@@ -25,6 +26,10 @@ namespace stressTools{
          * :param const floatType &currentTime: The current time
          * :const floatVector &currentStrain: The current Green-Lagrange strain
          * :const floatType &previousTime: The previous time
+         * :const floatType &currentRateModifier: The current value of the rate modifier 
+         *     which can be used for temperature effects or (potentially) other non-linear effects.
+         * :const floatType &previousRateModifier: The previous value of the rate modifier 
+         *     which can be used for temperature effects or (potentially) other non-linear effects.
          * :const floatVector &previousStrain: The previous value of strain
          * :const floatVector &previousStateVariables: The previous values of the state variables
          * :const floatVector &materialParameters: The material parameters
@@ -75,7 +80,7 @@ namespace stressTools{
             Gi = materialParameters[i+nTerms];
 
             //Get the factor
-            factor = taui/(taui + dt*(1 - alpha));
+            factor = taui/(taui + dt*(1 - alpha)*currentRateModifier);
 
             //Set the indices of the previous values of the state variables
             for (unsigned int j=dim*(i-1), k=0; j<dim*i; j++, k++){
@@ -86,7 +91,7 @@ namespace stressTools{
             vectorTools::getValuesByIndex(previousStateVariables, indices, Xip);
 
             //Compute the new state-variable values
-            Xic = factor*(Xip + (dt/taui)*(currentStrain + alpha*(previousStrain - Xip - currentStrain)));
+            Xic = factor*(Xip + (dt/taui)*(currentStrain*currentRateModifier + alpha*((previousStrain - Xip)*previousRateModifier - currentStrain*currentRateModifier)));
 
             //Add the contribution to the stress
             stress += Gi*(currentStrain - Xic);
@@ -100,9 +105,11 @@ namespace stressTools{
 
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain,
                                    const floatType &previousTime, const floatVector &previousStrain,
+                                   const floatType &currentRateModifier, const floatType &previousRateModifier,
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
                                    const floatType &alpha,
-                                   floatVector &stress, floatVector &currentStateVariables, floatMatrix &dstressdstrain){
+                                   floatVector &stress, floatVector &currentStateVariables, floatMatrix &dstressdstrain, 
+                                   floatVector &dstressdrateModifier){
         /*!
          * Compute the stress for linear viscoelasticity based on the potential function
          * rho^0 \Psi = E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ})
@@ -111,6 +118,10 @@ namespace stressTools{
          * :const floatVector &currentStrain: The current Green-Lagrange strain
          * :const floatType &previousTime: The previous time
          * :const floatVector &previousStrain: The previous value of strain
+         * :const floatType &currentRateModifier: The current value of the rate modifier 
+         *     which can be used for temperature effects or (potentially) other non-linear effects.
+         * :const floatType &previousRateModifier: The previous value of the rate modifier 
+         *     which can be used for temperature effects or (potentially) other non-linear effects.
          * :const floatVector &previousStateVariables: The previous values of the state variables
          * :const floatVector &materialParameters: The material parameters
          *     The order of the parameters is [Ginfty, taus, Gs] where
@@ -120,12 +131,13 @@ namespace stressTools{
          * :const floatType &alpha: The integration parameter (0 for implicit, 1 for explicit)
          * :floatVector &stress: The computed stress in the reference configuration (i.e. the same configuration as the strain)
          * :floatVector &currentStateVariables: The current values of the state variables
-         * :floatMatrix &dstressdstrain: The derivative of the stress in the reference configuration 
-         *     w.r.t. the strain in the reference configuration.
+         * :floatMatrix &dstressdstrain: The derivative of the stress w.r.t. the strain
+         * :floatVector &dstressdrateModifier: The derivative of the stress w.r.t. the rate modifier
          */
 
-        errorOut lVresult = linearViscoelasticity(currentTime, currentStrain, previousTime, previousStrain, previousStateVariables,
-            materialParameters, alpha, stress, currentStateVariables);
+        errorOut lVresult = linearViscoelasticity(currentTime, currentStrain, previousTime, previousStrain, 
+                                                  currentRateModifier, previousRateModifier, previousStateVariables,
+                                                  materialParameters, alpha, stress, currentStateVariables);
 
         //Error handling
         if (lVresult){
@@ -137,21 +149,42 @@ namespace stressTools{
         //Compute the change in time
         float dt = currentTime - previousTime;
 
-        //Compute the jacobian
-        floatMatrix eye = vectorTools::eye<floatType>(currentStrain.size());
+        //Compute the derivative of the stress w.r.t. the strain
+        //and the rate modifier.
+        dstressdrateModifier = floatVector(currentStrain.size(), 0);
         
         //Compute the "infinite" term
-        dstressdstrain = materialParameters[0]*eye;
+        floatType scalarTerm = materialParameters[0];
         floatType taui, Gi, factor;
+        std::vector< unsigned int > indices(currentStrain.size(), 0);
+        floatVector Xic;
         unsigned int nTerms = (materialParameters.size() - 1)/2;
+        unsigned int dim = currentStrain.size();
 
         //Add the contributions from the other terms
         for (unsigned int i=1; i<nTerms+1; i++){
             taui = materialParameters[i];
             Gi = materialParameters[i+nTerms];
-            factor = taui/(taui + dt*(1 - alpha));
-            dstressdstrain += Gi*(1 - factor*(1 - alpha)*dt/taui)*eye;
+
+            //Set the indices of the current values of the state variables
+            for (unsigned int j=dim*(i-1), k=0; j<dim*i; j++, k++){
+                indices[k] = j;
+            }
+
+            //Get the previous values of the state variables
+            vectorTools::getValuesByIndex(currentStateVariables, indices, Xic);
+
+            factor = taui/(taui + dt*(1 - alpha)*currentRateModifier);
+
+            //Add terms to the gradient w.r.t. the strain
+            scalarTerm += Gi*(1 - factor*(1 - alpha)*dt/taui*currentRateModifier);
+
+            //Add terms to the gradient w.r.t. the rate modifier
+            dstressdrateModifier -= Gi*(dt*(1-alpha)/(taui + dt*(1-alpha)*currentRateModifier))*(currentStrain - Xic);
         }
+
+        //Assemble the full gradient
+        dstressdstrain = scalarTerm*vectorTools::eye<floatType>(currentStrain.size());
 
         return NULL;
     }

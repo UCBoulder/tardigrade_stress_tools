@@ -64,6 +64,9 @@ int testLinearViscoelasticity(std::ofstream &results){
 
     floatVector materialParameters = {100, 1., 10, 150, 200};
 
+    floatType currentRateModifier = 2.7;
+    floatType previousRateModifier = 3.5;
+
     floatType alpha = 0.5; //Trapezoidal rule
 
     floatVector stress;
@@ -71,6 +74,7 @@ int testLinearViscoelasticity(std::ofstream &results){
 
     stressTools::linearViscoelasticity( currentTime,  currentStrain,
                                        previousTime, previousStrain,
+                                       currentRateModifier, previousRateModifier,
                                        previousStateVariables,
                                        materialParameters, alpha,
                                        stress, currentStateVariables);
@@ -88,6 +92,7 @@ int testLinearViscoelasticity(std::ofstream &results){
 
     errorOut res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
                                                       previousTime, previousStrain,
+                                                      currentRateModifier, previousRateModifier,
                                                       previousStateVariables,
                                                       materialParameters, alpha,
                                                       stress, currentStateVariables);
@@ -109,6 +114,7 @@ int testLinearViscoelasticity(std::ofstream &results){
 
     res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
                                              previousTime, previousStrain,
+                                             currentRateModifier, previousRateModifier,
                                              previousStateVariables,
                                              materialParameters, 0.,
                                              stress, currentStateVariables);
@@ -201,6 +207,7 @@ int testLinearViscoelasticity(std::ofstream &results){
     //Calculate the rotated stress
     res = stressTools::linearViscoelasticity( currentTime,  rotatedCurrentStrain,
                                              previousTime, rotatedPreviousStrain,
+                                             currentRateModifier, previousRateModifier,
                                              rotatedPreviousStateVariables,
                                              materialParameters, alpha,
                                              rotatedStress, rotatedCurrentStateVariables);
@@ -214,6 +221,7 @@ int testLinearViscoelasticity(std::ofstream &results){
     //Re-calculate the initial values
     res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
                                              previousTime, previousStrain,
+                                             currentRateModifier, previousRateModifier,
                                              previousStateVariables,
                                              materialParameters, alpha,
                                              stress, currentStateVariables);
@@ -265,13 +273,16 @@ int testLinearViscoelasticity(std::ofstream &results){
     floatVector deltaStress;
 
     floatMatrix jacobian;
+    floatVector dstressdrateModifier;
 
     //Compute the jacobian
     res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
                                              previousTime, previousStrain,
+                                             currentRateModifier, previousRateModifier,
                                              previousStateVariables,
                                              materialParameters, alpha,
-                                             stress, currentStateVariables, jacobian);
+                                             stress, currentStateVariables, jacobian, 
+                                             dstressdrateModifier);
 
     for (unsigned int i=0; i<currentStrain.size(); i++){
         floatVector deltaStrain(currentStrain.size(), 0);
@@ -279,6 +290,7 @@ int testLinearViscoelasticity(std::ofstream &results){
 
         res = stressTools::linearViscoelasticity( currentTime,  currentStrain + deltaStrain,
                                                  previousTime, previousStrain,
+                                                 currentRateModifier, previousRateModifier,
                                                  previousStateVariables,
                                                  materialParameters, alpha,
                                                  deltaStress, currentStateVariables);
@@ -298,6 +310,27 @@ int testLinearViscoelasticity(std::ofstream &results){
     }
 
     floatVector deltaStrain(currentStrain.size(), 0);
+
+    //Test the gradient w.r.t. the rate modifier
+    res = stressTools::linearViscoelasticity( currentTime, currentStrain,
+                                             previousTime, previousStrain,
+                                             currentRateModifier + fabs(eps*currentRateModifier), previousRateModifier,
+                                             previousStateVariables,
+                                             materialParameters, alpha,
+                                             deltaStress, currentStateVariables);
+
+    if (res){
+        res->print();
+        results << "testLinearViscoelasticity (test 6) & False\n";
+        return 1;
+    }
+
+    if (! vectorTools::fuzzyEquals((deltaStress - stress)/fabs(eps*currentRateModifier), dstressdrateModifier)){
+        std::cout << "dstressdrateModifier: "; vectorTools::print(dstressdrateModifier);
+        std::cout << "answer:               "; vectorTools::print((deltaStress - stress)/fabs(eps*currentRateModifier));
+        results << "testLinearViscoelasticity (test 6) & False\n";
+        return 1;
+    }
 
     results << "testLinearViscoelasticity & True\n";
     return 0;
