@@ -21,7 +21,7 @@ namespace stressTools{
                                    floatVector &stress, floatVector &currentStateVariables){
         /*!
          * Compute the stress for linear viscoelasticity based on the potential function
-         * rho^0 \Psi = E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ})
+         * rho^0 \Psi = 0.5*(E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ}))
          * 
          * :param const floatType &currentTime: The current time
          * :const floatVector &currentStrain: The current Green-Lagrange strain
@@ -112,7 +112,7 @@ namespace stressTools{
                                    floatVector &dstressdrateModifier){
         /*!
          * Compute the stress for linear viscoelasticity based on the potential function
-         * rho^0 \Psi = E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ})
+         * rho^0 \Psi = 0.5*(E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ}))
          * 
          * :param const floatType &currentTime: The current time
          * :const floatVector &currentStrain: The current Green-Lagrange strain
