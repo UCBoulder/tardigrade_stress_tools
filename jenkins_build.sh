@@ -1,13 +1,7 @@
 #!/usr/bin/env bash
 
-repo='stress_tools'
-workdir=${PWD}
-declare -A deprepo 
-deprepo['eigen']='https://gitlab.com/libeigen/eigen.git'
-deprepo['constitutive_tools']='ssh://git@xcp-stash.lanl.gov:7999/mm/constitutive_tools.git'
-deprepo['error_tools']='ssh://git@xcp-stash.lanl.gov:7999/mm/error_tools.git'
-deprepo['vector_tools']='ssh://git@xcp-stash.lanl.gov:7999/mm/vector_tools.git'
-proxyout='proxyout.lanl.gov:8080'
+# Source common shell script variables
+source set_vars.sh
 
 # Source the Intel compilers
 source /apps/intel2016/bin/ifortvars.sh -arch intel64 -platform linux
@@ -23,7 +17,13 @@ for deprepodir in "${!deprepo[@]}"; do
     if [ ! -d ${deprepodir} ]; then
         all_proxy=${proxyout} git clone ${deprepo[$deprepodir]}
     else
-        cd ${deprepodir} && all_proxy=${proxyout} git pull
+        cd ${deprepodir} 
+        if [ ${deprepodir} == "eigen" ]; then
+            all_proxy=${proxyout} git checkout master
+        else
+            all_proxy=${proxyout} git checkout dev
+        fi
+        all_proxy=${proxyout} git pull --ff-only
         cd ..
     fi
 done
