@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# Source common shell script variables
-source set_vars.sh
-
 # Source the Intel compilers
 source /apps/intel2016/bin/ifortvars.sh -arch intel64 -platform linux
 
@@ -11,22 +8,12 @@ source /apps/intel2016/bin/ifortvars.sh -arch intel64 -platform linux
 # Have to do this after sourcing ifortvars.sh becuase the shell script has unbound variables
 set -Eeuxo pipefail
 
-# Clone dependencies
-cd ..
-for deprepodir in "${!deprepo[@]}"; do
-    if [ ! -d ${deprepodir} ]; then
-        all_proxy=${proxyout} git clone ${deprepo[$deprepodir]}
-    else
-        cd ${deprepodir} 
-        if [ ${deprepodir} == "eigen" ]; then
-            all_proxy=${proxyout} git checkout master
-        else
-            all_proxy=${proxyout} git checkout dev
-        fi
-        all_proxy=${proxyout} git pull --ff-only
-        cd ..
-    fi
-done
+# Source common shell script variables
+source set_vars.sh
+
+# Clone and update dependencies
+source update_dependencies.sh
+
 # Perform repo tests
 cd ${workdir}/src/cpp/tests/${repo}/
 if [ -f ${repo}.o ]; then
