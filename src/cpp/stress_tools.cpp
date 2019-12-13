@@ -13,6 +13,36 @@
 
 namespace stressTools{
 
+    errorOut calculateMeanStress(const floatVector &stress, floatType &meanStress){
+        /*!
+         * Compute the mean stress from a 2nd rank stress tensor with 3
+         * dimensions as meanStress = frac{1}{3}*trace(\sigma)
+         *
+         * :param floatVector &stress: The stress tensor
+         */
+
+        //FIXME: fix mismatching argument types for trace call
+        floatType trace;
+        int res = vectorTools::trace(stress, trace);
+        meanStress = 1./3.*trace;
+         
+        return NULL;
+    }
+
+    floatType calculateMeanStress(const floatVector &stress){
+        /*!
+         * Compute the mean stress from a 2nd rank stress tensor with 3
+         * dimensions as meanStress = frac{1}{3}*trace(\sigma)
+         *
+         * :param floatVector &stress: The stress tensor
+         */
+
+        floatType meanStress;
+        errorOut calculateMeanStressResult = calculateMeanStress(stress, meanStress);
+         
+        return meanStress;
+    }
+
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
                                    const floatType &previousTime, const floatVector &previousStrain, 
                                    const floatType &currentRateModifier, const floatType &previousRateModifier,

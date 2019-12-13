@@ -36,6 +36,25 @@ struct cerr_redirect{
         std::streambuf * old;
 };
 
+int testCalculateMeanStress(std::ofstream &results){
+    /*!
+     * Test the mean stress calculation 
+     *
+     * :param std::ofstream &results: The output-file to write to.
+     */
+
+    floatVector stress = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    floatType meanStress;
+
+    errorOut res = stressTools::calculateMeanStress(stress, meanStress);
+
+    //TODO: write check for results and error statement
+
+    results << "testCalculateMeanStress & True\n";
+    return 0;
+    
+}
+
 int testLinearViscoelasticity(std::ofstream &results){
     /*!
      * Test the implementation of linear finite-deformation 
@@ -455,6 +474,7 @@ int main(){
     results.open("results.tex");
 
     //Run the tests
+    testCalculateMeanStress(results);
     testLinearViscoelasticity(results);
     testVolumetricNeoHookean(results);
 

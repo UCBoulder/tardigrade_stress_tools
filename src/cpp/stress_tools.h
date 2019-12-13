@@ -25,6 +25,10 @@ namespace stressTools{
     typedef constitutiveTools::floatVector floatVector; //! Define a vector of floats
     typedef constitutiveTools::floatMatrix floatMatrix; //!Define a matrix of floats
 
+    errorOut calculateMeanStress(const floatVector &stress, floatType &meanStress);
+
+    floatType calculateMeanStress(const floatVector &stress);
+
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
                                    const floatType &previousTime, const floatVector &previousStrain,
                                    const floatType &currentRateModifier, const floatType &previousRateModifier, 
