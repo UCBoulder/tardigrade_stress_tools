@@ -15,15 +15,15 @@ namespace stressTools{
 
     errorOut calculateMeanStress(const floatVector &stress, floatType &meanStress){
         /*!
-         * Compute the mean stress from a 2nd rank stress tensor with 3
-         * dimensions as meanStress = frac{1}{3}*trace(\sigma)
+         * Compute the mean stress from a 2nd rank stress tensor stored in row major format
+         * meanStress = frac{1}{3}*trace(\sigma)
          *
          * :param floatVector &stress: The stress tensor
+         * :param floatType &meanStress: The mean stress scalar 
          */
 
-        //FIXME: fix mismatching argument types for trace call
         floatType trace;
-        int res = vectorTools::trace(stress, trace);
+        int result = vectorTools::trace(stress, trace);
         meanStress = 1./3.*trace;
          
         return NULL;
@@ -31,14 +31,46 @@ namespace stressTools{
 
     floatType calculateMeanStress(const floatVector &stress){
         /*!
-         * Compute the mean stress from a 2nd rank stress tensor with 3
-         * dimensions as meanStress = frac{1}{3}*trace(\sigma)
+         * Compute the mean stress from a 2nd rank stress tensor stored in row major format
+         * meanStress = frac{1}{3}*trace(\sigma)
          *
          * :param floatVector &stress: The stress tensor
+         * :param floatType &meanStress: The mean stress scalar 
          */
 
         floatType meanStress;
-        errorOut calculateMeanStressResult = calculateMeanStress(stress, meanStress);
+        errorOut result = calculateMeanStress(stress, meanStress);
+         
+        return meanStress;
+    }
+
+    errorOut calculateMeanStress(const floatMatrix &stress, floatType &meanStress){
+        /*!
+         * Compute the mean stress from a 2nd rank stress tensor stored in matrix format
+         * meanStress = frac{1}{3}*trace(\sigma)
+         *
+         * :param floatMatrix &stress: The stress tensor
+         * :param floatType &meanStress: The mean stress scalar 
+         */
+
+        floatType trace;
+        int result = vectorTools::trace(stress, trace);
+        meanStress = 1./3.*trace;
+         
+        return NULL;
+    }
+
+    floatType calculateMeanStress(const floatMatrix &stress){
+        /*!
+         * Compute the mean stress from a 2nd rank stress tensor stored in matrix format
+         * meanStress = frac{1}{3}*trace(\sigma)
+         *
+         * :param floatMatrix &stress: The stress tensor
+         * :param floatType &meanStress: The mean stress scalar 
+         */
+
+        floatType meanStress;
+        errorOut result = calculateMeanStress(stress, meanStress);
          
         return meanStress;
     }
