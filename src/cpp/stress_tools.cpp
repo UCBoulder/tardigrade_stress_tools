@@ -13,6 +13,68 @@
 
 namespace stressTools{
 
+    errorOut calculateMeanStress(const floatVector &stress, floatType &meanStress){
+        /*!
+         * Compute the mean stress from a 2nd rank stress tensor stored in row major format
+         * meanStress = frac{1}{3}*trace(\sigma)
+         *
+         * :param floatVector &stress: The stress tensor
+         * :param floatType &meanStress: The mean stress scalar 
+         */
+
+        floatType trace;
+        int result = vectorTools::trace(stress, trace);
+        meanStress = 1./3.*trace;
+         
+        return NULL;
+    }
+
+    floatType calculateMeanStress(const floatVector &stress){
+        /*!
+         * Compute the mean stress from a 2nd rank stress tensor stored in row major format
+         * meanStress = frac{1}{3}*trace(\sigma)
+         *
+         * :param floatVector &stress: The stress tensor
+         * :param floatType &meanStress: The mean stress scalar 
+         */
+
+        floatType meanStress;
+        errorOut result = calculateMeanStress(stress, meanStress);
+         
+        return meanStress;
+    }
+
+    errorOut calculateMeanStress(const floatMatrix &stress, floatType &meanStress){
+        /*!
+         * Compute the mean stress from a 2nd rank stress tensor stored in matrix format
+         * meanStress = frac{1}{3}*trace(\sigma)
+         *
+         * :param floatMatrix &stress: The stress tensor
+         * :param floatType &meanStress: The mean stress scalar 
+         */
+
+        floatType trace;
+        int result = vectorTools::trace(stress, trace);
+        meanStress = 1./3.*trace;
+         
+        return NULL;
+    }
+
+    floatType calculateMeanStress(const floatMatrix &stress){
+        /*!
+         * Compute the mean stress from a 2nd rank stress tensor stored in matrix format
+         * meanStress = frac{1}{3}*trace(\sigma)
+         *
+         * :param floatMatrix &stress: The stress tensor
+         * :param floatType &meanStress: The mean stress scalar 
+         */
+
+        floatType meanStress;
+        errorOut result = calculateMeanStress(stress, meanStress);
+         
+        return meanStress;
+    }
+
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
                                    const floatType &previousTime, const floatVector &previousStrain, 
                                    const floatType &currentRateModifier, const floatType &previousRateModifier,

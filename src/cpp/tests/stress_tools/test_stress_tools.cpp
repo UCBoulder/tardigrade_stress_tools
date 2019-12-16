@@ -36,6 +36,59 @@ struct cerr_redirect{
         std::streambuf * old;
 };
 
+int testCalculateMeanStress(std::ofstream &results){
+    /*!
+     * Test the mean stress calculation 
+     *
+     * :param std::ofstream &results: The output-file to write to.
+     */
+
+    floatVector stressVector = {1., 0., 0.,
+                                0., 1., 0., 
+                                0., 0., 1.};
+    floatMatrix stressMatrix = {{1., 0., 0.},
+                                {0., 1., 0.},
+                                {0., 0., 1.}};
+    floatType meanStress;
+    errorOut result;
+
+    //Test for correct mean stress calculation from stressVector with pointer output
+    meanStress = 0.;
+    result = stressTools::calculateMeanStress(stressVector, meanStress);
+    if (!vectorTools::fuzzyEquals(meanStress, 1.)){
+        results << "testCalculateMeanStress (test 1) & False\n";
+        return 1;
+    }
+
+    //Test for correct mean stress calculation from stressVector without pointer output
+    meanStress = 0.;
+    meanStress = stressTools::calculateMeanStress(stressVector);
+    if (!vectorTools::fuzzyEquals(meanStress, 1.)){
+        results << "testCalculateMeanStress (test 2) & False\n";
+        return 1;
+    }
+
+    //Test for correct mean stress calculation from stressMatrix with pointer output
+    meanStress = 0.;
+    result = stressTools::calculateMeanStress(stressMatrix, meanStress);
+    if (!vectorTools::fuzzyEquals(meanStress, 1.)){
+        results << "testCalculateMeanStress (test 3) & False\n";
+        return 1;
+    }
+
+    //Test for correct mean stress calculation from stressMatrix without pointer output
+    meanStress = 0.;
+    meanStress = stressTools::calculateMeanStress(stressMatrix);
+    if (!vectorTools::fuzzyEquals(meanStress, 1.)){
+        results << "testCalculateMeanStress (test 4) & False\n";
+        return 1;
+    }
+
+
+    results << "testCalculateMeanStress & True\n";
+    return 0;
+}
+
 int testLinearViscoelasticity(std::ofstream &results){
     /*!
      * Test the implementation of linear finite-deformation 
@@ -455,6 +508,7 @@ int main(){
     results.open("results.tex");
 
     //Run the tests
+    testCalculateMeanStress(results);
     testLinearViscoelasticity(results);
     testVolumetricNeoHookean(results);
 
