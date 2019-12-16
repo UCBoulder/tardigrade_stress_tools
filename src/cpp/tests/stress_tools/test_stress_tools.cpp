@@ -48,7 +48,11 @@ int testCalculateMeanStress(std::ofstream &results){
 
     errorOut res = stressTools::calculateMeanStress(stress, meanStress);
 
-    //TODO: write check for results and error statement
+    //Test for correct mean stress calculation
+    if (!vectorTools::fuzzyEquals(meanStress, 5.)){
+        results << "testCalculateMeanStress (test 1) & False\n";
+        return 1;
+    }
 
     results << "testCalculateMeanStress & True\n";
     return 0;
