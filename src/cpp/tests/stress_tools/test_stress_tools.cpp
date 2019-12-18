@@ -38,13 +38,13 @@ struct cerr_redirect{
 
 int testCalculateMeanStress(std::ofstream &results){
     /*!
-     * Test the mean stress calculation 
+     * Test the mean stress calculation
      *
      * :param std::ofstream &results: The output-file to write to.
      */
 
     floatVector stressVector = {1., 0., 0.,
-                                0., 1., 0., 
+                                0., 1., 0.,
                                 0., 0., 1.};
     floatMatrix stressMatrix = {{1., 0., 0.},
                                 {0., 1., 0.},
@@ -89,11 +89,76 @@ int testCalculateMeanStress(std::ofstream &results){
     return 0;
 }
 
+int testCalculateDeviatoricStress(std::ofstream &results){
+    /*!
+     * Test the deviatoric stress calculation
+     *
+     * :param std::ofstream &results: The output-file to write to.
+     */
+    floatVector stressVector = {1., 0., 0.,
+                                0., 1., 0.,
+                                0., 0., 1.};
+    floatVector expectedVector = {0., 0., 0.,
+                                  0., 0., 0.,
+                                  0., 0., 0.};
+    floatVector deviatoricVector(stressVector.size(), 0.);
+    errorOut result;
+
+    //Test computation of deviatoric tensor in row major format
+    std::fill(deviatoricVector.begin(), deviatoricVector.end(), 0.);
+    result = stressTools::calculateDeviatoricStress(stressVector, deviatoricVector);
+    if (!vectorTools::fuzzyEquals(expectedVector, deviatoricVector)){
+        results << "testCalculateDeviatoricStress (test 1) & False\n";
+        return 1;
+    }
+
+    std::fill(deviatoricVector.begin(), deviatoricVector.end(), 0.);
+    deviatoricVector = stressTools::calculateDeviatoricStress(stressVector);
+    if (!vectorTools::fuzzyEquals(expectedVector, deviatoricVector)){
+        results << "testCalculateDeviatoricStress (test 2) & False\n";
+        return 1;
+    }
+
+    results << "testCalculateDeviatoricStress & True\n";
+    return 0;
+}
+
+int testCalculateVonMisesStress(std::ofstream &results){
+    /*!
+     * Test the deviatoric stress calculation
+     *
+     * :param std::ofstream &results: The output-file to write to.
+     */
+    floatVector stressVector = {1., 1., 1.,
+                                1., 1., 1.,
+                                1., 1., 1.};
+    floatType expected = 3.0;
+    floatType vonMises;
+
+    //Test computation of vonMises stress from row major stress tensor
+    vonMises = 0.;
+    stressTools::calculateVonMisesStress(stressVector, vonMises);
+    if (!vectorTools::fuzzyEquals(vonMises, expected)){
+        results << "testCalculateVonMisesStress (test 1) & False\n";
+        return 1;
+    }
+
+    vonMises = 0.;
+    vonMises = stressTools::calculateVonMisesStress(stressVector);
+    if (!vectorTools::fuzzyEquals(vonMises, expected)){
+        results << "testCalculateVonMisesStress (test 2) & False\n";
+        return 1;
+    }
+
+    results << "testCalculateVonMisesStress & True\n";
+    return 0;
+}
+
 int testLinearViscoelasticity(std::ofstream &results){
     /*!
-     * Test the implementation of linear finite-deformation 
+     * Test the implementation of linear finite-deformation
      * viscoelasticity.
-     * 
+     *
      * :param std::ofstream &results: The output-file to write to.
      */
 
@@ -160,7 +225,7 @@ int testLinearViscoelasticity(std::ofstream &results){
         return 1;
     }
 
-    //!Test to make sure the state variable evolution is occurring 
+    //!Test to make sure the state variable evolution is occurring
     //!as expected for very large dt and alpha=0 (fully implicit)
 
     currentTime = 1e10;
@@ -334,7 +399,7 @@ int testLinearViscoelasticity(std::ofstream &results){
                                              currentRateModifier, previousRateModifier,
                                              previousStateVariables,
                                              materialParameters, alpha,
-                                             stress, currentStateVariables, jacobian, 
+                                             stress, currentStateVariables, jacobian,
                                              dstressdrateModifier);
 
     for (unsigned int i=0; i<currentStrain.size(); i++){
@@ -392,7 +457,7 @@ int testLinearViscoelasticity(std::ofstream &results){
 int testVolumetricNeoHookean(std::ofstream &results){
     /*!
      * Test the computation of the mean stress (-pressure) using a Neo-Hookean model
-     * 
+     *
      * :param std::ofstream &results: The output file
      */
 
@@ -497,9 +562,9 @@ int testVolumetricNeoHookean(std::ofstream &results){
 
 int main(){
     /*!
-    The main loop which runs the tests defined in the 
+    The main loop which runs the tests defined in the
     accompanying functions. Each function should output
-    the function name followed by & followed by True or False 
+    the function name followed by & followed by True or False
     if the test passes or fails respectively.
     */
 
@@ -509,6 +574,8 @@ int main(){
 
     //Run the tests
     testCalculateMeanStress(results);
+    testCalculateVonMisesStress(results);
+    testCalculateDeviatoricStress(results);
     testLinearViscoelasticity(results);
     testVolumetricNeoHookean(results);
 
