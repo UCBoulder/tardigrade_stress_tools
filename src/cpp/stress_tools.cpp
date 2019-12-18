@@ -185,6 +185,8 @@ namespace stressTools{
          */
 
         floatType dpYield = 0;
+
+        //Calculate DP yield criterion
         druckerPragerSurface(vonMises, meanStress, A, dpYield);
     
         return dpYield;
