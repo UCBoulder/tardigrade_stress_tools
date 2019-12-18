@@ -128,9 +128,25 @@ namespace stressTools{
          * :param floatType &meanStress: The mean stress scalar 
          */
 
-        vonMises = 0.;
+        floatVector deviatoric = calculateDeviatoricStress(stress);
+        vonMises = std::sqrt(3./2.*vectorTools::inner(deviatoric, deviatoric));
 
         return NULL;
+    }
+
+    floatType calculateVonMisesStress(const floatVector &stress){
+        /*!
+         * Compute the von Mises stress from a 2nd rank stress tensor stored in row major format
+         * \sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}
+         * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
+         *
+         * :param floatMatrix &stress: The stress tensor
+         * :param floatType &meanStress: The mean stress scalar 
+         */
+
+        floatType vonMises = calculateVonMisesStress(stress);
+
+        return vonMises;
     }
 
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 

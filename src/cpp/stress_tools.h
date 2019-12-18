@@ -39,6 +39,8 @@ namespace stressTools{
 
     errorOut calculateVonMisesStress(const floatVector &stress, floatType &vonMises);
 
+    floatType calculateVonMisesStress(const floatVector &stress);
+
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
                                    const floatType &previousTime, const floatVector &previousStrain,
                                    const floatType &currentRateModifier, const floatType &previousRateModifier, 
