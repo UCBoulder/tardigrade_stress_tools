@@ -33,6 +33,12 @@ namespace stressTools{
 
     floatType calculateMeanStress(const floatMatrix &stress);
 
+    errorOut calculateDeviatoricStress(const floatVector &stress, floatVector &deviatoric);
+
+    floatVector calculateDeviatoricStress(const floatVector &stress);
+
+    errorOut calculateVonMisesStress(const floatVector &stress, floatType &vonMises);
+
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
                                    const floatType &previousTime, const floatVector &previousStrain,
                                    const floatType &currentRateModifier, const floatType &previousRateModifier, 

@@ -89,6 +89,40 @@ int testCalculateMeanStress(std::ofstream &results){
     return 0;
 }
 
+int testCalculateDeviatoricStress(std::ofstream &results){
+    /*!
+     * Test the deviatoric stress calculation 
+     *
+     * :param std::ofstream &results: The output-file to write to.
+     */
+    floatVector stressVector = {1., 0., 0.,
+                                0., 1., 0., 
+                                0., 0., 1.};
+    floatVector expectedVector = {0., 0., 0.,
+                                  0., 0., 0., 
+                                  0., 0., 0.};
+    floatVector deviatoricVector(stressVector.size(), 0.);
+    errorOut result;
+
+    //Test computation of deviatoric tensor in row major format
+    std::fill(deviatoricVector.begin(), deviatoricVector.end(), 0.);
+    result = stressTools::calculateDeviatoricStress(stressVector, deviatoricVector);
+    if (!vectorTools::fuzzyEquals(expectedVector, deviatoricVector)){
+        results << "testCalculateDeviatoricStress (test 1) & False\n";
+        return 1;
+    }
+
+    std::fill(deviatoricVector.begin(), deviatoricVector.end(), 0.);
+    deviatoricVector = stressTools::calculateDeviatoricStress(stressVector);
+    if (!vectorTools::fuzzyEquals(expectedVector, deviatoricVector)){
+        results << "testCalculateDeviatoricStress (test 2) & False\n";
+        return 1;
+    }
+
+    results << "testCalculateDeviatoricStress & True\n";
+    return 0;
+}
+
 int testLinearViscoelasticity(std::ofstream &results){
     /*!
      * Test the implementation of linear finite-deformation 
@@ -509,6 +543,7 @@ int main(){
 
     //Run the tests
     testCalculateMeanStress(results);
+    testCalculateDeviatoricStress(results);
     testLinearViscoelasticity(results);
     testVolumetricNeoHookean(results);
 

@@ -16,7 +16,7 @@ namespace stressTools{
     errorOut calculateMeanStress(const floatVector &stress, floatType &meanStress){
         /*!
          * Compute the mean stress from a 2nd rank stress tensor stored in row major format
-         * meanStress = frac{1}{3}*trace(\sigma)
+         * meanStress = \frac{1}{3}*trace(\sigma)
          *
          * :param floatVector &stress: The stress tensor
          * :param floatType &meanStress: The mean stress scalar 
@@ -32,7 +32,7 @@ namespace stressTools{
     floatType calculateMeanStress(const floatVector &stress){
         /*!
          * Compute the mean stress from a 2nd rank stress tensor stored in row major format
-         * meanStress = frac{1}{3}*trace(\sigma)
+         * meanStress = \frac{1}{3}*trace(\sigma)
          *
          * :param floatVector &stress: The stress tensor
          * :param floatType &meanStress: The mean stress scalar 
@@ -47,7 +47,7 @@ namespace stressTools{
     errorOut calculateMeanStress(const floatMatrix &stress, floatType &meanStress){
         /*!
          * Compute the mean stress from a 2nd rank stress tensor stored in matrix format
-         * meanStress = frac{1}{3}*trace(\sigma)
+         * meanStress = \frac{1}{3}*trace(\sigma)
          *
          * :param floatMatrix &stress: The stress tensor
          * :param floatType &meanStress: The mean stress scalar 
@@ -63,7 +63,7 @@ namespace stressTools{
     floatType calculateMeanStress(const floatMatrix &stress){
         /*!
          * Compute the mean stress from a 2nd rank stress tensor stored in matrix format
-         * meanStress = frac{1}{3}*trace(\sigma)
+         * meanStress = \frac{1}{3}*trace(\sigma)
          *
          * :param floatMatrix &stress: The stress tensor
          * :param floatType &meanStress: The mean stress scalar 
@@ -73,6 +73,64 @@ namespace stressTools{
         errorOut result = calculateMeanStress(stress, meanStress);
          
         return meanStress;
+    }
+
+    errorOut calculateDeviatoricStress(const floatVector &stress, floatVector &deviatoric){
+        /*!
+         * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
+         * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
+         *
+         * :param floatVector &stress: The stress tensor in row major format
+         * :param floatVector &deviatoric: The deviatoric stress tensor in row major format
+         */
+
+        //Check vector lengths
+        unsigned int length = stress.size();
+        if (length != deviatoric.size()){
+            return new errorNode("calculateDeviatoric", "The tensor and deviatoric tensor sizes must match.");
+        }
+
+        //Initialize the identity matrix
+        floatVector I(length, 0.);
+        vectorTools::eye<floatType>(I);
+
+        //Calculate deviatoric stress tensor
+        floatType meanStress = calculateMeanStress(stress);
+        deviatoric = stress - meanStress*I;
+    
+        return NULL;
+    }
+
+    floatVector calculateDeviatoricStress(const floatVector &stress){
+        /*!
+         * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
+         * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
+         *
+         * :param floatVector &stress: The stress tensor in row major format
+         * :returns: The deviatoric stress tensor in row major format
+         * :rtype: floatVector &deviatoric
+         */
+
+        floatVector deviatoric(stress.size());
+        errorOut result;
+        result = calculateDeviatoricStress(stress, deviatoric); 
+    
+        return deviatoric;
+    }
+
+    errorOut calculateVonMisesStress(const floatVector &stress, floatType &vonMises){
+        /*!
+         * Compute the von Mises stress from a 2nd rank stress tensor stored in row major format
+         * \sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}
+         * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
+         *
+         * :param floatMatrix &stress: The stress tensor
+         * :param floatType &meanStress: The mean stress scalar 
+         */
+
+        vonMises = 0.;
+
+        return NULL;
     }
 
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
