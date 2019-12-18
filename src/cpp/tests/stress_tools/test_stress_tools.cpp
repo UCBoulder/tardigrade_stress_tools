@@ -125,7 +125,7 @@ int testCalculateDeviatoricStress(std::ofstream &results){
 
 int testCalculateVonMisesStress(std::ofstream &results){
     /*!
-     * Test the deviatoric stress calculation
+     * Test the von Mises stress calculation
      *
      * :param std::ofstream &results: The output-file to write to.
      */
@@ -151,6 +151,57 @@ int testCalculateVonMisesStress(std::ofstream &results){
     }
 
     results << "testCalculateVonMisesStress & True\n";
+    return 0;
+}
+
+int testDruckerPragerSurface(std::ofstream &results){
+    /*!
+     * Test the Drucker-Prager yield criterion calculation.
+     *
+     * :param std::ofstream &results: The output-file to write to.
+     */
+
+    floatVector stressVector = {1., 1., 1.,
+                                1., 1., 1.,
+                                1., 1., 1.};
+    floatType vonMises = 3.;
+    floatType meanStress = 1.;
+    floatType A = 1.;
+
+    floatType expected = 2.;
+    floatType dpYield;
+
+    //Test computation of DP yield criterion from vonMises and meanStress
+    dpYield = 0;
+    stressTools::druckerPragerSurface(vonMises, meanStress, A, dpYield); 
+    if (!vectorTools::fuzzyEquals(dpYield, expected)){
+        results << "testDruckerPragerSurface (test 1) & False\n";
+        return 1;
+    }
+
+    dpYield = 0;
+    dpYield = stressTools::druckerPragerSurface(vonMises, meanStress, A); 
+    if (!vectorTools::fuzzyEquals(dpYield, expected)){
+        results << "testDruckerPragerSurface (test 2) & False\n";
+        return 1;
+    }
+
+    //Test computation of DP yield criterion from row major stress tensor 
+    dpYield = 0;
+    stressTools::druckerPragerSurface(stressVector, A, dpYield); 
+    if (!vectorTools::fuzzyEquals(dpYield, expected)){
+        results << "testDruckerPragerSurface (test 3) & False\n";
+        return 1;
+    }
+
+    dpYield = 0;
+    dpYield = stressTools::druckerPragerSurface(stressVector, A); 
+    if (!vectorTools::fuzzyEquals(dpYield, expected)){
+        results << "testDruckerPragerSurface (test 4) & False\n";
+        return 1;
+    }
+
+    results << "testDruckerPragerSurface & True\n";
     return 0;
 }
 
@@ -575,6 +626,7 @@ int main(){
     //Run the tests
     testCalculateMeanStress(results);
     testCalculateVonMisesStress(results);
+    testDruckerPragerSurface(results);
     testCalculateDeviatoricStress(results);
     testLinearViscoelasticity(results);
     testVolumetricNeoHookean(results);
