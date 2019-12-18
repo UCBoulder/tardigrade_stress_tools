@@ -144,7 +144,8 @@ namespace stressTools{
          * :param floatType &meanStress: The mean stress scalar 
          */
 
-        floatType vonMises = calculateVonMisesStress(stress);
+        floatType vonMises = 0.;
+        errorOut result = calculateVonMisesStress(stress, vonMises);
 
         return vonMises;
     }
