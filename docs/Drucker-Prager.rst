@@ -22,6 +22,7 @@ be written as
 .. math::
 
     n = \frac{\partial f}{\partial \sigma}
+    :label: drucker-prager-direction
 
 and for non-associative flow
 
@@ -29,3 +30,15 @@ and for non-associative flow
 
     f = \sigma^{vonMises} - C * \sigma^{mean} - D
     n = \frac{\partial g}{\partial \sigma} 
+
+where
+
+.. math::
+
+    \frac{\partial g}{\partial \sigma} = \frac{\partial
+        \sigma^{vonMises}}{\sigma} - C * \frac{\sigma^{mean}}{\sigma}
+    :label: drucker-prager-non-associative
+
+Equation :eq:`drucker-prager-non-associative` is implemented as
+``druckerPragerDirection`` and the derivation of the R.H.S. partial derivatives
+are implemented in ``vonMises`` and ``meanStress``, respectively. 
