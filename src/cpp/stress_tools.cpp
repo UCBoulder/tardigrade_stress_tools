@@ -75,6 +75,37 @@ namespace stressTools{
         return meanStress;
     }
 
+    errorOut calculateMeanStress(const floatVector &stress, floatType &meanStress, floatVector &jacobian){
+        /*!
+         * Compute the mean stress from a 2nd rank stress tensor stored in row major format
+         * meanStress = \frac{1}{3}*trace(\sigma)
+         *
+         * :param floatVector &stress: The row major stress tensor
+         * :param floatType &meanStress: The scalar mean stress  
+         * :param floatVector &jacobian: The row major jacobian w.r.t. the stress tensor
+         */
+
+        //Check vector lengths
+        unsigned int length = stress.size();
+        if (length != jacobian.size()){
+            return new errorNode("calculatemeanStress", "The stress tensor and jacobian tensor sizes must match.");
+        }
+
+        //Calculate the mean stress
+        meanStress = 0.;
+        std::fill(jacobian.begin(), jacobian.end(), 0.);
+        calculateMeanStress(stress, meanStress);
+
+        //Initialize the identity matrix
+        floatVector I(length, 0.);
+        vectorTools::eye<floatType>(I);
+
+        //Calculate the jacobian
+        jacobian = 1./3.*I;
+         
+        return NULL;
+    }
+
     errorOut calculateDeviatoricStress(const floatVector &stress, floatVector &deviatoric){
         /*!
          * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format

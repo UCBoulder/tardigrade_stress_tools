@@ -33,6 +33,8 @@ namespace stressTools{
 
     floatType calculateMeanStress(const floatMatrix &stress);
 
+    errorOut calculateMeanStress(const floatVector &stress, floatType &meanStress, floatVector &jacobian);
+
     errorOut calculateDeviatoricStress(const floatVector &stress, floatVector &deviatoric);
 
     floatVector calculateDeviatoricStress(const floatVector &stress);
