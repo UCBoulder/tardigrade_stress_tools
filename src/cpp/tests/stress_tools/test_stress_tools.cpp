@@ -167,20 +167,21 @@ int testDruckerPragerSurface(std::ofstream &results){
     floatType vonMises = 3.;
     floatType meanStress = 1.;
     floatType A = 1.;
+    floatType B = 0.;
 
     floatType expected = 2.;
     floatType dpYield;
 
     //Test computation of DP yield criterion from vonMises and meanStress
     dpYield = 0;
-    stressTools::druckerPragerSurface(vonMises, meanStress, A, dpYield); 
+    stressTools::druckerPragerSurface(vonMises, meanStress, A, B, dpYield); 
     if (!vectorTools::fuzzyEquals(dpYield, expected)){
         results << "testDruckerPragerSurface (test 1) & False\n";
         return 1;
     }
 
     dpYield = 0;
-    dpYield = stressTools::druckerPragerSurface(vonMises, meanStress, A); 
+    dpYield = stressTools::druckerPragerSurface(vonMises, meanStress, A, B); 
     if (!vectorTools::fuzzyEquals(dpYield, expected)){
         results << "testDruckerPragerSurface (test 2) & False\n";
         return 1;
@@ -188,14 +189,14 @@ int testDruckerPragerSurface(std::ofstream &results){
 
     //Test computation of DP yield criterion from row major stress tensor 
     dpYield = 0;
-    stressTools::druckerPragerSurface(stressVector, A, dpYield); 
+    stressTools::druckerPragerSurface(stressVector, A, B, dpYield); 
     if (!vectorTools::fuzzyEquals(dpYield, expected)){
         results << "testDruckerPragerSurface (test 3) & False\n";
         return 1;
     }
 
     dpYield = 0;
-    dpYield = stressTools::druckerPragerSurface(stressVector, A); 
+    dpYield = stressTools::druckerPragerSurface(stressVector, A, B); 
     if (!vectorTools::fuzzyEquals(dpYield, expected)){
         results << "testDruckerPragerSurface (test 4) & False\n";
         return 1;

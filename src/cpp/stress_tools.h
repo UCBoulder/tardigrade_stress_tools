@@ -41,13 +41,13 @@ namespace stressTools{
 
     floatType calculateVonMisesStress(const floatVector &stress);
 
-    errorOut druckerPragerSurface(const floatType &vonMises, const floatType &meanStress, const floatType &A, floatType &dpYield);
+    errorOut druckerPragerSurface(const floatType &vonMises, const floatType &meanStress, const floatType &A, const floatType &B, floatType &dpYield);
 
-    floatType druckerPragerSurface(const floatType &vonMises, const floatType &meanStress, const floatType &A);
+    floatType druckerPragerSurface(const floatType &vonMises, const floatType &meanStress, const floatType &A, const floatType &B);
 
-    errorOut druckerPragerSurface(const floatVector &stress, const floatType &A, floatType &dpYield);
+    errorOut druckerPragerSurface(const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield);
 
-    floatType druckerPragerSurface(const floatVector &stress, const floatType &A);
+    floatType druckerPragerSurface(const floatVector &stress, const floatType &A, const floatType &B);
 
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
                                    const floatType &previousTime, const floatVector &previousStrain,
