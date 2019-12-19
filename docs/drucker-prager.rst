@@ -48,11 +48,12 @@ where
 
     \frac{\partial g}{\partial \sigma} = \frac{\partial
         \sigma^{vonMises}}{\sigma} - C \frac{\sigma^{mean}}{\sigma}
-    :label: drucker-prager-non-associative
+    :label: drucker-prager-jacobian
 
-Equation :eq:`drucker-prager-non-associative` is implemented as
-``druckerPragerDirection`` and the derivation of the R.H.S. partial derivatives
-are implemented in ``vonMises`` and ``meanStress``, respectively. 
+is the jacobian of the Drucker-Prager yield surface. Equation
+:eq:`drucker-prager-jacobian` is implemented in ``druckerPragerSurface``
+and the derivation of the R.H.S. partial derivatives are implemented in
+``vonMises`` and ``meanStress``, respectively. 
 
 The von Mises stress is defined as
 
@@ -69,7 +70,9 @@ where ``S`` is the deviatoric stress
     S_{ij} = \sigma_{ij} - \frac{1}{3} \sigma_{ij} \delta_{ij}
 
 and ``\delta`` is the `Kronecker delta
-<https://en.wikipedia.org/wiki/Kronecker_delta>`_. The mean stress is defined as
+<https://en.wikipedia.org/wiki/Kronecker_delta>`_. 
+
+The mean stress is defined as
 
 .. math::
 
@@ -77,8 +80,8 @@ and ``\delta`` is the `Kronecker delta
     \sigma^{mean} = \frac{1}{3} trace \left ( \sigma_{ii} \right )
  
 From these definitions, we can calculate the partial derivatives in Equation
-:eq:`drucker-prager-non-associative`. First, re-write Equation
-:eq:`drucker-prager-non-associative` with the chain rule.
+:eq:`drucker-prager-jacobian`. First, re-write Equation
+:eq:`drucker-prager-jacobian` with the chain rule.
 
 .. math::
 
@@ -146,9 +149,9 @@ stress.
 
 These partial derivatives are implemented in ``calculateVonMises``,
 ``calculateDeviatoricStress``, and ``calculateMeanStress`` and are used in
-``druckerPragerSurface`` to calculate the flow direction.
+``druckerPragerSurface`` to calculate the jacobian and flow direction.
 
-For completeness, the Drucker-Prager flow direction is included below.
+For completeness, the Drucker-Prager jacobian is included below.
 
 .. math::
 
@@ -170,10 +173,46 @@ tensor.
 
     0 = S_{ij} \delta_{ij}
 
-Simplifying, the final result for the partial derivative of the flow direction
-is
+Simplifying, the final result for the jacobian is
 
 .. math::
  
     \frac{\partial g}{\partial \sigma_{kl}} = \frac{3 S_{kl}}{2
         \sigma^{vonMises}} - \frac{A}{3} \delta_{kl}
+
+From this, the unit normal flow direction (normalized jacobian) may be
+calculated from 
+
+.. math:: 
+
+    n^{norm}_{ij} = \frac{n_{ij}}{\norm{n_{ij}}}
+
+The calculation can be derived knowing that
+
+.. math::
+
+    S_{ij} S_{ij} = \frac{2 \sigma^{vonMises}}{3} 
+
+and
+
+.. math::
+
+    S_{ij} \delta_{ij} = 0
+
+So the tensor, or Frobenius, norm of the jacobian is
+
+.. math::
+
+    \norm{n_{ij}} = \sqrt{n_{ij} n_{ij}}
+
+    \norm{n_{ij}} = \sqrt{\left ( \frac{3 S_{ij}}{2 \sigma^{vonMises}} - \frac{A
+        \delta_{ij}}{3} \right )^{2}}
+
+    \norm{n_{ij}} = \sqrt{\frac{3}{2} + \frac{A^2}{3}}
+
+Finally, the unit normal flow direction is 
+
+.. math::
+
+    n_{ij} = \frac{\frac{\partial g}{\partial \sigma_{ij}}}{\sqrt{\frac{3}{2} +
+        \frac{A^2}{3}}}
