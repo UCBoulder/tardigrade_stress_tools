@@ -33,6 +33,7 @@ and for non-associative flow
 .. math::
 
     g = \sigma^{vonMises} - C \sigma^{mean} - D
+
     n = \frac{\partial g}{\partial \sigma}  / \norm{\frac{\partial g}{\partial
         \sigma}}
 
