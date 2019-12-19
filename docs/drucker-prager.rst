@@ -1,3 +1,6 @@
+Drucker-Prager Yield Criterion
+==============================
+
 The Drucker-Prager yield criterion is defined as 
 
 .. math::
@@ -49,7 +52,7 @@ The von Mises stress is defined as
 
 .. math::
 
-    \sigma^{vonMises} = \sqrt{/frac{3}{2} S S}
+    \sigma^{vonMises} = \sqrt{\frac{3}{2} S S}
     \sigma^{vonMises} = \sqrt{\frac{3}{2} S_{ij} S_{ij}}
 
 where ``S`` is the deviatoric stress
