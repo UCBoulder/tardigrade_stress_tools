@@ -155,7 +155,7 @@ namespace stressTools{
          * \sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}
          * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
          *
-         * :param floatMatrix &stress: The row major stress tensor
+         * :param floatVector &stress: The row major stress tensor
          * :param floatType &meanStress: The scalar mean stress 
          */
 
@@ -171,7 +171,7 @@ namespace stressTools{
          * \sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}
          * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
          *
-         * :param floatMatrix &stress: The row major stress tensor
+         * :param floatVector &stress: The row major stress tensor
          * :param floatType &meanStress: The scalar mean stress 
          */
 
@@ -187,7 +187,7 @@ namespace stressTools{
          * \sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}
          * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
          *
-         * :param floatMatrix &stress: The row major stress tensor
+         * :param floatVector &stress: The row major stress tensor
          * :param floatType &meanStress: The scalar mean stress 
          * :param floatVector &jacobian: The row major mean stress jacobian tensor w.r.t. the stress tensor
          */
@@ -257,7 +257,7 @@ namespace stressTools{
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
          *
-         * :param floatMatrix &stress: The stress tensor
+         * :param floatVector &stress: The row major stress tensor
          * :param floatType &A: The first Drucker-Prager material parameter 
          * :param floatType &B: The second Drucker-Prager material parameter 
          * :param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
@@ -283,7 +283,7 @@ namespace stressTools{
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
          *
-         * :param floatMatrix &stress: The stress tensor
+         * :param floatVector &stress: The row major stress tensor
          * :param floatType &A: The first Drucker-Prager material parameter 
          * :param floatType &B: The second Drucker-Prager material parameter 
          * :returns: The Drucker-Prager yield stress/criterion/surface
