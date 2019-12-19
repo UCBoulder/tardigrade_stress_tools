@@ -151,9 +151,9 @@ int testCalculateVonMisesStress(std::ofstream &results){
     floatVector stressVector = {1., 1., 1.,
                                 1., 1., 1.,
                                 1., 1., 1.};
-    floatVector jacobianExpected = {0.,    1./2., 1./2.,
-                                    1./2., 0.,    1./2.,
-                                    1./2., 1./2., 0.};
+    floatVector jacobianVectorExpected = {0.,    1./2., 1./2.,
+                                          1./2., 0.,    1./2.,
+                                          1./2., 1./2., 0.};
     floatType vonMisesExpected = 3.0;
 
     //Initialize test output
@@ -180,7 +180,7 @@ int testCalculateVonMisesStress(std::ofstream &results){
     std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
     stressTools::calculateVonMisesStress(stressVector, vonMises, jacobianVector);
     if (!vectorTools::fuzzyEquals(vonMises, vonMisesExpected) ||
-        !vectorTools::fuzzyEquals(jacobianVector, jacobianExpected)){
+        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
         results << "testCalculateVonMisesStress (test 3) & False\n";
         return 1;
     }
@@ -204,20 +204,25 @@ int testDruckerPragerSurface(std::ofstream &results){
     floatType A = 1.;
     floatType B = 0.;
 
-    floatType expected = 2.;
+    floatType dpYieldExpected = 2.;
+    floatVector jacobianVectorExpected = {-1./3.,  1./2.,  1./2.,
+                                           1./2., -1./3.,  1./2.,
+                                           1./2.,  1./2., -1./3.};
+
     floatType dpYield;
+    floatVector jacobianVector(stressVector.size());
 
     //Test computation of DP yield criterion from vonMises and meanStress
     dpYield = 0;
     stressTools::druckerPragerSurface(vonMises, meanStress, A, B, dpYield); 
-    if (!vectorTools::fuzzyEquals(dpYield, expected)){
+    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected)){
         results << "testDruckerPragerSurface (test 1) & False\n";
         return 1;
     }
 
     dpYield = 0;
     dpYield = stressTools::druckerPragerSurface(vonMises, meanStress, A, B); 
-    if (!vectorTools::fuzzyEquals(dpYield, expected)){
+    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected)){
         results << "testDruckerPragerSurface (test 2) & False\n";
         return 1;
     }
@@ -225,17 +230,28 @@ int testDruckerPragerSurface(std::ofstream &results){
     //Test computation of DP yield criterion from row major stress tensor 
     dpYield = 0;
     stressTools::druckerPragerSurface(stressVector, A, B, dpYield); 
-    if (!vectorTools::fuzzyEquals(dpYield, expected)){
+    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected)){
         results << "testDruckerPragerSurface (test 3) & False\n";
         return 1;
     }
 
     dpYield = 0;
     dpYield = stressTools::druckerPragerSurface(stressVector, A, B); 
-    if (!vectorTools::fuzzyEquals(dpYield, expected)){
+    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected)){
         results << "testDruckerPragerSurface (test 4) & False\n";
         return 1;
     }
+
+    //Test computation of DP yield and jacobian from row major stress tensor
+    dpYield = 0;
+    std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
+    stressTools::druckerPragerSurface(stressVector, A, B, dpYield, jacobianVector);
+    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
+        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
+        results << "testDruckerPragerSurface (test 5) & False\n";
+        return 1;
+    }
+    
 
     results << "testDruckerPragerSurface & True\n";
     return 0;

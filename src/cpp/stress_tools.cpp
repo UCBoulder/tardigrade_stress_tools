@@ -88,7 +88,7 @@ namespace stressTools{
         //Check vector lengths
         unsigned int length = stress.size();
         if (length != jacobian.size()){
-            return new errorNode("calculatemeanStress", "The stress tensor and jacobian tensor sizes must match.");
+            return new errorNode("calculateMeanStress", "The stress tensor and jacobian tensor sizes must match.");
         }
 
         //Calculate the mean stress
@@ -191,6 +191,12 @@ namespace stressTools{
          * :param floatType &meanStress: The scalar mean stress 
          * :param floatVector &jacobian: The row major mean stress jacobian tensor w.r.t. the stress tensor
          */
+
+        //Check vector lengths
+        unsigned int length = stress.size();
+        if (length != jacobian.size()){
+            return new errorNode("calculateVonMisesStress", "The stress tensor and jacobian tensor sizes must match.");
+        }
 
         //Calculate the vonMises stress
         calculateVonMisesStress(stress, vonMises);
@@ -296,6 +302,44 @@ namespace stressTools{
         druckerPragerSurface(stress, A, B, dpYield);
     
         return dpYield;
+    }
+
+    errorOut druckerPragerSurface(const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian){
+        /*!
+         * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
+         * f = \sigma^{vonMises} - A*\sigma^{mean} - B
+         *
+         * TODO: find the common name for which material parameter, if a common
+         * name exists to distinguish between the two DP parameters.
+         *
+         * :param floatVector &stress: The stress tensor
+         * :param floatType &A: The first Drucker-Prager material parameter 
+         * :param floatType &B: The second Drucker-Prager material parameter 
+         * :param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * :param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
+         */
+
+        //Check vector lengths
+        unsigned int length = stress.size();
+        if (length != jacobian.size()){
+            return new errorNode("druckerPragerSurface", "The stress tensor and jacobian tensor sizes must match.");
+        }
+
+        //Calculate von Mises and mean stresses with jacobians
+        floatType vonMises, meanStress;
+        vonMises = meanStress = 0.;
+        floatVector vonMisesJacobian(jacobian.size(), 0.);
+        floatVector meanStressJacobian(jacobian.size(), 0.);
+        calculateVonMisesStress(stress, vonMises, vonMisesJacobian);
+        calculateMeanStress(stress, meanStress, meanStressJacobian);
+
+        //Calculate the Drucker-Prager yield criterion
+        druckerPragerSurface(stress, A, B, dpYield); 
+
+        //Calculate the Drucker-Prager jacobian
+        jacobian = vonMisesJacobian - A * meanStressJacobian;
+    
+        return NULL;
     }
 
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
