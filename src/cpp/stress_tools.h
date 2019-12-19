@@ -43,6 +43,8 @@ namespace stressTools{
 
     floatType calculateVonMisesStress(const floatVector &stress);
 
+    errorOut calculateVonMisesStress(const floatVector &stress, floatType &vonMises, floatVector &jacobian);
+
     errorOut druckerPragerSurface(const floatType &vonMises, const floatType &meanStress, const floatType &A, const floatType &B, floatType &dpYield);
 
     floatType druckerPragerSurface(const floatType &vonMises, const floatType &meanStress, const floatType &A, const floatType &B);
