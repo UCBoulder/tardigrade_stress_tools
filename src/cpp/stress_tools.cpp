@@ -342,6 +342,31 @@ namespace stressTools{
         return NULL;
     }
 
+    errorOut druckerPragerSurface(const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection){
+        /*!
+         * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
+         * f = \sigma^{vonMises} - A*\sigma^{mean} - B
+         *
+         * TODO: find the common name for which material parameter, if a common
+         * name exists to distinguish between the two DP parameters.
+         *
+         * :param floatVector &stress: The stress tensor
+         * :param floatType &A: The first Drucker-Prager material parameter 
+         * :param floatType &B: The second Drucker-Prager material parameter 
+         * :param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * :param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
+         * :param floatVector &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
+         */
+
+        //Calculate the Drucker-Prager yield criterion and jacobian
+        druckerPragerSurface(stress, A, B, dpYield, jacobian); 
+
+        //Calculate the Drucker-Prager unit normal flow direction as the normalized jacobian
+        unitDirection = jacobian / std::sqrt(3./2. * pow(A, 2.)/3.);
+    
+        return NULL;
+    }
+
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
                                    const floatType &previousTime, const floatVector &previousStrain, 
                                    const floatType &currentRateModifier, const floatType &previousRateModifier,
