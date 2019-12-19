@@ -1,7 +1,9 @@
 Drucker-Prager Yield Criterion
 ==============================
 
-The Drucker-Prager yield criterion is defined as 
+The `Drucker-Prager yield criterion
+<https://en.wikipedia.org/wiki/Drucker%E2%80%93Prager_yield_criterion>`_ is
+defined as 
 
 .. math::
 
@@ -18,9 +20,12 @@ re-written as
 
 Equation :eq:`drucker-prager-flow` is implemented as ``druckerPragerSurface``.
 In strain-hardening materials and visco-plastic materials it is possible to
-cross the initial yield surface. For these cases, it is important to also
-compute the inelastic strain increment direction. For associative flow this may
-be written as
+cross the initial yield surface, where ``f >= 0`` indicates inelastic flow, ``f
+= 0`` is inelastic flow on the 'yield surface', and ``f <= 0`` indicates no (or
+minimal) inelastic flow. 
+
+For these cases, it is important to also compute the inelastic strain increment
+direction. For associative flow this may be written as
 
 .. math::
 
