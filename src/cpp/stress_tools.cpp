@@ -155,8 +155,8 @@ namespace stressTools{
          * \sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}
          * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
          *
-         * :param floatMatrix &stress: The stress tensor
-         * :param floatType &meanStress: The mean stress scalar 
+         * :param floatMatrix &stress: The row major stress tensor
+         * :param floatType &meanStress: The scalar mean stress 
          */
 
         floatVector deviatoric = calculateDeviatoricStress(stress);
@@ -171,14 +171,38 @@ namespace stressTools{
          * \sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}
          * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
          *
-         * :param floatMatrix &stress: The stress tensor
-         * :param floatType &meanStress: The mean stress scalar 
+         * :param floatMatrix &stress: The row major stress tensor
+         * :param floatType &meanStress: The scalar mean stress 
          */
 
         floatType vonMises = 0.;
         errorOut result = calculateVonMisesStress(stress, vonMises);
 
         return vonMises;
+    }
+
+    errorOut calculateVonMisesStress(const floatVector &stress, floatType &vonMises, floatVector &jacobian){
+        /*!
+         * Compute the von Mises stress from a 2nd rank stress tensor stored in row major format
+         * \sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}
+         * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
+         *
+         * :param floatMatrix &stress: The row major stress tensor
+         * :param floatType &meanStress: The scalar mean stress 
+         * :param floatVector &jacobian: The row major mean stress jacobian tensor w.r.t. the stress tensor
+         */
+
+        //Calculate the vonMises stress
+        calculateVonMisesStress(stress, vonMises);
+
+        //Calculate the deviatoric stress
+        floatVector deviatoric(stress.size(), 0.);
+        calculateDeviatoricStress(stress, deviatoric);
+
+        //Calculate the jacobian
+        jacobian = 3./(2.*vonMises) * deviatoric;
+
+        return NULL;
     }
 
     errorOut druckerPragerSurface(const floatType &vonMises, const floatType &meanStress, const floatType &A, const floatType &B, floatType &dpYield){

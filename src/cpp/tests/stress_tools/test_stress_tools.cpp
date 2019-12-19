@@ -146,24 +146,42 @@ int testCalculateVonMisesStress(std::ofstream &results){
      *
      * :param std::ofstream &results: The output-file to write to.
      */
+
+    //Initialize test values
     floatVector stressVector = {1., 1., 1.,
                                 1., 1., 1.,
                                 1., 1., 1.};
-    floatType expected = 3.0;
+    floatVector jacobianExpected = {0.,    1./2., 1./2.,
+                                    1./2., 0.,    1./2.,
+                                    1./2., 1./2., 0.};
+    floatType vonMisesExpected = 3.0;
+
+    //Initialize test output
     floatType vonMises;
+    floatVector jacobianVector(stressVector.size());
 
     //Test computation of vonMises stress from row major stress tensor
     vonMises = 0.;
     stressTools::calculateVonMisesStress(stressVector, vonMises);
-    if (!vectorTools::fuzzyEquals(vonMises, expected)){
+    if (!vectorTools::fuzzyEquals(vonMises, vonMisesExpected)){
         results << "testCalculateVonMisesStress (test 1) & False\n";
         return 1;
     }
 
     vonMises = 0.;
     vonMises = stressTools::calculateVonMisesStress(stressVector);
-    if (!vectorTools::fuzzyEquals(vonMises, expected)){
+    if (!vectorTools::fuzzyEquals(vonMises, vonMisesExpected)){
         results << "testCalculateVonMisesStress (test 2) & False\n";
+        return 1;
+    }
+
+    //Test computation of vonMises stress and jacobian
+    vonMises = 0.;
+    std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
+    stressTools::calculateVonMisesStress(stressVector, vonMises, jacobianVector);
+    if (!vectorTools::fuzzyEquals(vonMises, vonMisesExpected) ||
+        !vectorTools::fuzzyEquals(jacobianVector, jacobianExpected)){
+        results << "testCalculateVonMisesStress (test 3) & False\n";
         return 1;
     }
 
