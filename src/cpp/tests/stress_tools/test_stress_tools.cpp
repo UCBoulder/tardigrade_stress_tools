@@ -43,19 +43,27 @@ int testCalculateMeanStress(std::ofstream &results){
      * :param std::ofstream &results: The output-file to write to.
      */
 
+    //Initialize test values
     floatVector stressVector = {1., 0., 0.,
                                 0., 1., 0.,
                                 0., 0., 1.};
     floatMatrix stressMatrix = {{1., 0., 0.},
                                 {0., 1., 0.},
                                 {0., 0., 1.}};
+    floatType meanStressExpected = 1.;
+    floatVector jacobianVectorExpected = {1./3., 0.,    0.,
+                                          0.,    1./3., 0.,
+                                          0.,    0.,    1./3.};
+
+    //Initialize test output
     floatType meanStress;
+    floatVector jacobianVector(stressVector.size());
     errorOut result;
 
     //Test for correct mean stress calculation from stressVector with pointer output
     meanStress = 0.;
     result = stressTools::calculateMeanStress(stressVector, meanStress);
-    if (!vectorTools::fuzzyEquals(meanStress, 1.)){
+    if (!vectorTools::fuzzyEquals(meanStress, meanStressExpected)){
         results << "testCalculateMeanStress (test 1) & False\n";
         return 1;
     }
@@ -63,7 +71,7 @@ int testCalculateMeanStress(std::ofstream &results){
     //Test for correct mean stress calculation from stressVector without pointer output
     meanStress = 0.;
     meanStress = stressTools::calculateMeanStress(stressVector);
-    if (!vectorTools::fuzzyEquals(meanStress, 1.)){
+    if (!vectorTools::fuzzyEquals(meanStress, meanStressExpected)){
         results << "testCalculateMeanStress (test 2) & False\n";
         return 1;
     }
@@ -71,7 +79,7 @@ int testCalculateMeanStress(std::ofstream &results){
     //Test for correct mean stress calculation from stressMatrix with pointer output
     meanStress = 0.;
     result = stressTools::calculateMeanStress(stressMatrix, meanStress);
-    if (!vectorTools::fuzzyEquals(meanStress, 1.)){
+    if (!vectorTools::fuzzyEquals(meanStress, meanStressExpected)){
         results << "testCalculateMeanStress (test 3) & False\n";
         return 1;
     }
@@ -79,11 +87,20 @@ int testCalculateMeanStress(std::ofstream &results){
     //Test for correct mean stress calculation from stressMatrix without pointer output
     meanStress = 0.;
     meanStress = stressTools::calculateMeanStress(stressMatrix);
-    if (!vectorTools::fuzzyEquals(meanStress, 1.)){
+    if (!vectorTools::fuzzyEquals(meanStress, meanStressExpected)){
         results << "testCalculateMeanStress (test 4) & False\n";
         return 1;
     }
 
+    //Test for correct mean stress and jacobian calculation
+    meanStress = 0.;
+    std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
+    result = stressTools::calculateMeanStress(stressVector, meanStress, jacobianVector);
+    if (!vectorTools::fuzzyEquals(meanStress, meanStressExpected) || 
+        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
+        results << "testCalculateMeanStress (test 5) & False\n";
+        return 1;
+    }
 
     results << "testCalculateMeanStress & True\n";
     return 0;
