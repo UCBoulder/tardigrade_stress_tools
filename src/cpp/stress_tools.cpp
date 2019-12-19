@@ -223,7 +223,7 @@ namespace stressTools{
     floatType druckerPragerSurface(const floatVector &stress, const floatType &A, const floatType &B){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
-         * f = \sigma^{vonMises} - A*\sigma^{mean}
+         * f = \sigma^{vonMises} - A*\sigma^{mean} - B
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
