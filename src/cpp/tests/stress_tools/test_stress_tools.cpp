@@ -680,6 +680,34 @@ int testVolumetricNeoHookean(std::ofstream &results){
 
 }
 
+int testPeryznaModel(std::ofstream &results){
+    /*!
+     * Test the implementation of the Peryzna style model
+     * 
+     * :param std::ofstream &results: The output file
+     */
+
+    floatType f = 2.;
+    floatType q = .42;
+    floatType A = 1.4;
+    floatType n = 2.4;
+
+    if (!vectorTools::fuzzyEquals(stressTools::peryznaModel(f, q, A, n), A*pow((f/q), n))){
+        results << "testPeryznaModel (test 1) & False\n";
+        return 1;
+    }
+
+    f = -1;
+
+    if (!vectorTools::fuzzyEquals(stressTools::peryznaModel(f, q, A, n), 0.)){
+        results << "testPeryznaModel (test 2) & False\n";
+        return 1;
+    }
+
+    results << "testPeryznaModel & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the
@@ -699,6 +727,7 @@ int main(){
     testCalculateDeviatoricStress(results);
     testLinearViscoelasticity(results);
     testVolumetricNeoHookean(results);
+    testPeryznaModel(results);
 
     //Close the results file
     results.close();

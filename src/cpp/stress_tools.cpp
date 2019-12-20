@@ -656,4 +656,21 @@ namespace stressTools{
         return volumetricNeoHookean(J, bulkModulus, meanStress, dmeanStressdJ);
 
     }
+
+    floatType peryznaModel(const floatType f, const floatType q, const floatType A, const floatType n){
+        /*!
+         * Implementation of the Peryzna type model of the form
+         * 
+         * p = A \left \langle \frac{f}{q} \right \rangle^n
+         * 
+         * where \langle \rangle are the Macaulay brackets.
+         * 
+         * :param const floatType f: The numerator term in the brackets.
+         * :param const floatType q: The denominator term in the brackets.
+         * :param const floatType A: The scaling factor.
+         * :param const floatType n: The exponent.
+         */
+
+        return A*pow(constitutiveTools::mac(f/q), n);
+    }
 }
