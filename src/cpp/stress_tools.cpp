@@ -657,7 +657,7 @@ namespace stressTools{
 
     }
 
-    floatType peryznaModel(const floatType f, const floatType q, const floatType A, const floatType n){
+    errorOut peryznaModel(const floatType f, const floatType q, const floatType A, const floatType n, floatType &p){
         /*!
          * Implementation of the Peryzna type model of the form
          * 
@@ -669,8 +669,59 @@ namespace stressTools{
          * :param const floatType q: The denominator term in the brackets.
          * :param const floatType A: The scaling factor.
          * :param const floatType n: The exponent.
+         * :param const floatType &p: The value of the model.
          */
 
-        return A*pow(constitutiveTools::mac(f/q), n);
+        if (vectorTools::fuzzyEquals(q, 0.)){
+            return new errorNode("peryznaModel", "The denominator term is zero");
+        }
+
+        if (n < 1){
+            return new errorNode("peryznaModel (jacobian)", "n must be >= 1");
+        }
+
+        p = A*pow(constitutiveTools::mac(f/q), n);
+        return NULL;
+    }
+
+    errorOut peryznaModel(const floatType f, const floatType q, const floatType A, const floatType n, floatType &p,
+                          floatType &dpdf, floatType &dpdq, floatType &dpdA){
+
+        /*!
+         * Implementation of the Peryzna type model of the form
+         * 
+         * p = A \left \langle \frac{f}{q} \right \rangle^n
+         * 
+         * where \langle \rangle are the Macaulay brackets.
+         * 
+         * :param const floatType f: The numerator term in the brackets.
+         * :param const floatType q: The denominator term in the brackets.
+         * :param const floatType A: The scaling factor.
+         * :param const floatType n: The exponent.
+         * :param floatType &p: The value of the model.
+         * :param floatType &dpdf: The derivative of the value w.r.t. f.
+         * :param floatType &dpdq: The derivative of the value w.r.t. q.
+         * :param floatType &dpdA: The derivative of the value w.r.t. A.
+         */
+
+        if (vectorTools::fuzzyEquals(q, 0.)){
+            return new errorNode("peryznaModel (jacobian)", "The denominator term is zero");
+        }
+
+        if (n < 1){
+            return new errorNode("peryznaModel (jacobian)", "n must be >= 1");
+        }
+
+        //Compute the value
+        floatType mac, dmacdx;
+        mac = constitutiveTools::mac(f/q, dmacdx);
+
+        p = A*pow(constitutiveTools::mac(f/q), n);
+
+        dpdf = A*n*pow(mac, n-1)*dmacdx/q;
+        dpdq = -A*n*pow(mac, n-1)*dmacdx*f/(q*q);
+        dpdA = pow(constitutiveTools::mac(f/q), n);
+
+        return NULL;
     }
 }
