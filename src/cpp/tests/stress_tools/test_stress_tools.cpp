@@ -211,7 +211,7 @@ int testDruckerPragerSurface(std::ofstream &results){
     floatVector unitDirectionVectorExpected = {-1./3.,  1./2.,  1./2.,
                                                 1./2., -1./3.,  1./2.,
                                                 1./2.,  1./2., -1./3.};
-    unitDirectionVectorExpected /= sqrt(0.5);
+    unitDirectionVectorExpected /= sqrt(1.5 + 1./3);
 
     floatType dpYield;
     floatVector jacobianVector(stressVector.size());
@@ -316,22 +316,15 @@ int testDruckerPragerSurface(std::ofstream &results){
     floatMatrix unitDirectionJacobian;
     error = stressTools::druckerPragerSurface(stressVector, A, B, dpYield, jacobianVector, unitDirectionVector, unitDirectionJacobian);
 
-    std::cout << "unitDirectionJacobian:\n"; vectorTools::print(unitDirectionJacobian);
-
     if (error){
         error->print();
         results << "testDruckerPragerSurface (test 8) & False\n";
         return 1;
     }
 
-    std::cout << "dpYield, expected: " << dpYield << ", " << dpYieldExpected << "\n";    
-    std::cout << "jacobianVector, expected:\n"; vectorTools::print(jacobianVector); vectorTools::print(jacobianVectorExpected);
-    std::cout << "unitDirectionVector, expected:\n"; vectorTools::print(unitDirectionVector); vectorTools::print(unitDirectionVectorExpected);
-
     if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) || 
         !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) ||
         !vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected)){
-        std::cout << "derp\n";
         results << "testDruckerPragerSurface (test 8) & False\n";
         return 1;
     }
@@ -342,8 +335,6 @@ int testDruckerPragerSurface(std::ofstream &results){
 
         error = stressTools::druckerPragerSurface(stressVector + delta, A, B, dpYield, jacobianVector, unitDirectionVectorJ);
 
-        std::cout << "unitDirectionVectorJ: "; vectorTools::print(unitDirectionVectorJ);
-
         if (error){
             error->print();
             results << "testDruckerPragerSurface (test 8) & False\n";
@@ -351,8 +342,6 @@ int testDruckerPragerSurface(std::ofstream &results){
         }
 
         floatVector gradCol = (unitDirectionVectorJ - unitDirectionVector)/delta[i];
-
-        std::cout << "gradCol: "; vectorTools::print(gradCol);
 
         for (unsigned int j=0; j<gradCol.size(); j++){
             if (!vectorTools::fuzzyEquals(unitDirectionJacobian[j][i], gradCol[j])){

@@ -440,9 +440,7 @@ namespace stressTools{
         //Compute the unit normal flow direction and the jacobian of the unit normal flow direction
         //w.r.t. stress
         floatMatrix duDdjacobian;
-        std::cout << "jacobian: "; vectorTools::print(jacobian);
         constitutiveTools::computeUnitNormal(jacobian, unitDirection, duDdjacobian);
-        std::cout << "unitDirection: "; vectorTools::print(unitDirection);
 
         unitDirectionJacobian = floatMatrix(stress.size(), floatVector(stress.size(), 0));
         for (unsigned int I=0; I<stress.size(); I++){
