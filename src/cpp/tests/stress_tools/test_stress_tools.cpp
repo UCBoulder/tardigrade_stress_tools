@@ -310,6 +310,59 @@ int testDruckerPragerSurface(std::ofstream &results){
         }
     }
 
+    //Test the computation of the DP yield, jacobian, unit direction, and the jacobian 
+    //of the unit direction jacobian.
+    floatVector unitDirectionVectorJ;
+    floatMatrix unitDirectionJacobian;
+    error = stressTools::druckerPragerSurface(stressVector, A, B, dpYield, jacobianVector, unitDirectionVector, unitDirectionJacobian);
+
+    std::cout << "unitDirectionJacobian:\n"; vectorTools::print(unitDirectionJacobian);
+
+    if (error){
+        error->print();
+        results << "testDruckerPragerSurface (test 8) & False\n";
+        return 1;
+    }
+
+    std::cout << "dpYield, expected: " << dpYield << ", " << dpYieldExpected << "\n";    
+    std::cout << "jacobianVector, expected:\n"; vectorTools::print(jacobianVector); vectorTools::print(jacobianVectorExpected);
+    std::cout << "unitDirectionVector, expected:\n"; vectorTools::print(unitDirectionVector); vectorTools::print(unitDirectionVectorExpected);
+
+    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) || 
+        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) ||
+        !vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected)){
+        std::cout << "derp\n";
+        results << "testDruckerPragerSurface (test 8) & False\n";
+        return 1;
+    }
+
+    for (unsigned int i=0; i<stressVector.size(); i++){
+        floatVector delta(stressVector.size(), 0);
+        delta[i] = eps*fabs(stressVector[i]) + eps;
+
+        error = stressTools::druckerPragerSurface(stressVector + delta, A, B, dpYield, jacobianVector, unitDirectionVectorJ);
+
+        std::cout << "unitDirectionVectorJ: "; vectorTools::print(unitDirectionVectorJ);
+
+        if (error){
+            error->print();
+            results << "testDruckerPragerSurface (test 8) & False\n";
+            return 1;
+        }
+
+        floatVector gradCol = (unitDirectionVectorJ - unitDirectionVector)/delta[i];
+
+        std::cout << "gradCol: "; vectorTools::print(gradCol);
+
+        for (unsigned int j=0; j<gradCol.size(); j++){
+            if (!vectorTools::fuzzyEquals(unitDirectionJacobian[j][i], gradCol[j])){
+                results << "testDruckerPragerSurface (test 8) & False\n";
+                return 1;
+            }
+        }
+    }
+    
+
     results << "testDruckerPragerSurface & True\n";
     return 0;
 }
