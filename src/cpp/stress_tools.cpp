@@ -231,6 +231,27 @@ namespace stressTools{
         return NULL;
     }
 
+    errorOut druckerPragerSurface(const floatType &vonMises, const floatType &meanStress, const floatVector &dpParam, floatType &dpYield){
+        /*!
+         * Compute the Drucker-Prager yield criterion from the von Mises and mean stress 
+         * f = \sigma^{vonMises} - dpParam[0]*\sigma^{mean} - dpParam[1]
+         *
+         * :param floatType &vonMises: The von Mises stress
+         * :param floatType &meanStress: The mean Stress
+         * :param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * :param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         */
+
+        //Check Drucker-Prager parameter vector length 
+        if (dpParam.size() != 2){
+            return new errorNode("druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface.");
+        }
+
+        druckerPragerSurface(vonMises, meanStress, dpParam[0], dpParam[1], dpYield);
+    
+        return NULL;
+    }
+
     floatType druckerPragerSurface(const floatType &vonMises, const floatType &meanStress, const floatType &A, const floatType &B){
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress 
