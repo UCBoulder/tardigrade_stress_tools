@@ -319,6 +319,28 @@ namespace stressTools{
         return NULL;
     }
 
+    errorOut druckerPragerSurface(const floatVector &stress, const floatVector &dpParam, floatType &dpYield){
+        /*!
+         * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
+         * f = \sigma^{vonMises} - A*\sigma^{mean} - B
+         *
+         * :param floatType &vonMises: The von Mises stress
+         * :param floatType &meanStress: The mean Stress
+         * :param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * :param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         */
+
+        //Check Drucker-Prager parameter vector length 
+        if (dpParam.size() != 2){
+            return new errorNode("druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface.");
+        }
+
+        //Calculate DP yield criterion
+        druckerPragerSurface(stress, dpParam[0], dpParam[1], dpYield);
+    
+        return NULL;
+    }
+
     floatType druckerPragerSurface(const floatVector &stress, const floatType &A, const floatType &B){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
