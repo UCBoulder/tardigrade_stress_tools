@@ -269,13 +269,20 @@ int testDruckerPragerSurface(std::ofstream &results){
         return 1;
     }
 
+    dpYield = 0;
+    dpYield = stressTools::druckerPragerSurface(stressVector, dpParam); 
+    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected)){
+        results << "testDruckerPragerSurface (test 8) & False\n";
+        return 1;
+    }
+
     //Test computation of DP yield and jacobian from row major stress tensor
     dpYield = 0;
     std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
     stressTools::druckerPragerSurface(stressVector, A, B, dpYield, jacobianVector);
     if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
         !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
-        results << "testDruckerPragerSurface (test 8) & False\n";
+        results << "testDruckerPragerSurface (test 9) & False\n";
         return 1;
     }
 
@@ -287,7 +294,7 @@ int testDruckerPragerSurface(std::ofstream &results){
     if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
         !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) ||
         !vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected)){
-        results << "testDruckerPragerSurface (test 9) & False\n";
+        results << "testDruckerPragerSurface (test 10) & False\n";
         return 1;
     }
 
@@ -299,13 +306,13 @@ int testDruckerPragerSurface(std::ofstream &results){
 
     if (error){
         error->print();
-        results << "testDruckerPragerSurface (test 10) & False\n";
+        results << "testDruckerPragerSurface (test 11) & False\n";
         return 1;
     }
 
     if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) || 
         !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
-        results << "testDruckerPragerSurface (test 10) & False\n";
+        results << "testDruckerPragerSurface (test 11) & False\n";
         return 1;
     }
 
@@ -340,14 +347,14 @@ int testDruckerPragerSurface(std::ofstream &results){
 
     if (error){
         error->print();
-        results << "testDruckerPragerSurface (test 11) & False\n";
+        results << "testDruckerPragerSurface (test 12) & False\n";
         return 1;
     }
 
     if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) || 
         !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) ||
         !vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected)){
-        results << "testDruckerPragerSurface (test 11) & False\n";
+        results << "testDruckerPragerSurface (test 12) & False\n";
         return 1;
     }
 

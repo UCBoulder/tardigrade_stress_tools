@@ -59,6 +59,8 @@ namespace stressTools{
 
     floatType druckerPragerSurface(const floatVector &stress, const floatType &A, const floatType &B);
 
+    floatType druckerPragerSurface(const floatVector &stress, const floatVector &dpParam);
+
     errorOut druckerPragerSurface(const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian);
 
     errorOut druckerPragerSurface(const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatMatrix &djacobiandstress);
