@@ -84,6 +84,11 @@ namespace stressTools{
     errorOut volumetricNeoHookean(const floatVector &deformationGradient, const floatType &bulkModulus,
                                   floatType &meanStress, floatType &dmeanStressdJ);
 
+    errorOut peryznaModel(const floatType f, const floatType q, const floatType A, const floatType n, floatType &p);
+
+    errorOut peryznaModel(const floatType f, const floatType q, const floatType A, const floatType n, floatType &p,
+                          floatType &dpdf, floatType &dpdq, floatType &dpdA);
+
 }
 
 #endif

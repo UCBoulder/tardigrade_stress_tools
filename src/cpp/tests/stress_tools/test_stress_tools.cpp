@@ -680,6 +680,163 @@ int testVolumetricNeoHookean(std::ofstream &results){
 
 }
 
+int testPeryznaModel(std::ofstream &results){
+    /*!
+     * Test the implementation of the Peryzna style model
+     * 
+     * :param std::ofstream &results: The output file
+     */
+
+    floatType f = 2.;
+    floatType q = 5.42;
+    floatType A = 1.4;
+    floatType n = 2.4;
+
+    floatType p;
+    errorOut error = stressTools::peryznaModel(f, q, A, n, p);
+
+    if (error){
+        error->print();
+        results << "testPeryznaModel & False\n";
+        return 1;
+    }
+
+    if (!vectorTools::fuzzyEquals(p, A*pow((f/q), n))){
+        results << "testPeryznaModel (test 1) & False\n";
+        return 1;
+    }
+
+    floatType pJ;
+    floatType dpdf, dpdq, dpdA;
+    error = stressTools::peryznaModel(f, q, A, n, pJ, dpdf, dpdq, dpdA);
+
+    if (error){
+        error->print();
+        results << "testPeryznaModel & False\n";
+        return 1;
+    }
+
+    if (!vectorTools::fuzzyEquals(p, pJ)){
+        results << "testPeryznaModel (test 2) & False\n";
+        return 1;
+    }
+
+    floatType eps = 1e-6;
+    floatType delta = eps*fabs(f) + eps;
+    error = stressTools::peryznaModel(f + delta, q, A, n, pJ);
+
+    if (error){
+        error->print();
+        results << "testPeryznaModel & False\n";
+        return 1;
+    }
+
+    if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdf, 1e-5, 1e-5)){
+        results << "testPeryznaModel (test 3) & False\n";
+        return 1;
+    }
+    
+    delta = eps*fabs(q) + eps;
+    error = stressTools::peryznaModel(f, q + delta, A, n, pJ);
+
+    if (error){
+        error->print();
+        results << "testPeryznaModel & False\n";
+        return 1;
+    }
+
+    if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdq, 1e-5, 1e-5)){
+        results << "testPeryznaModel (test 4) & False\n";
+        return 1;
+    }
+
+    delta = eps*fabs(A) + eps;
+    error = stressTools::peryznaModel(f, q, A + delta, n, pJ);
+
+    if (error){
+        error->print();
+        results << "testPeryznaModel & False\n";
+        return 1;
+    }
+
+    if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdA, 1e-5, 1e-5)){
+        results << "testPeryznaModel (test 5) & False\n";
+        return 1;
+    }
+
+    f = -1;
+    error = stressTools::peryznaModel(f, q, A, n, p);
+
+    if (error){
+        error->print();
+        results << "testPeryznaModel & False\n";
+        return 1;
+    }
+
+    if (!vectorTools::fuzzyEquals(p, 0.)){
+        results << "testPeryznaModel (test 6) & False\n";
+        return 1;
+    }
+
+    error = stressTools::peryznaModel(f, q, A, n, pJ, dpdf, dpdq, dpdA);
+
+    if (error){
+        error->print();
+        results << "testPeryznaModel & False\n";
+        return 1;
+    }
+
+    if (!vectorTools::fuzzyEquals(p, pJ)){
+        results << "testPeryznaModel (test 7) & False\n";
+        return 1;
+    }
+
+    delta = eps*fabs(f) + eps;
+    error = stressTools::peryznaModel(f + delta, q, A, n, pJ);
+
+    if (error){
+        error->print();
+        results << "testPeryznaModel & False\n";
+        return 1;
+    }
+
+    if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdf, 1e-5, 1e-5)){
+        results << "testPeryznaModel (test 8) & False\n";
+        return 1;
+    }
+    
+    delta = eps*fabs(q) + eps;
+    error = stressTools::peryznaModel(f, q + delta, A, n, pJ);
+
+    if (error){
+        error->print();
+        results << "testPeryznaModel & False\n";
+        return 1;
+    }
+
+    if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdq, 1e-5, 1e-5)){
+        results << "testPeryznaModel (test 9) & False\n";
+        return 1;
+    }
+
+    delta = eps*fabs(A) + eps;
+    error = stressTools::peryznaModel(f, q, A + delta, n, pJ);
+
+    if (error){
+        error->print();
+        results << "testPeryznaModel & False\n";
+        return 1;
+    }
+
+    if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdA, 1e-5, 1e-5)){
+        results << "testPeryznaModel (test 10) & False\n";
+        return 1;
+    }
+
+    results << "testPeryznaModel & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the
@@ -699,6 +856,7 @@ int main(){
     testCalculateDeviatoricStress(results);
     testLinearViscoelasticity(results);
     testVolumetricNeoHookean(results);
+    testPeryznaModel(results);
 
     //Close the results file
     results.close();
