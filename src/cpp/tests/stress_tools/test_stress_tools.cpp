@@ -307,6 +307,17 @@ int testDruckerPragerSurface(std::ofstream &results){
         return 1;
     }
 
+    dpYield = 0;
+    std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
+    std::fill(unitDirectionVector.begin(), unitDirectionVector.end(), 0.);
+    stressTools::druckerPragerSurface(stressVector, dpParam, dpYield, jacobianVector, unitDirectionVector);
+    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
+        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) ||
+        !vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected)){
+        results << "testDruckerPragerSurface (test 12) & False\n";
+        return 1;
+    }
+
     //Test the computation of the DP yield, jacobian, and the derivative of the jacobian 
     //w.r.t. the stress
     floatVector jacobianVectorJ(stressVector.size());
@@ -315,13 +326,13 @@ int testDruckerPragerSurface(std::ofstream &results){
 
     if (error){
         error->print();
-        results << "testDruckerPragerSurface (test 12) & False\n";
+        results << "testDruckerPragerSurface (test 13) & False\n";
         return 1;
     }
 
     if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) || 
         !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
-        results << "testDruckerPragerSurface (test 12) & False\n";
+        results << "testDruckerPragerSurface (test 13) & False\n";
         return 1;
     }
 
@@ -334,7 +345,7 @@ int testDruckerPragerSurface(std::ofstream &results){
 
         if (error){
             error->print();
-            results << "testDruckerPragerSurface (test 13) & False\n";
+            results << "testDruckerPragerSurface (test 14) & False\n";
             return 1;
         }
 
@@ -342,7 +353,7 @@ int testDruckerPragerSurface(std::ofstream &results){
 
         for (unsigned int j=0; j<gradCol.size(); j++){
             if (!vectorTools::fuzzyEquals(djacobiandstress[j][i], gradCol[j])){
-                results << "testDruckerPragerSurface (test 13) & False\n";
+                results << "testDruckerPragerSurface (test 14) & False\n";
                 return 1;
             }
         }
@@ -354,13 +365,13 @@ int testDruckerPragerSurface(std::ofstream &results){
 
     if (error){
         error->print();
-        results << "testDruckerPragerSurface (test 14) & False\n";
+        results << "testDruckerPragerSurface (test 15) & False\n";
         return 1;
     }
 
     if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) || 
         !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
-        results << "testDruckerPragerSurface (test 14) & False\n";
+        results << "testDruckerPragerSurface (test 15) & False\n";
         return 1;
     }
 
@@ -373,7 +384,7 @@ int testDruckerPragerSurface(std::ofstream &results){
 
         if (error){
             error->print();
-            results << "testDruckerPragerSurface (test 15) & False\n";
+            results << "testDruckerPragerSurface (test 16) & False\n";
             return 1;
         }
 
@@ -381,7 +392,7 @@ int testDruckerPragerSurface(std::ofstream &results){
 
         for (unsigned int j=0; j<gradCol.size(); j++){
             if (!vectorTools::fuzzyEquals(djacobiandstress[j][i], gradCol[j])){
-                results << "testDruckerPragerSurface (test 15) & False\n";
+                results << "testDruckerPragerSurface (test 16) & False\n";
                 return 1;
             }
         }
@@ -395,14 +406,14 @@ int testDruckerPragerSurface(std::ofstream &results){
 
     if (error){
         error->print();
-        results << "testDruckerPragerSurface (test 16) & False\n";
+        results << "testDruckerPragerSurface (test 17) & False\n";
         return 1;
     }
 
     if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) || 
         !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) ||
         !vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected)){
-        results << "testDruckerPragerSurface (test 16) & False\n";
+        results << "testDruckerPragerSurface (test 17) & False\n";
         return 1;
     }
 
@@ -414,7 +425,7 @@ int testDruckerPragerSurface(std::ofstream &results){
 
         if (error){
             error->print();
-            results << "testDruckerPragerSurface (test 17) & False\n";
+            results << "testDruckerPragerSurface (test 18) & False\n";
             return 1;
         }
 
@@ -422,7 +433,7 @@ int testDruckerPragerSurface(std::ofstream &results){
 
         for (unsigned int j=0; j<gradCol.size(); j++){
             if (!vectorTools::fuzzyEquals(unitDirectionJacobian[j][i], gradCol[j])){
-                results << "testDruckerPragerSurface (test 17) & False\n";
+                results << "testDruckerPragerSurface (test 18) & False\n";
                 return 1;
             }
         }

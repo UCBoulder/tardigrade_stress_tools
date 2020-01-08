@@ -548,6 +548,27 @@ namespace stressTools{
         return NULL;
     }
 
+    errorOut druckerPragerSurface(const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection){
+        /*!
+         * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
+         * f = \sigma^{vonMises} - A*\sigma^{mean} - B
+         *
+         * :param floatVector &stress: The stress tensor
+         * :param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * :param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * :param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
+         * :param floatVector &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
+         */
+
+        //Calculate the Drucker-Prager yield criterion and jacobian
+        druckerPragerSurface(stress, dpParam, dpYield, jacobian); 
+
+        //Calculate the Drucker-Prager unit normal flow direction as the normalized jacobian
+        unitDirection = jacobian / std::sqrt(3./2. + pow(dpParam[0], 2.)/3.);
+    
+        return NULL;
+    }
+
     errorOut druckerPragerSurface(const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection, floatMatrix &unitDirectionJacobian){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
