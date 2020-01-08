@@ -459,7 +459,8 @@ int testDruckerPragerSurface(std::ofstream &results){
             return 1;
         }
 
-        floatVector gradCol = (unitDirectionVectorJ - unitDirectionVector)/delta[i];
+        std::fill(gradCol.begin(), gradCol.end(), 0.);
+        gradCol = (unitDirectionVectorJ - unitDirectionVector)/delta[i];
 
         for (unsigned int j=0; j<gradCol.size(); j++){
             if (!vectorTools::fuzzyEquals(unitDirectionJacobian[j][i], gradCol[j])){
@@ -503,8 +504,9 @@ int testDruckerPragerSurface(std::ofstream &results){
             results << "testDruckerPragerSurface (test 20) & False\n";
             return 1;
         }
-
-        floatVector gradCol = (unitDirectionVectorJ - unitDirectionVector)/delta[i];
+  
+        std::fill(gradCol.begin(), gradCol.end(), 0.);
+        gradCol = (unitDirectionVectorJ - unitDirectionVector)/delta[i];
 
         for (unsigned int j=0; j<gradCol.size(); j++){
             if (!vectorTools::fuzzyEquals(unitDirectionJacobian[j][i], gradCol[j])){
