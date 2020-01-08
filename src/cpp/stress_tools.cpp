@@ -595,14 +595,7 @@ namespace stressTools{
         floatMatrix duDdjacobian;
         constitutiveTools::computeUnitNormal(jacobian, unitDirection, duDdjacobian);
 
-        unitDirectionJacobian = floatMatrix(stress.size(), floatVector(stress.size(), 0));
-        for (unsigned int I=0; I<stress.size(); I++){
-            for (unsigned int J=0; J<stress.size(); J++){
-                for (unsigned int K=0; K<stress.size(); K++){
-                    unitDirectionJacobian[I][J] += duDdjacobian[I][K]*djacobiandstress[K][J];
-                }
-            }
-        }
+        unitDirectionJacobian = vectorTools::dot(duDdjacobian, djacobiandstress);
     
         return NULL;
     }
@@ -629,14 +622,7 @@ namespace stressTools{
         floatMatrix duDdjacobian;
         constitutiveTools::computeUnitNormal(jacobian, unitDirection, duDdjacobian);
 
-        unitDirectionJacobian = floatMatrix(stress.size(), floatVector(stress.size(), 0));
-        for (unsigned int I=0; I<stress.size(); I++){
-            for (unsigned int J=0; J<stress.size(); J++){
-                for (unsigned int K=0; K<stress.size(); K++){
-                    unitDirectionJacobian[I][J] += duDdjacobian[I][K]*djacobiandstress[K][J];
-                }
-            }
-        }
+        unitDirectionJacobian = vectorTools::dot(duDdjacobian, djacobiandstress);
     
         return NULL;
     }
