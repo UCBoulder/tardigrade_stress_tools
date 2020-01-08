@@ -438,6 +438,47 @@ int testDruckerPragerSurface(std::ofstream &results){
             }
         }
     }
+
+    //Test the computation of the DP yield, jacobian, unit direction, and the jacobian 
+    //of the unit direction jacobian from the parameter vector interface
+    unitDirectionVectorJ;
+    unitDirectionJacobian;
+    error = stressTools::druckerPragerSurface(stressVector, dpParam, dpYield, jacobianVector, unitDirectionVector, unitDirectionJacobian);
+
+    if (error){
+        error->print();
+        results << "testDruckerPragerSurface (test 19) & False\n";
+        return 1;
+    }
+
+    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) || 
+        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) ||
+        !vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected)){
+        results << "testDruckerPragerSurface (test 19) & False\n";
+        return 1;
+    }
+
+    for (unsigned int i=0; i<stressVector.size(); i++){
+        floatVector delta(stressVector.size(), 0);
+        delta[i] = eps*fabs(stressVector[i]) + eps;
+
+        error = stressTools::druckerPragerSurface(stressVector + delta, dpParam, dpYield, jacobianVector, unitDirectionVectorJ);
+
+        if (error){
+            error->print();
+            results << "testDruckerPragerSurface (test 20) & False\n";
+            return 1;
+        }
+
+        floatVector gradCol = (unitDirectionVectorJ - unitDirectionVector)/delta[i];
+
+        for (unsigned int j=0; j<gradCol.size(); j++){
+            if (!vectorTools::fuzzyEquals(unitDirectionJacobian[j][i], gradCol[j])){
+                results << "testDruckerPragerSurface (test 20) & False\n";
+                return 1;
+            }
+        }
+    }
     
     results << "testDruckerPragerSurface & True\n";
     return 0;

@@ -607,6 +607,40 @@ namespace stressTools{
         return NULL;
     }
 
+    errorOut druckerPragerSurface(const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection, floatMatrix &unitDirectionJacobian){
+        /*!
+         * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
+         * f = \sigma^{vonMises} - A*\sigma^{mean} - B
+         *
+         * :param floatVector &stress: The stress tensor
+         * :param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * :param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * :param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
+         * :param floatVector &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
+         * :param floatMatrix &unitDirectionJacobian: The jacobian of the unit direction w.r.t. the stress
+         */
+
+        //Calculate the Drucker-Prager yield criterion and jacobian
+        floatMatrix djacobiandstress;
+        druckerPragerSurface(stress, dpParam, dpYield, jacobian, djacobiandstress); 
+
+        //Compute the unit normal flow direction and the jacobian of the unit normal flow direction
+        //w.r.t. stress
+        floatMatrix duDdjacobian;
+        constitutiveTools::computeUnitNormal(jacobian, unitDirection, duDdjacobian);
+
+        unitDirectionJacobian = floatMatrix(stress.size(), floatVector(stress.size(), 0));
+        for (unsigned int I=0; I<stress.size(); I++){
+            for (unsigned int J=0; J<stress.size(); J++){
+                for (unsigned int K=0; K<stress.size(); K++){
+                    unitDirectionJacobian[I][J] += duDdjacobian[I][K]*djacobiandstress[K][J];
+                }
+            }
+        }
+    
+        return NULL;
+    }
+
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
                                    const floatType &previousTime, const floatVector &previousStrain, 
                                    const floatType &currentRateModifier, const floatType &previousRateModifier,
