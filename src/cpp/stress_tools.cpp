@@ -231,6 +231,27 @@ namespace stressTools{
         return NULL;
     }
 
+    errorOut druckerPragerSurface(const floatType &vonMises, const floatType &meanStress, const floatVector &dpParam, floatType &dpYield){
+        /*!
+         * Compute the Drucker-Prager yield criterion from the von Mises and mean stress 
+         * f = \sigma^{vonMises} - dpParam[0]*\sigma^{mean} - dpParam[1]
+         *
+         * :param floatType &vonMises: The von Mises stress
+         * :param floatType &meanStress: The mean Stress
+         * :param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * :param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         */
+
+        //Check Drucker-Prager parameter vector length 
+        if (dpParam.size() != 2){
+            return new errorNode("druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface.");
+        }
+
+        druckerPragerSurface(vonMises, meanStress, dpParam[0], dpParam[1], dpYield);
+    
+        return NULL;
+    }
+
     floatType druckerPragerSurface(const floatType &vonMises, const floatType &meanStress, const floatType &A, const floatType &B){
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress 
@@ -251,6 +272,25 @@ namespace stressTools{
 
         //Calculate DP yield criterion
         druckerPragerSurface(vonMises, meanStress, A, B, dpYield);
+    
+        return dpYield;
+    }
+
+    floatType druckerPragerSurface(const floatType &vonMises, const floatType &meanStress, const floatVector &dpParam){
+        /*!
+         * Compute the Drucker-Prager yield criterion from the von Mises and mean stress 
+         * f = \sigma^{vonMises} - dpParam[0]*\sigma^{mean} - dpParam[1]
+         *
+         * :param floatType &vonMises: The von Mises stress
+         * :param floatType &meanStress: The mean Stress
+         * :param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * :param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * :returns:  The Drucker-Prager yield stress/criterion/surface
+         * :rtype: floatType &dpYield
+         */
+
+        floatType dpYield = 0;
+        druckerPragerSurface(vonMises, meanStress, dpParam, dpYield);
     
         return dpYield;
     }
@@ -281,6 +321,28 @@ namespace stressTools{
         return NULL;
     }
 
+    errorOut druckerPragerSurface(const floatVector &stress, const floatVector &dpParam, floatType &dpYield){
+        /*!
+         * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
+         * f = \sigma^{vonMises} - A*\sigma^{mean} - B
+         *
+         * :param floatType &vonMises: The von Mises stress
+         * :param floatType &meanStress: The mean Stress
+         * :param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * :param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         */
+
+        //Check Drucker-Prager parameter vector length 
+        if (dpParam.size() != 2){
+            return new errorNode("druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface.");
+        }
+
+        //Calculate DP yield criterion
+        druckerPragerSurface(stress, dpParam[0], dpParam[1], dpYield);
+    
+        return NULL;
+    }
+
     floatType druckerPragerSurface(const floatVector &stress, const floatType &A, const floatType &B){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
@@ -300,6 +362,27 @@ namespace stressTools{
 
         //Calculate DP yield criterion
         druckerPragerSurface(stress, A, B, dpYield);
+    
+        return dpYield;
+    }
+
+    floatType druckerPragerSurface(const floatVector &stress, const floatVector &dpParam){
+        /*!
+         * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
+         * f = \sigma^{vonMises} - A*\sigma^{mean} - B
+         *
+         * :param floatType &vonMises: The von Mises stress
+         * :param floatType &meanStress: The mean Stress
+         * :param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * :param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * :returns: The Drucker-Prager yield stress/criterion/surface
+         * :rtype: floatType &dpYield
+         */
+
+        floatType dpYield = 0.;
+
+        //Calculate DP yield criterion
+        druckerPragerSurface(stress, dpParam, dpYield);
     
         return dpYield;
     }
@@ -339,6 +422,30 @@ namespace stressTools{
         //Calculate the Drucker-Prager jacobian
         jacobian = vonMisesJacobian - A * meanStressJacobian;
     
+        return NULL;
+    }
+
+    errorOut druckerPragerSurface(const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian){
+        /*!
+         * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
+         * f = \sigma^{vonMises} - A*\sigma^{mean} - B
+         *
+         * TODO: find the common name for which material parameter, if a common
+         * name exists to distinguish between the two DP parameters.
+         *
+         * :param floatVector &stress: The stress tensor
+         * :param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * :param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * :param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
+         */
+
+        //Check Drucker-Prager parameter vector length 
+        if (dpParam.size() != 2){
+            return new errorNode("druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface.");
+        }
+
+        druckerPragerSurface(stress, dpParam[0], dpParam[1], dpYield, jacobian);
+
         return NULL;
     }
 
@@ -391,6 +498,31 @@ namespace stressTools{
         return NULL;
     }
 
+    errorOut druckerPragerSurface(const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatMatrix &djacobiandstress){
+        /*!
+         * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
+         * f = \sigma^{vonMises} - A*\sigma^{mean} - B
+         *
+         * TODO: find the common name for which material parameter, if a common
+         * name exists to distinguish between the two DP parameters.
+         *
+         * :param floatVector &stress: The stress tensor
+         * :param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * :param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * :param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
+         * :param floatMatrix &djacobiandstress: The gradient of the jacobian w.r.t. the stress
+         */
+
+        //Check Drucker-Prager parameter vector length 
+        if (dpParam.size() != 2){
+            return new errorNode("druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface.");
+        }
+
+        druckerPragerSurface(stress, dpParam[0], dpParam[1], dpYield, jacobian, djacobiandstress);
+
+        return NULL;
+    }
+
     errorOut druckerPragerSurface(const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
@@ -416,6 +548,27 @@ namespace stressTools{
         return NULL;
     }
 
+    errorOut druckerPragerSurface(const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection){
+        /*!
+         * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
+         * f = \sigma^{vonMises} - A*\sigma^{mean} - B
+         *
+         * :param floatVector &stress: The stress tensor
+         * :param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * :param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * :param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
+         * :param floatVector &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
+         */
+
+        //Calculate the Drucker-Prager yield criterion and jacobian
+        druckerPragerSurface(stress, dpParam, dpYield, jacobian); 
+
+        //Calculate the Drucker-Prager unit normal flow direction as the normalized jacobian
+        unitDirection = jacobian / std::sqrt(3./2. + pow(dpParam[0], 2.)/3.);
+    
+        return NULL;
+    }
+
     errorOut druckerPragerSurface(const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection, floatMatrix &unitDirectionJacobian){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
@@ -436,6 +589,40 @@ namespace stressTools{
         //Calculate the Drucker-Prager yield criterion and jacobian
         floatMatrix djacobiandstress;
         druckerPragerSurface(stress, A, B, dpYield, jacobian, djacobiandstress); 
+
+        //Compute the unit normal flow direction and the jacobian of the unit normal flow direction
+        //w.r.t. stress
+        floatMatrix duDdjacobian;
+        constitutiveTools::computeUnitNormal(jacobian, unitDirection, duDdjacobian);
+
+        unitDirectionJacobian = floatMatrix(stress.size(), floatVector(stress.size(), 0));
+        for (unsigned int I=0; I<stress.size(); I++){
+            for (unsigned int J=0; J<stress.size(); J++){
+                for (unsigned int K=0; K<stress.size(); K++){
+                    unitDirectionJacobian[I][J] += duDdjacobian[I][K]*djacobiandstress[K][J];
+                }
+            }
+        }
+    
+        return NULL;
+    }
+
+    errorOut druckerPragerSurface(const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection, floatMatrix &unitDirectionJacobian){
+        /*!
+         * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
+         * f = \sigma^{vonMises} - A*\sigma^{mean} - B
+         *
+         * :param floatVector &stress: The stress tensor
+         * :param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * :param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * :param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
+         * :param floatVector &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
+         * :param floatMatrix &unitDirectionJacobian: The jacobian of the unit direction w.r.t. the stress
+         */
+
+        //Calculate the Drucker-Prager yield criterion and jacobian
+        floatMatrix djacobiandstress;
+        druckerPragerSurface(stress, dpParam, dpYield, jacobian, djacobiandstress); 
 
         //Compute the unit normal flow direction and the jacobian of the unit normal flow direction
         //w.r.t. stress
