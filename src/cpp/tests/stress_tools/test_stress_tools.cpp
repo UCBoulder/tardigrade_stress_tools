@@ -196,6 +196,7 @@ int testDruckerPragerSurface(std::ofstream &results){
      * :param std::ofstream &results: The output-file to write to.
      */
 
+    //Declare test input variables
     floatVector stressVector = {1., 1., 1.,
                                 1., 1., 1.,
                                 1., 1., 1.};
@@ -214,14 +215,20 @@ int testDruckerPragerSurface(std::ofstream &results){
                                                 1./2.,  1./2., -1./3.};
     unitDirectionVectorExpected /= sqrt(1.5 + 1./3);
 
+    //Declare internal testing variables
     errorOut error;
     floatType eps;
+    floatVector delta(stressVector.size(), 0.);
+    floatVector gradCol(stressVector.size(), 0);
     
+    //Declare test output variables
     floatType dpYield;
-    floatVector jacobianVector(stressVector.size());
-    floatVector unitDirectionVector(stressVector.size());
-    floatVector jacobianVectorJ(stressVector.size());
+    floatVector jacobianVector(stressVector.size(), 0.);
+    floatVector unitDirectionVector(stressVector.size(), 0.);
+    floatVector jacobianVectorJ(stressVector.size(), 0.);
     floatMatrix djacobiandstress;
+    floatMatrix unitDirectionJacobian;
+    floatVector unitDirectionVectorJ(stressVector.size(), 0.);
 
     //Test computation of DP yield criterion from vonMises and meanStress
     dpYield = 0;
@@ -348,7 +355,7 @@ int testDruckerPragerSurface(std::ofstream &results){
 
     eps = 1e-6;
     for (unsigned int i=0; i<stressVector.size(); i++){
-        floatVector delta(stressVector.size(), 0);
+        std::fill(delta.begin(), delta.end(), 0.);
         delta[i] = eps*fabs(stressVector[i]) + eps;
 
         error = stressTools::druckerPragerSurface(stressVector + delta, A, B, dpYield, jacobianVectorJ);
@@ -359,7 +366,7 @@ int testDruckerPragerSurface(std::ofstream &results){
             return 1;
         }
 
-        floatVector gradCol(stressVector.size(), 0);
+        std::fill(gradCol.begin(), gradCol.end(), 0.);
         gradCol = (jacobianVectorJ - jacobianVector)/delta[i];
 
         for (unsigned int j=0; j<gradCol.size(); j++){
@@ -395,7 +402,7 @@ int testDruckerPragerSurface(std::ofstream &results){
 
     eps = 1e-6;
     for (unsigned int i=0; i<stressVector.size(); i++){
-        floatVector delta(stressVector.size(), 0);
+        std::fill(delta.begin(), delta.end(), 0.);
         delta[i] = eps*fabs(stressVector[i]) + eps;
 
         error = stressTools::druckerPragerSurface(stressVector + delta, dpParam, dpYield, jacobianVectorJ);
@@ -406,7 +413,7 @@ int testDruckerPragerSurface(std::ofstream &results){
             return 1;
         }
 
-        floatVector gradCol(stressVector.size(), 0);
+        std::fill(gradCol.begin(), gradCol.end(), 0.);
         gradCol = (jacobianVectorJ - jacobianVector)/delta[i];
 
         for (unsigned int j=0; j<gradCol.size(); j++){
@@ -419,8 +426,12 @@ int testDruckerPragerSurface(std::ofstream &results){
 
     //Test the computation of the DP yield, jacobian, unit direction, and the jacobian 
     //of the unit direction jacobian.
-    floatVector unitDirectionVectorJ;
-    floatMatrix unitDirectionJacobian;
+    dpYield = 0;
+    std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
+    for (unsigned int i=0; i<unitDirectionJacobian.size(); i++){
+        std::fill(unitDirectionJacobian[i].begin(), unitDirectionJacobian[i].end(), 0.);
+    }
+    std::fill(unitDirectionVectorJ.begin(), unitDirectionVectorJ.end(), 0.);
     error = stressTools::druckerPragerSurface(stressVector, A, B, dpYield, jacobianVector, unitDirectionVector, unitDirectionJacobian);
 
     if (error){
@@ -460,8 +471,12 @@ int testDruckerPragerSurface(std::ofstream &results){
 
     //Test the computation of the DP yield, jacobian, unit direction, and the jacobian 
     //of the unit direction jacobian from the parameter vector interface
-    unitDirectionVectorJ;
-    unitDirectionJacobian;
+    dpYield = 0;
+    std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
+    for (unsigned int i=0; i<unitDirectionJacobian.size(); i++){
+        std::fill(unitDirectionJacobian[i].begin(), unitDirectionJacobian[i].end(), 0.);
+    }
+    std::fill(unitDirectionVectorJ.begin(), unitDirectionVectorJ.end(), 0.);
     error = stressTools::druckerPragerSurface(stressVector, dpParam, dpYield, jacobianVector, unitDirectionVector, unitDirectionJacobian);
 
     if (error){
