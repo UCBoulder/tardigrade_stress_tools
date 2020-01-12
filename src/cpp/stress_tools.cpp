@@ -984,4 +984,25 @@ namespace stressTools{
 
         return NULL;
     }
+
+    errorOut linearHardening(const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift,
+                             floatType &value){
+        /*!
+         * Compute the linear hardening curve value.
+         * 
+         * value = stateVariables_i linearModuli_i + scalarShift
+         * 
+         * :param const floatVector &stateVariables: The state variable vector
+         * :param const floatVector &linearModuli: The linear moduli vector.
+         * :param const floatType &scalarShift: The scalar shift value.
+         * :param floatType &value: The value of the linear hardening curve.
+         */
+
+        if (stateVariables.size() != linearModuli.size()){
+            return new errorNode("linearHardening", "The state variables and the moduli must have the same size");
+        }
+
+        value = vectorTools::dot(stateVariables, linearModuli) + scalarShift;
+        return NULL;
+    }
 }
