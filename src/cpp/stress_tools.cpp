@@ -1005,4 +1005,31 @@ namespace stressTools{
         value = vectorTools::dot(stateVariables, linearModuli) + scalarShift;
         return NULL;
     }
+
+    errorOut linearHardening(const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift,
+                             floatType &value, floatVector &valueJacobian){
+        /*!
+         * Compute the linear hardening curve value.
+         * 
+         * value = stateVariables_i linearModuli_i + scalarShift
+         * 
+         * :param const floatVector &stateVariables: The state variable vector
+         * :param const floatVector &linearModuli: The linear moduli vector.
+         * :param const floatType &scalarShift: The scalar shift value.
+         * :param floatType &value: The value of the linear hardening curve.
+         * :param floatVector &valueJacobian: The jacobian of value w.r.t. the state variables.
+         */
+
+        errorOut error = linearHardening(stateVariables, linearModuli, scalarShift, value);
+
+        if (error){
+            errorOut result = new errorNode("linearHardening (jacobian)", "Error in computation of hardening value");
+            result->addNext(error);
+            return result;
+        }
+
+        valueJacobian = linearModuli;
+        return NULL;
+    }
+
 }

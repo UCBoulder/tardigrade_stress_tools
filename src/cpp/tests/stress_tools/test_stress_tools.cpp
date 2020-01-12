@@ -1097,9 +1097,50 @@ int testLinearHardening(std::ofstream &results){
 
     errorOut error = stressTools::linearHardening(stateVariables, linearModuli, shiftFactor, value);
 
+    if (error){
+        error->print();
+        results << "testLinearHardening & False\n";
+        return 1;
+    }
+
     if (!vectorTools::fuzzyEquals(value, 133.7)){
         results << "testLinearHardening (test 1) & False\n";
         return 1;
+    }
+
+    floatType valueJ;
+    floatVector valueJacobian;
+
+    error = stressTools::linearHardening(stateVariables, linearModuli, shiftFactor, valueJ, valueJacobian);
+
+    if (error){
+        error->print();
+        results << "testLinearHardening & False\n";
+        return 1;
+    }
+
+    if (!vectorTools::fuzzyEquals(value, valueJ)){
+        results << "testLinearHardening (test 2) & False\n";
+        return 1;
+    }
+
+    floatType eps = 1e-6;
+    for (unsigned int i=0; i<stateVariables.size(); i++){
+        floatVector delta(stateVariables.size(), 0);
+        delta[i] = eps*fabs(stateVariables[i]) + eps;
+
+        error = stressTools::linearHardening(stateVariables + delta, linearModuli, shiftFactor, valueJ);
+        
+        if (error){
+            error->print();
+            results << "testLinearHardening & False\n";
+            return 1;
+        }
+
+        if (!vectorTools::fuzzyEquals((valueJ - value)/delta[i], valueJacobian[i])){
+            results << "testLinearHardening (test 3) & False\n";
+            return 1;
+        }
     }
 
     results << "testLinearHardening & True\n";
