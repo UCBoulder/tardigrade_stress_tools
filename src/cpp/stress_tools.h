@@ -109,6 +109,8 @@ namespace stressTools{
     errorOut peryznaModel(const floatType f, const floatType q, const floatType A, const floatType n, floatType &p,
                           floatType &dpdf, floatType &dpdq, floatType &dpdA);
 
+    errorOut linearHardening(const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift, 
+                             floatType &value);
 }
 
 #endif

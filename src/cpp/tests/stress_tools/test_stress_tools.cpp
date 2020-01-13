@@ -1083,6 +1083,29 @@ int testPeryznaModel(std::ofstream &results){
     return 0;
 }
 
+int testLinearHardening(std::ofstream &results){
+    /*!
+     * Test the linear hardening function.
+     * 
+     * :param std::ofstream &results: The output file.
+     */
+
+    floatVector stateVariables = {1, 2, 3, 4, 5};
+    floatVector linearModuli = {6, 7, 8, 9, 10};
+    floatType shiftFactor = 3.7;
+    floatType value;
+
+    errorOut error = stressTools::linearHardening(stateVariables, linearModuli, shiftFactor, value);
+
+    if (!vectorTools::fuzzyEquals(value, 133.7)){
+        results << "testLinearHardening (test 1) & False\n";
+        return 1;
+    }
+
+    results << "testLinearHardening & True\n";
+    return 0;
+}
+
 int main(){
     /*!
     The main loop which runs the tests defined in the
@@ -1103,6 +1126,7 @@ int main(){
     testLinearViscoelasticity(results);
     testVolumetricNeoHookean(results);
     testPeryznaModel(results);
+    testLinearHardening(results);
 
     //Close the results file
     results.close();
