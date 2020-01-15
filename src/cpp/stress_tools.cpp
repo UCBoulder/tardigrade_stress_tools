@@ -944,6 +944,26 @@ namespace stressTools{
         return NULL;
     }
 
+    errorOut peryznaModel(const floatType f, const floatType q, const floatType A, const floatVector &parameters, floatType &p){
+        /*!
+         * Implementation of the Peryzna type model of the form
+         * 
+         * p = A \left \langle \frac{f}{q} \right \rangle^n
+         * 
+         * where \langle \rangle are the Macaulay brackets.
+         * 
+         * :param const floatType f: The numerator term in the brackets.
+         * :param const floatType q: The denominator term in the brackets.
+         * :param const floatType A: The scaling factor.
+         * :param const floatVector &parameters: The parameters (currently just n)
+         * :param const floatType &p: The value of the model.
+         */
+        if (parameters.size() != 1){
+            return new errorNode("peryznaModel", "The parameters vector is one value long");
+        }
+        return peryznaModel(f, q, A, parameters[0], p);
+    }
+
     errorOut peryznaModel(const floatType f, const floatType q, const floatType A, const floatType n, floatType &p,
                           floatType &dpdf, floatType &dpdq, floatType &dpdA){
 
@@ -983,6 +1003,30 @@ namespace stressTools{
         dpdA = pow(constitutiveTools::mac(f/q), n);
 
         return NULL;
+    }
+
+    errorOut peryznaModel(const floatType f, const floatType q, const floatType A, const floatVector &parameters, floatType &p,
+                          floatType &dpdf, floatType &dpdq, floatType &dpdA){
+        /*!
+         * Implementation of the Peryzna type model of the form
+         * 
+         * p = A \left \langle \frac{f}{q} \right \rangle^n
+         * 
+         * where \langle \rangle are the Macaulay brackets.
+         * 
+         * :param const floatType f: The numerator term in the brackets.
+         * :param const floatType q: The denominator term in the brackets.
+         * :param const floatType A: The scaling factor.
+         * :param const floatVector &parameters: The parameters (currently just n)
+         * :param const floatType &p: The value of the model.
+         * :param floatType &dpdf: The derivative of the value w.r.t. f.
+         * :param floatType &dpdq: The derivative of the value w.r.t. q.
+         * :param floatType &dpdA: The derivative of the value w.r.t. A.
+         */
+        if (parameters.size() != 1){
+            return new errorNode("peryznaModel", "The parameters vector is one value long");
+        }
+        return peryznaModel(f, q, A, parameters[0], p, dpdf, dpdq, dpdA);
     }
 
     errorOut linearHardening(const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift,
