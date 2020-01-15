@@ -937,6 +937,7 @@ int testPeryznaModel(std::ofstream &results){
     floatType q = 5.42;
     floatType A = 1.4;
     floatType n = 2.4;
+    floatVector parameters = {n};
 
     floatType p;
     errorOut error = stressTools::peryznaModel(f, q, A, n, p);
@@ -952,6 +953,19 @@ int testPeryznaModel(std::ofstream &results){
         return 1;
     }
 
+    error = stressTools::peryznaModel(f, q, A, parameters, p);
+
+    if (error){
+        error->print();
+        results << "testPeryznaModel & False\n";
+        return 1;
+    }
+
+    if (!vectorTools::fuzzyEquals(p, A*pow((f/q), n))){
+        results << "testPeryznaModel (test 2) & False\n";
+        return 1;
+    }
+
     floatType pJ;
     floatType dpdf, dpdq, dpdA;
     error = stressTools::peryznaModel(f, q, A, n, pJ, dpdf, dpdq, dpdA);
@@ -963,7 +977,7 @@ int testPeryznaModel(std::ofstream &results){
     }
 
     if (!vectorTools::fuzzyEquals(p, pJ)){
-        results << "testPeryznaModel (test 2) & False\n";
+        results << "testPeryznaModel (test 3) & False\n";
         return 1;
     }
 
@@ -978,7 +992,7 @@ int testPeryznaModel(std::ofstream &results){
     }
 
     if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdf, 1e-5, 1e-5)){
-        results << "testPeryznaModel (test 3) & False\n";
+        results << "testPeryznaModel (test 4) & False\n";
         return 1;
     }
     
@@ -992,7 +1006,7 @@ int testPeryznaModel(std::ofstream &results){
     }
 
     if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdq, 1e-5, 1e-5)){
-        results << "testPeryznaModel (test 4) & False\n";
+        results << "testPeryznaModel (test 5) & False\n";
         return 1;
     }
 
@@ -1006,7 +1020,7 @@ int testPeryznaModel(std::ofstream &results){
     }
 
     if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdA, 1e-5, 1e-5)){
-        results << "testPeryznaModel (test 5) & False\n";
+        results << "testPeryznaModel (test 6) & False\n";
         return 1;
     }
 
@@ -1020,7 +1034,7 @@ int testPeryznaModel(std::ofstream &results){
     }
 
     if (!vectorTools::fuzzyEquals(p, 0.)){
-        results << "testPeryznaModel (test 6) & False\n";
+        results << "testPeryznaModel (test 7) & False\n";
         return 1;
     }
 
@@ -1033,7 +1047,7 @@ int testPeryznaModel(std::ofstream &results){
     }
 
     if (!vectorTools::fuzzyEquals(p, pJ)){
-        results << "testPeryznaModel (test 7) & False\n";
+        results << "testPeryznaModel (test 8) & False\n";
         return 1;
     }
 
@@ -1047,7 +1061,7 @@ int testPeryznaModel(std::ofstream &results){
     }
 
     if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdf, 1e-5, 1e-5)){
-        results << "testPeryznaModel (test 8) & False\n";
+        results << "testPeryznaModel (test 9) & False\n";
         return 1;
     }
     
@@ -1061,7 +1075,7 @@ int testPeryznaModel(std::ofstream &results){
     }
 
     if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdq, 1e-5, 1e-5)){
-        results << "testPeryznaModel (test 9) & False\n";
+        results << "testPeryznaModel (test 10) & False\n";
         return 1;
     }
 
@@ -1075,8 +1089,18 @@ int testPeryznaModel(std::ofstream &results){
     }
 
     if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdA, 1e-5, 1e-5)){
-        results << "testPeryznaModel (test 10) & False\n";
+        results << "testPeryznaModel (test 11) & False\n";
         return 1;
+    }
+
+    floatType pJv, dpdfv, dpdqv, dpdAv;
+    error = stressTools::peryznaModel(f, q, A, parameters, pJv, dpdfv, dpdqv, dpdAv);
+
+    if (!vectorTools::fuzzyEquals(pJv, p) ||
+        !vectorTools::fuzzyEquals(dpdfv, dpdf) ||
+        !vectorTools::fuzzyEquals(dpdqv, dpdq) ||
+        !vectorTools::fuzzyEquals(dpdAv, dpdA)){
+        results << "testPeryznaModel (test 12) & False\n";
     }
 
     results << "testPeryznaModel & True\n";
