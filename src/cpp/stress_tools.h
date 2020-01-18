@@ -37,7 +37,13 @@ namespace stressTools{
 
     errorOut calculateDeviatoricStress(const floatVector &stress, floatVector &deviatoric);
 
+    errorOut calculateDeviatoricStress(const floatVector &stress, floatVector &deviatoric, floatMatrix &jacobian);
+
+    errorOut calculateDeviatoricStress(const floatVector &stress, floatVector &deviatoric, floatMatrix &jacobian);
+
     floatVector calculateDeviatoricStress(const floatVector &stress);
+
+    floatVector calculateDeviatoricStress(const floatVector &stress, floatMatrix &jacobian);
 
     errorOut calculateVonMisesStress(const floatVector &stress, floatType &vonMises);
 

@@ -132,6 +132,39 @@ namespace stressTools{
         return NULL;
     }
 
+    errorOut calculateDeviatoricStress(const floatVector &stress, floatVector &deviatoric, floatMatrix &jacobian){
+        /*!
+         * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
+         * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
+         * 
+         * Also return the jacobian
+         * \frac{\partial \sigma_{ij}^{deviatoric}}{\partial \sigma_{kl}} = \delta_{ik}\delta{jl} - \frac{\partial \sigma^{\mean}}{\partial \sigma_{kl}} \delta_{ij}
+         *
+         *
+         * :param floatVector &stress: The stress tensor in row major format
+         * :param floatVector &deviatoric: The deviatoric stress tensor in row major format
+         * :param floatMatrix &jacobian: The jacobian of the deviatoric stress tensor w.r.t. the stress.
+         */
+
+        //Compute the deviatoric stress.
+        deviatoric.resize(stress.size());
+        errorOut error = calculateDeviatoricStress(stress, deviatoric);
+        
+        if (error){
+            errorOut result = new errorNode("calculateDeviatoricStress (jacobian) ", "Error in calculation of deviatoric stress");
+            result->addNext(error);
+            return result;
+        }
+
+        //Compute the jacobian
+        floatVector eye(stress.size(), 0);
+        vectorTools::eye(eye);
+
+        jacobian = vectorTools::eye<floatType>(stress.size()) - 1./3 * vectorTools::dyadic(eye, eye);
+        
+        return NULL;
+    }
+
     floatVector calculateDeviatoricStress(const floatVector &stress){
         /*!
          * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
@@ -146,6 +179,26 @@ namespace stressTools{
         errorOut result;
         result = calculateDeviatoricStress(stress, deviatoric); 
     
+        return deviatoric;
+    }
+
+    floatVector calculateDeviatoricStress(const floatVector &stress, floatMatrix &jacobian){
+        /*!
+         * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
+         * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
+         * 
+         * Also return the jacobian
+         * \frac{\partial \sigma_{ij}^{deviatoric}}{\partial \sigma_{kl}} = \delta_{ik}\delta{jl} - \frac{\partial \sigma^{\mean}}{\partial \sigma_{kl}} \delta_{ij}
+         *
+         *
+         * :param floatVector &stress: The stress tensor in row major format
+         * :param floatMatrix &jacobian: The jacobian of the deviatoric stress tensor w.r.t. the stress.
+         */
+
+        floatVector deviatoric(stress.size());
+        errorOut result;
+        result = calculateDeviatoricStress(stress, deviatoric, jacobian);
+
         return deviatoric;
     }
 
