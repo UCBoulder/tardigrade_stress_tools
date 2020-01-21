@@ -118,21 +118,83 @@ int testCalculateDeviatoricStress(std::ofstream &results){
     floatVector expectedVector = {0., 0., 0.,
                                   0., 0., 0.,
                                   0., 0., 0.};
-    floatVector deviatoricVector(stressVector.size(), 0.);
+    floatVector deviatoricVector(stressVector.size(), 0.), deviatoricVectorJ;
+    floatMatrix jacobian, jacobian2;
+    floatType eps = 1e-6;
     errorOut result;
 
     //Test computation of deviatoric tensor in row major format
     std::fill(deviatoricVector.begin(), deviatoricVector.end(), 0.);
     result = stressTools::calculateDeviatoricStress(stressVector, deviatoricVector);
+
+    if (result){
+        result->print();
+        results << "testCalculateDeviatoricStress & False\n";
+        return 1;
+    }
+
     if (!vectorTools::fuzzyEquals(expectedVector, deviatoricVector)){
         results << "testCalculateDeviatoricStress (test 1) & False\n";
         return 1;
     }
 
     std::fill(deviatoricVector.begin(), deviatoricVector.end(), 0.);
+
     deviatoricVector = stressTools::calculateDeviatoricStress(stressVector);
+
     if (!vectorTools::fuzzyEquals(expectedVector, deviatoricVector)){
         results << "testCalculateDeviatoricStress (test 2) & False\n";
+        return 1;
+    }
+
+    //Test the computation of the jacobian
+    result = stressTools::calculateDeviatoricStress(stressVector, deviatoricVectorJ, jacobian);
+
+    if (result){
+        result->print();
+        results << "testCalculateDeviatoricStress & False\n";
+        return 1;
+    }
+
+    if (!vectorTools::fuzzyEquals(expectedVector, deviatoricVectorJ)){
+        results << "testCalculateDeviatoricStress (test 3) & False\n";
+        return 1;
+    }
+
+    //Test the jacobian
+    for (unsigned int i=0; i<stressVector.size(); i++){
+        floatVector delta(stressVector.size(), 0);
+        delta[i] = eps * fabs(stressVector[i]) + eps;
+        
+        result = stressTools::calculateDeviatoricStress(stressVector + delta, deviatoricVectorJ, jacobian);
+
+        if (result){
+            result->print();
+            results << "testCalculateDeviatoricStress & False\n";
+            return 1;
+        }
+
+        floatVector grad = (deviatoricVectorJ - deviatoricVector) / delta[i];
+
+        for (unsigned int j=0; j<grad.size(); j++){
+            if (!vectorTools::fuzzyEquals(grad[j], jacobian[j][i])){
+                std::cout << "i, j, delta: " << i << ", " << j << ", " << grad[j] - jacobian[j][i] << "\n";
+                results << "testCalculateDeviatoricStress (test 4) & False\n";
+                return 1;
+            }
+        }
+
+    }
+
+    deviatoricVector = stressTools::calculateDeviatoricStress(stressVector, jacobian2);
+
+    if (!vectorTools::fuzzyEquals(deviatoricVector, expectedVector)){
+        results << "testCalculateDeviatoricStress (test 5) & False\n";
+        return 1;
+    }
+
+    if (!vectorTools::fuzzyEquals(jacobian, jacobian2)){
+        results << "testCalculateDeviatoricStress (test 6) & False\n";
         return 1;
     }
 
