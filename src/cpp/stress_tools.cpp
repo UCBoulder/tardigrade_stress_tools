@@ -23,7 +23,7 @@ namespace stressTools{
          */
 
         floatType trace;
-        int result = vectorTools::trace(stress, trace);
+        vectorTools::trace(stress, trace);
         meanStress = 1./3.*trace;
          
         return NULL;
@@ -39,7 +39,7 @@ namespace stressTools{
          */
 
         floatType meanStress;
-        errorOut result = calculateMeanStress(stress, meanStress);
+        calculateMeanStress(stress, meanStress);
          
         return meanStress;
     }
@@ -54,7 +54,7 @@ namespace stressTools{
          */
 
         floatType trace;
-        int result = vectorTools::trace(stress, trace);
+        vectorTools::trace(stress, trace);
         meanStress = 1./3.*trace;
          
         return NULL;
@@ -70,7 +70,7 @@ namespace stressTools{
          */
 
         floatType meanStress;
-        errorOut result = calculateMeanStress(stress, meanStress);
+        calculateMeanStress(stress, meanStress);
          
         return meanStress;
     }
@@ -176,8 +176,11 @@ namespace stressTools{
          */
 
         floatVector deviatoric(stress.size());
-        errorOut result;
-        result = calculateDeviatoricStress(stress, deviatoric); 
+        errorOut result = calculateDeviatoricStress(stress, deviatoric);
+        if (result){
+            result->print();
+            throw std::runtime_error("Error in calculation of deviatoric stress");
+        }
     
         return deviatoric;
     }
@@ -196,8 +199,11 @@ namespace stressTools{
          */
 
         floatVector deviatoric(stress.size());
-        errorOut result;
-        result = calculateDeviatoricStress(stress, deviatoric, jacobian);
+        errorOut result = calculateDeviatoricStress(stress, deviatoric, jacobian);
+        if (result){
+            result->print();
+            throw std::runtime_error("Error in calculation of deviatoric stress");
+        }
 
         return deviatoric;
     }
@@ -230,6 +236,10 @@ namespace stressTools{
 
         floatType vonMises = 0.;
         errorOut result = calculateVonMisesStress(stress, vonMises);
+        if (result){
+            result->print();
+            throw std::runtime_error("Error in calculation of deviatoric stress");
+        }
 
         return vonMises;
     }
