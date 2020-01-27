@@ -58,11 +58,16 @@ int testCalculateMeanStress(std::ofstream &results){
     //Initialize test output
     floatType meanStress;
     floatVector jacobianVector(stressVector.size());
-    errorOut result;
 
     //Test for correct mean stress calculation from stressVector with pointer output
     meanStress = 0.;
-    result = stressTools::calculateMeanStress(stressVector, meanStress);
+    errorOut result = stressTools::calculateMeanStress(stressVector, meanStress);
+    if (result){
+        result->print();
+        results << "testCalculateMeanStress & False\n";
+        return 1;
+    }
+
     if (!vectorTools::fuzzyEquals(meanStress, meanStressExpected)){
         results << "testCalculateMeanStress (test 1) & False\n";
         return 1;
