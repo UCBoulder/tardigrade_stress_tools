@@ -727,10 +727,10 @@ namespace stressTools{
         }
 
         //Set the number of Prony-Series terms
-        unsigned int nTerms = (materialParameters.size() - 1)/2;
-        if ((nTerms % 2) != 0){
+        if ( (materialParameters.size() - 1) % 2 != 0 ){
             return new errorNode("linearViscoelasticity", "An equal number of taus and Gs must be provided.");
         }
+        unsigned int nTerms = (materialParameters.size() - 1)/2;
 
         //Set the dimension of the strain
         unsigned int dim = currentStrain.size();
