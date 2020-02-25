@@ -883,6 +883,24 @@ int testLinearViscoelasticity(std::ofstream &results){
         return 1;
     }
 
+    //Test to make sure odd numbers of prony series terms can be passed in
+    floatVector materialParametersOdd = { materialParameters[1], 1, 10, 100, 400, 300, 200 };
+    floatVector previousStateVariablesOdd( 3 * 9, 0 );
+
+    res = stressTools::linearViscoelasticity(  currentTime, currentStrain,
+                                              previousTime, previousStrain,
+                                              currentRateModifier, previousRateModifier,
+                                              previousStateVariablesOdd,
+                                              materialParametersOdd, alpha,
+                                              stress, currentStateVariables );
+
+    if ( res ){
+        res->print();
+        results << "testLinearViscoelasticity (test 7) & False\n";
+        return 1;
+    }
+                                           
+
     results << "testLinearViscoelasticity & True\n";
     return 0;
 }
