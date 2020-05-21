@@ -11,6 +11,7 @@ Welcome to stress_tools's documentation!
    :caption: Contents:
 
    theory-manual
+   stress_tools
 
 
 Indices and tables
