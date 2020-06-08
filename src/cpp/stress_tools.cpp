@@ -16,7 +16,8 @@ namespace stressTools{
     errorOut calculateMeanStress(const floatVector &stress, floatType &meanStress){
         /*!
          * Compute the mean stress from a 2nd rank stress tensor stored in row major format
-         * meanStress = \frac{1}{3}*trace(\sigma)
+         *
+         * \f$meanStress = \frac{1}{3}*trace(\sigma)\f$
          *
          * \param &stress: The stress tensor
          * \param &meanStress: The mean stress scalar
@@ -32,7 +33,8 @@ namespace stressTools{
     floatType calculateMeanStress(const floatVector &stress){
         /*!
          * Compute the mean stress from a 2nd rank stress tensor stored in row major format
-         * meanStress = \frac{1}{3}*trace(\sigma)
+         *
+         * \f$meanStress = \frac{1}{3}*trace(\sigma)\f$
          *
          * \param &stress: The stress tensor
          * \param &meanStress: The mean stress scalar
@@ -47,7 +49,8 @@ namespace stressTools{
     errorOut calculateMeanStress(const floatMatrix &stress, floatType &meanStress){
         /*!
          * Compute the mean stress from a 2nd rank stress tensor stored in matrix format
-         * meanStress = \frac{1}{3}*trace(\sigma)
+         *
+         * \f$meanStress = \frac{1}{3}*trace(\sigma)\f$
          *
          * \param &stress: The stress tensor
          * \param &meanStress: The mean stress scalar
@@ -63,7 +66,8 @@ namespace stressTools{
     floatType calculateMeanStress(const floatMatrix &stress){
         /*!
          * Compute the mean stress from a 2nd rank stress tensor stored in matrix format
-         * meanStress = \frac{1}{3}*trace(\sigma)
+         *
+         * \f$meanStress = \frac{1}{3}*trace(\sigma)\f$
          *
          * \param &stress: The stress tensor
          * \param &meanStress: The mean stress scalar
@@ -78,7 +82,8 @@ namespace stressTools{
     errorOut calculateMeanStress(const floatVector &stress, floatType &meanStress, floatVector &jacobian){
         /*!
          * Compute the mean stress from a 2nd rank stress tensor stored in row major format
-         * meanStress = \frac{1}{3}*trace(\sigma)
+         *
+         * \f$meanStress = \frac{1}{3}*trace(\sigma)\f$
          *
          * \param &stress: The row major stress tensor
          * \param &meanStress: The scalar mean stress
@@ -109,7 +114,8 @@ namespace stressTools{
     errorOut calculateDeviatoricStress(const floatVector &stress, floatVector &deviatoric){
         /*!
          * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
-         * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
+         *
+         * \f$\sigma^{deviatoric} = \sigma - \sigma^{mean}I\f$
          *
          * \param &stress: The stress tensor in row major format
          * \param &deviatoric: The deviatoric stress tensor in row major format
@@ -135,11 +141,13 @@ namespace stressTools{
     errorOut calculateDeviatoricStress(const floatVector &stress, floatVector &deviatoric, floatMatrix &jacobian){
         /*!
          * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
-         * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
+         *
+         * \f$\sigma^{deviatoric} = \sigma - \sigma^{mean}I\f$
          *
          * Also return the jacobian
-         * \frac{\partial \sigma_{ij}^{deviatoric}}{\partial \sigma_{kl}} = \delta_{ik}\delta{jl} - \frac{\partial \sigma^{\mean}}{\partial \sigma_{kl}} \delta_{ij}
          *
+         * \f$\frac{\partial \sigma_{ij}^{deviatoric}}{\partial \sigma_{kl}} = \delta_{ik}\delta{jl} - \frac{\partial
+         * \sigma^{\mean}}{\partial \sigma_{kl}} \delta_{ij}\f$
          *
          * \param &stress: The stress tensor in row major format
          * \param &deviatoric: The deviatoric stress tensor in row major format
@@ -168,7 +176,8 @@ namespace stressTools{
     floatVector calculateDeviatoricStress(const floatVector &stress){
         /*!
          * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
-         * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
+         *
+         * \f$\sigma^{deviatoric} = \sigma - \sigma^{mean}I\f$
          *
          * \param &stress: The stress tensor in row major format
          * :returns: The deviatoric stress tensor in row major format
@@ -188,11 +197,13 @@ namespace stressTools{
     floatVector calculateDeviatoricStress(const floatVector &stress, floatMatrix &jacobian){
         /*!
          * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
-         * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
+         *
+         * \f$\sigma^{deviatoric} = \sigma - \sigma^{mean}I\f$
          *
          * Also return the jacobian
-         * \frac{\partial \sigma_{ij}^{deviatoric}}{\partial \sigma_{kl}} = \delta_{ik}\delta{jl} - \frac{\partial \sigma^{\mean}}{\partial \sigma_{kl}} \delta_{ij}
          *
+         * \f$\frac{\partial \sigma_{ij}^{deviatoric}}{\partial \sigma_{kl}} = \delta_{ik}\delta{jl} - \frac{\partial
+         * \sigma^{\mean}}{\partial \sigma_{kl}} \delta_{ij}\f$
          *
          * \param &stress: The stress tensor in row major format
          * \param &jacobian: The jacobian of the deviatoric stress tensor w.r.t. the stress.
