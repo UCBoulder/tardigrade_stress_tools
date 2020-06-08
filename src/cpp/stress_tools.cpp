@@ -180,8 +180,7 @@ namespace stressTools{
          * \f$\sigma^{deviatoric} = \sigma - \sigma^{mean}I\f$
          *
          * \param &stress: The stress tensor in row major format
-         * \returns The deviatoric stress tensor in row major format
-         * :rtype: floatVector &deviatoric
+         * \returns <B>deviatoric<\B>: The deviatoric stress tensor in row major format
          */
 
         floatVector deviatoric(stress.size());
@@ -347,8 +346,7 @@ namespace stressTools{
          * \param &meanStress: The mean Stress
          * \param &A: The first Drucker-Prager material parameter
          * \param &B: The second Drucker-Prager material parameter
-         * \returns  The Drucker-Prager yield stress/criterion/surface
-         * :rtype: floatType &dpYield
+         * \returns <B>dpYield<\B>: The Drucker-Prager yield stress/criterion/surface
          */
 
         floatType dpYield = 0;
@@ -369,8 +367,7 @@ namespace stressTools{
          * \param &meanStress: The mean Stress
          * \param &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
          * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
-         * \returns  The Drucker-Prager yield stress/criterion/surface
-         * :rtype: floatType &dpYield
+         * \returns <B>dpYield<\B>: The Drucker-Prager yield stress/criterion/surface
          */
 
         floatType dpYield = 0;
@@ -441,8 +438,7 @@ namespace stressTools{
          * \param &stress: The row major stress tensor
          * \param &A: The first Drucker-Prager material parameter
          * \param &B: The second Drucker-Prager material parameter
-         * \returns The Drucker-Prager yield stress/criterion/surface
-         * :rtype: floatType &dpYield
+         * \returns <B>dpYield</B>: The Drucker-Prager yield stress/criterion/surface
          */
 
         floatType dpYield = 0.;
@@ -463,8 +459,7 @@ namespace stressTools{
          * \param &meanStress: The mean Stress
          * \param &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
          * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
-         * \returns The Drucker-Prager yield stress/criterion/surface
-         * :rtype: floatType &dpYield
+         * \returns <B>dpYield<\B>: The Drucker-Prager yield stress/criterion/surface
          */
 
         floatType dpYield = 0.;
