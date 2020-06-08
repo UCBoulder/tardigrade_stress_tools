@@ -900,8 +900,10 @@ namespace stressTools{
                                   floatType &meanStress){
         /*!
          * Compute the volumetric part of a Neo-Hookean material model response of the form
-         * U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))
-         * where J is the determinant of the deformation gradient.
+         *
+         * \f$U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))\f$
+         *
+         * where \f$J\f$ is the determinant of the deformation gradient.
          *
          * \param &jacobian: The jacobian of deformation
          * \param &bulkModulus: The bulk modulus
@@ -926,8 +928,10 @@ namespace stressTools{
                                   floatType &meanStress, floatType &dmeanStressdJ){
         /*!
          * Compute the volumetric part of a Neo-Hookean material model response of the form
-         * U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))
-         * where J is the determinant of the deformation gradient.
+         *
+         * \f$U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))\f$
+         *
+         * where \f$J\f$ is the determinant of the deformation gradient.
          *
          * \param &jacobian: The jacobian of deformation
          * \param &bulkModulus: The bulk modulus
@@ -957,8 +961,10 @@ namespace stressTools{
                                   floatType &meanStress){
         /*!
          * Compute the volumetric part of a Neo-Hookean material model response of the form
-         * U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))
-         * where J is the determinant of the deformation gradient.
+         *
+         * \f$U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))\f$
+         *
+         * where \f$J\f$ is the determinant of the deformation gradient.
          *
          * \param &deformationGradient: The deformation gradient
          * \param &bulkModulus: The bulk modulus
@@ -985,8 +991,10 @@ namespace stressTools{
                                   floatType &meanStress, floatType &dmeanStressdJ){
         /*!
          * Compute the volumetric part of a Neo-Hookean material model response of the form
-         * U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))
-         * where J is the determinant of the deformation gradient.
+         *
+         * \f$U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))\f$
+         *
+         * where \f$J\f$ is the determinant of the deformation gradient.
          *
          * \param &deformationGradient: The deformation gradient
          * \param &bulkModulus: The bulk modulus
