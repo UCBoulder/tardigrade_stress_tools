@@ -1022,9 +1022,9 @@ namespace stressTools{
         /*!
          * Implementation of the Peryzna type model of the form
          *
-         * p = A \left \langle \frac{f}{q} \right \rangle^n
+         * \f$p = A \left \langle \frac{f}{q} \right \rangle^n\f$
          *
-         * where \langle \rangle are the Macaulay brackets.
+         * where \f$\langle\f$ \f$\rangle\f$ are the Macaulay brackets.
          *
          * \param f: The numerator term in the brackets.
          * \param q: The denominator term in the brackets.
@@ -1049,9 +1049,9 @@ namespace stressTools{
         /*!
          * Implementation of the Peryzna type model of the form
          *
-         * p = A \left \langle \frac{f}{q} \right \rangle^n
+         * \f$p = A \left \langle \frac{f}{q} \right \rangle^n\f$
          *
-         * where \langle \rangle are the Macaulay brackets.
+         * where \f$\langle\f$ \f$\rangle\f$ are the Macaulay brackets.
          *
          * \param f: The numerator term in the brackets.
          * \param q: The denominator term in the brackets.
@@ -1071,9 +1071,9 @@ namespace stressTools{
         /*!
          * Implementation of the Peryzna type model of the form
          *
-         * p = A \left \langle \frac{f}{q} \right \rangle^n
+         * \f$p = A \left \langle \frac{f}{q} \right \rangle^n\f$
          *
-         * where \langle \rangle are the Macaulay brackets.
+         * where \f$\langle\f$ \f$\rangle\f$ are the Macaulay brackets.
          *
          * \param f: The numerator term in the brackets.
          * \param q: The denominator term in the brackets.
@@ -1111,9 +1111,9 @@ namespace stressTools{
         /*!
          * Implementation of the Peryzna type model of the form
          *
-         * p = A \left \langle \frac{f}{q} \right \rangle^n
+         * \f$p = A \left \langle \frac{f}{q} \right \rangle^n\f$
          *
-         * where \langle \rangle are the Macaulay brackets.
+         * where \f$\langle\f$ \f$\rangle\f$ are the Macaulay brackets.
          *
          * \param f: The numerator term in the brackets.
          * \param q: The denominator term in the brackets.
