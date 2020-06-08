@@ -7,7 +7,7 @@
   * have capabilities which may not be contained within a collection of
   * of constitutive models.
   ******************************************************************************
-*/
+  */
 
 #ifndef STRESS_TOOLS_H
 #define STRESS_TOOLS_H
@@ -19,11 +19,11 @@
 
 namespace stressTools{
 
-    typedef constitutiveTools::errorNode errorNode; //!Redefinition for the error node
-    typedef constitutiveTools::errorOut errorOut; //!Redefinition for a pointer to the error node
-    typedef constitutiveTools::floatType floatType; //!Define the float values type.
-    typedef constitutiveTools::floatVector floatVector; //! Define a vector of floats
-    typedef constitutiveTools::floatMatrix floatMatrix; //!Define a matrix of floats
+    typedef constitutiveTools::errorNode errorNode; //!< Redefinition for the error node
+    typedef constitutiveTools::errorOut errorOut; //!< Redefinition for a pointer to the error node
+    typedef constitutiveTools::floatType floatType; //!< Define the float values type.
+    typedef constitutiveTools::floatVector floatVector; //!< Define a vector of floats
+    typedef constitutiveTools::floatMatrix floatMatrix; //!< Define a matrix of floats
 
     errorOut calculateMeanStress(const floatVector &stress, floatType &meanStress);
 
