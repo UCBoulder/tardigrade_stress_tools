@@ -18,8 +18,8 @@ namespace stressTools{
          * Compute the mean stress from a 2nd rank stress tensor stored in row major format
          * meanStress = \frac{1}{3}*trace(\sigma)
          *
-         * \param floatVector &stress: The stress tensor
-         * \param floatType &meanStress: The mean stress scalar
+         * \param &stress: The stress tensor
+         * \param &meanStress: The mean stress scalar
          */
 
         floatType trace;
@@ -34,8 +34,8 @@ namespace stressTools{
          * Compute the mean stress from a 2nd rank stress tensor stored in row major format
          * meanStress = \frac{1}{3}*trace(\sigma)
          *
-         * \param floatVector &stress: The stress tensor
-         * \param floatType &meanStress: The mean stress scalar
+         * \param &stress: The stress tensor
+         * \param &meanStress: The mean stress scalar
          */
 
         floatType meanStress;
@@ -49,8 +49,8 @@ namespace stressTools{
          * Compute the mean stress from a 2nd rank stress tensor stored in matrix format
          * meanStress = \frac{1}{3}*trace(\sigma)
          *
-         * \param floatMatrix &stress: The stress tensor
-         * \param floatType &meanStress: The mean stress scalar
+         * \param &stress: The stress tensor
+         * \param &meanStress: The mean stress scalar
          */
 
         floatType trace;
@@ -65,8 +65,8 @@ namespace stressTools{
          * Compute the mean stress from a 2nd rank stress tensor stored in matrix format
          * meanStress = \frac{1}{3}*trace(\sigma)
          *
-         * \param floatMatrix &stress: The stress tensor
-         * \param floatType &meanStress: The mean stress scalar
+         * \param &stress: The stress tensor
+         * \param &meanStress: The mean stress scalar
          */
 
         floatType meanStress;
@@ -80,9 +80,9 @@ namespace stressTools{
          * Compute the mean stress from a 2nd rank stress tensor stored in row major format
          * meanStress = \frac{1}{3}*trace(\sigma)
          *
-         * \param floatVector &stress: The row major stress tensor
-         * \param floatType &meanStress: The scalar mean stress
-         * \param floatVector &jacobian: The row major jacobian w.r.t. the stress tensor
+         * \param &stress: The row major stress tensor
+         * \param &meanStress: The scalar mean stress
+         * \param &jacobian: The row major jacobian w.r.t. the stress tensor
          */
 
         //Check vector lengths
@@ -111,8 +111,8 @@ namespace stressTools{
          * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
          * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
          *
-         * \param floatVector &stress: The stress tensor in row major format
-         * \param floatVector &deviatoric: The deviatoric stress tensor in row major format
+         * \param &stress: The stress tensor in row major format
+         * \param &deviatoric: The deviatoric stress tensor in row major format
          */
 
         //Check vector lengths
@@ -141,9 +141,9 @@ namespace stressTools{
          * \frac{\partial \sigma_{ij}^{deviatoric}}{\partial \sigma_{kl}} = \delta_{ik}\delta{jl} - \frac{\partial \sigma^{\mean}}{\partial \sigma_{kl}} \delta_{ij}
          *
          *
-         * \param floatVector &stress: The stress tensor in row major format
-         * \param floatVector &deviatoric: The deviatoric stress tensor in row major format
-         * \param floatMatrix &jacobian: The jacobian of the deviatoric stress tensor w.r.t. the stress.
+         * \param &stress: The stress tensor in row major format
+         * \param &deviatoric: The deviatoric stress tensor in row major format
+         * \param &jacobian: The jacobian of the deviatoric stress tensor w.r.t. the stress.
          */
 
         //Compute the deviatoric stress.
@@ -170,7 +170,7 @@ namespace stressTools{
          * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
          * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
          *
-         * \param floatVector &stress: The stress tensor in row major format
+         * \param &stress: The stress tensor in row major format
          * :returns: The deviatoric stress tensor in row major format
          * :rtype: floatVector &deviatoric
          */
@@ -194,8 +194,8 @@ namespace stressTools{
          * \frac{\partial \sigma_{ij}^{deviatoric}}{\partial \sigma_{kl}} = \delta_{ik}\delta{jl} - \frac{\partial \sigma^{\mean}}{\partial \sigma_{kl}} \delta_{ij}
          *
          *
-         * \param floatVector &stress: The stress tensor in row major format
-         * \param floatMatrix &jacobian: The jacobian of the deviatoric stress tensor w.r.t. the stress.
+         * \param &stress: The stress tensor in row major format
+         * \param &jacobian: The jacobian of the deviatoric stress tensor w.r.t. the stress.
          */
 
         floatVector deviatoric(stress.size());
@@ -214,8 +214,8 @@ namespace stressTools{
          * \sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}
          * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
          *
-         * \param floatVector &stress: The row major stress tensor
-         * \param floatType &meanStress: The scalar mean stress
+         * \param &stress: The row major stress tensor
+         * \param &meanStress: The scalar mean stress
          */
 
         floatVector deviatoric = calculateDeviatoricStress(stress);
@@ -230,8 +230,8 @@ namespace stressTools{
          * \sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}
          * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
          *
-         * \param floatVector &stress: The row major stress tensor
-         * \param floatType &meanStress: The scalar mean stress
+         * \param &stress: The row major stress tensor
+         * \param &meanStress: The scalar mean stress
          */
 
         floatType vonMises = 0.;
@@ -250,9 +250,9 @@ namespace stressTools{
          * \sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}
          * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
          *
-         * \param floatVector &stress: The row major stress tensor
-         * \param floatType &meanStress: The scalar mean stress
-         * \param floatVector &jacobian: The row major mean stress jacobian tensor w.r.t. the stress tensor
+         * \param &stress: The row major stress tensor
+         * \param &meanStress: The scalar mean stress
+         * \param &jacobian: The row major mean stress jacobian tensor w.r.t. the stress tensor
          */
 
         //Check vector lengths
@@ -282,11 +282,11 @@ namespace stressTools{
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
          *
-         * \param floatType &vonMises: The von Mises stress
-         * \param floatType &meanStress: The mean Stress
-         * \param floatType &A: The first Drucker-Prager material parameter
-         * \param floatType &B: The second Drucker-Prager material parameter
-         * \param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &vonMises: The von Mises stress
+         * \param &meanStress: The mean Stress
+         * \param &A: The first Drucker-Prager material parameter
+         * \param &B: The second Drucker-Prager material parameter
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
          */
 
         dpYield = vonMises - A*meanStress - B;
@@ -299,10 +299,10 @@ namespace stressTools{
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
          * f = \sigma^{vonMises} - dpParam[0]*\sigma^{mean} - dpParam[1]
          *
-         * \param floatType &vonMises: The von Mises stress
-         * \param floatType &meanStress: The mean Stress
-         * \param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
-         * \param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &vonMises: The von Mises stress
+         * \param &meanStress: The mean Stress
+         * \param &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
          */
 
         //Check Drucker-Prager parameter vector length
@@ -323,10 +323,10 @@ namespace stressTools{
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
          *
-         * \param floatType &vonMises: The von Mises stress
-         * \param floatType &meanStress: The mean Stress
-         * \param floatType &A: The first Drucker-Prager material parameter
-         * \param floatType &B: The second Drucker-Prager material parameter
+         * \param &vonMises: The von Mises stress
+         * \param &meanStress: The mean Stress
+         * \param &A: The first Drucker-Prager material parameter
+         * \param &B: The second Drucker-Prager material parameter
          * :returns:  The Drucker-Prager yield stress/criterion/surface
          * :rtype: floatType &dpYield
          */
@@ -344,10 +344,10 @@ namespace stressTools{
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
          * f = \sigma^{vonMises} - dpParam[0]*\sigma^{mean} - dpParam[1]
          *
-         * \param floatType &vonMises: The von Mises stress
-         * \param floatType &meanStress: The mean Stress
-         * \param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
-         * \param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &vonMises: The von Mises stress
+         * \param &meanStress: The mean Stress
+         * \param &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
          * :returns:  The Drucker-Prager yield stress/criterion/surface
          * :rtype: floatType &dpYield
          */
@@ -366,10 +366,10 @@ namespace stressTools{
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
          *
-         * \param floatVector &stress: The row major stress tensor
-         * \param floatType &A: The first Drucker-Prager material parameter
-         * \param floatType &B: The second Drucker-Prager material parameter
-         * \param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &stress: The row major stress tensor
+         * \param &A: The first Drucker-Prager material parameter
+         * \param &B: The second Drucker-Prager material parameter
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
          */
 
         //Calculate von Mises and mean stresses
@@ -389,10 +389,10 @@ namespace stressTools{
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          * f = \sigma^{vonMises} - A*\sigma^{mean} - B
          *
-         * \param floatType &vonMises: The von Mises stress
-         * \param floatType &meanStress: The mean Stress
-         * \param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
-         * \param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &vonMises: The von Mises stress
+         * \param &meanStress: The mean Stress
+         * \param &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
          */
 
         //Check Drucker-Prager parameter vector length
@@ -414,9 +414,9 @@ namespace stressTools{
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
          *
-         * \param floatVector &stress: The row major stress tensor
-         * \param floatType &A: The first Drucker-Prager material parameter
-         * \param floatType &B: The second Drucker-Prager material parameter
+         * \param &stress: The row major stress tensor
+         * \param &A: The first Drucker-Prager material parameter
+         * \param &B: The second Drucker-Prager material parameter
          * :returns: The Drucker-Prager yield stress/criterion/surface
          * :rtype: floatType &dpYield
          */
@@ -434,10 +434,10 @@ namespace stressTools{
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          * f = \sigma^{vonMises} - A*\sigma^{mean} - B
          *
-         * \param floatType &vonMises: The von Mises stress
-         * \param floatType &meanStress: The mean Stress
-         * \param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
-         * \param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &vonMises: The von Mises stress
+         * \param &meanStress: The mean Stress
+         * \param &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
          * :returns: The Drucker-Prager yield stress/criterion/surface
          * :rtype: floatType &dpYield
          */
@@ -458,11 +458,11 @@ namespace stressTools{
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
          *
-         * \param floatVector &stress: The stress tensor
-         * \param floatType &A: The first Drucker-Prager material parameter
-         * \param floatType &B: The second Drucker-Prager material parameter
-         * \param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
-         * \param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
+         * \param &stress: The stress tensor
+         * \param &A: The first Drucker-Prager material parameter
+         * \param &B: The second Drucker-Prager material parameter
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &jacobian: The row major jacobian tensor w.r.t. the stress
          */
 
         //Check vector lengths
@@ -496,10 +496,10 @@ namespace stressTools{
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
          *
-         * \param floatVector &stress: The stress tensor
-         * \param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
-         * \param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
-         * \param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
+         * \param &stress: The stress tensor
+         * \param &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &jacobian: The row major jacobian tensor w.r.t. the stress
          */
 
         //Check Drucker-Prager parameter vector length
@@ -520,12 +520,12 @@ namespace stressTools{
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
          *
-         * \param floatVector &stress: The stress tensor
-         * \param floatType &A: The first Drucker-Prager material parameter
-         * \param floatType &B: The second Drucker-Prager material parameter
-         * \param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
-         * \param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
-         * \param floatMatrix &djacobiandstress: The gradient of the jacobian w.r.t. the stress
+         * \param &stress: The stress tensor
+         * \param &A: The first Drucker-Prager material parameter
+         * \param &B: The second Drucker-Prager material parameter
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &jacobian: The row major jacobian tensor w.r.t. the stress
+         * \param &djacobiandstress: The gradient of the jacobian w.r.t. the stress
          */
 
         //Check vector lengths
@@ -569,11 +569,11 @@ namespace stressTools{
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
          *
-         * \param floatVector &stress: The stress tensor
-         * \param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
-         * \param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
-         * \param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
-         * \param floatMatrix &djacobiandstress: The gradient of the jacobian w.r.t. the stress
+         * \param &stress: The stress tensor
+         * \param &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &jacobian: The row major jacobian tensor w.r.t. the stress
+         * \param &djacobiandstress: The gradient of the jacobian w.r.t. the stress
          */
 
         //Check Drucker-Prager parameter vector length
@@ -594,12 +594,12 @@ namespace stressTools{
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
          *
-         * \param floatVector &stress: The stress tensor
-         * \param floatType &A: The first Drucker-Prager material parameter
-         * \param floatType &B: The second Drucker-Prager material parameter
-         * \param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
-         * \param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
-         * \param floatVector &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
+         * \param &stress: The stress tensor
+         * \param &A: The first Drucker-Prager material parameter
+         * \param &B: The second Drucker-Prager material parameter
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &jacobian: The row major jacobian tensor w.r.t. the stress
+         * \param &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
          */
 
         //Calculate the Drucker-Prager yield criterion and jacobian
@@ -616,11 +616,11 @@ namespace stressTools{
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          * f = \sigma^{vonMises} - A*\sigma^{mean} - B
          *
-         * \param floatVector &stress: The stress tensor
-         * \param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
-         * \param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
-         * \param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
-         * \param floatVector &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
+         * \param &stress: The stress tensor
+         * \param &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &jacobian: The row major jacobian tensor w.r.t. the stress
+         * \param &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
          */
 
         //Calculate the Drucker-Prager yield criterion and jacobian
@@ -640,13 +640,13 @@ namespace stressTools{
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
          *
-         * \param floatVector &stress: The stress tensor
-         * \param floatType &A: The first Drucker-Prager material parameter
-         * \param floatType &B: The second Drucker-Prager material parameter
-         * \param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
-         * \param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
-         * \param floatVector &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
-         * \param floatMatrix &unitDirectionJacobian: The jacobian of the unit direction w.r.t. the stress
+         * \param &stress: The stress tensor
+         * \param &A: The first Drucker-Prager material parameter
+         * \param &B: The second Drucker-Prager material parameter
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &jacobian: The row major jacobian tensor w.r.t. the stress
+         * \param &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
+         * \param &unitDirectionJacobian: The jacobian of the unit direction w.r.t. the stress
          */
 
         //Calculate the Drucker-Prager yield criterion and jacobian
@@ -668,12 +668,12 @@ namespace stressTools{
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          * f = \sigma^{vonMises} - A*\sigma^{mean} - B
          *
-         * \param floatVector &stress: The stress tensor
-         * \param floatVector &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
-         * \param floatType &dpYield: The Drucker-Prager yield stress/criterion/surface
-         * \param floatVector &jacobian: The row major jacobian tensor w.r.t. the stress
-         * \param floatVector &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
-         * \param floatMatrix &unitDirectionJacobian: The jacobian of the unit direction w.r.t. the stress
+         * \param &stress: The stress tensor
+         * \param &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &jacobian: The row major jacobian tensor w.r.t. the stress
+         * \param &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
+         * \param &unitDirectionJacobian: The jacobian of the unit direction w.r.t. the stress
          */
 
         //Calculate the Drucker-Prager yield criterion and jacobian
@@ -700,7 +700,7 @@ namespace stressTools{
          * Compute the stress for linear viscoelasticity based on the potential function
          * rho^0 \Psi = 0.5*(E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ}))
          *
-         * \param const floatType &currentTime: The current time
+         * \param &currentTime: The current time
          * :const floatVector &currentStrain: The current Green-Lagrange strain
          * :const floatType &previousTime: The previous time
          * :const floatType &currentRateModifier: The current value of the rate modifier
@@ -791,7 +791,7 @@ namespace stressTools{
          * Compute the stress for linear viscoelasticity based on the potential function
          * rho^0 \Psi = 0.5*(E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ}))
          *
-         * \param const floatType &currentTime: The current time
+         * \param &currentTime: The current time
          * :const floatVector &currentStrain: The current Green-Lagrange strain
          * :const floatType &previousTime: The previous time
          * :const floatVector &previousStrain: The previous value of strain
@@ -873,9 +873,9 @@ namespace stressTools{
          * U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))
          * where J is the determinant of the deformation gradient.
          *
-         * \param const floatTyper &jacobian: The jacobian of deformation
-         * \param const floatType &bulkModulus: The bulk modulus
-         * \param floatType &meanStress: The meanStress NOTE: It is up to the user to determine
+         * \param &jacobian: The jacobian of deformation
+         * \param &bulkModulus: The bulk modulus
+         * \param NOTE: It is up to the user to determine
          *     which configuration this mean stress is defined within. If it is the reference
          *     configuration a mapping may be necessary going into a different configuration.
          *
@@ -899,12 +899,12 @@ namespace stressTools{
          * U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))
          * where J is the determinant of the deformation gradient.
          *
-         * \param const floatType &jacobian: The jacobian of deformation
-         * \param const floatType &bulkModulus: The bulk modulus
-         * \param floatType &meanStress: The meanStress NOTE: It is up to the user to determine
+         * \param &jacobian: The jacobian of deformation
+         * \param &bulkModulus: The bulk modulus
+         * \param NOTE: It is up to the user to determine
          *     which configuration this mean stress is defined within. If it is the reference
          *     configuration a mapping may be necessary going into a different configuration.
-         * \param floatType &dmeanStressdJ: The derivative of the mean stress w.r.t. the jacobian
+         * \param &dmeanStressdJ: The derivative of the mean stress w.r.t. the jacobian
          *     of deformation.
          */
 
@@ -930,9 +930,9 @@ namespace stressTools{
          * U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))
          * where J is the determinant of the deformation gradient.
          *
-         * \param const floatVector &deformationGradient: The deformation gradient
-         * \param const floatType &bulkModulus: The bulk modulus
-         * \param floatType &meanStress: The meanStress NOTE: It is up to the user to determine
+         * \param &deformationGradient: The deformation gradient
+         * \param &bulkModulus: The bulk modulus
+         * \param NOTE: It is up to the user to determine
          *     which configuration this mean stress is defined within. If it is the reference
          *     configuration a mapping may be necessary going into a different configuration.
          *
@@ -958,12 +958,12 @@ namespace stressTools{
          * U(J) = 0.5*bulkModulus*(0.5*(J**2 - 1) - ln(J))
          * where J is the determinant of the deformation gradient.
          *
-         * \param const floatVector &deformationGradient: The deformation gradient
-         * \param const floatType &bulkModulus: The bulk modulus
-         * \param floatType &meanStress: The meanStress NOTE: It is up to the user to determine
+         * \param &deformationGradient: The deformation gradient
+         * \param &bulkModulus: The bulk modulus
+         * \param NOTE: It is up to the user to determine
          *     which configuration this mean stress is defined within. If it is the reference
          *     configuration a mapping may be necessary going into a different configuration.
-         * \param floatType &dmeanStressdJ: The derivative of the mean stress w.r.t. the jacobian
+         * \param &dmeanStressdJ: The derivative of the mean stress w.r.t. the jacobian
          *     of deformation.
          */
 
@@ -988,11 +988,11 @@ namespace stressTools{
          *
          * where \langle \rangle are the Macaulay brackets.
          *
-         * \param const floatType f: The numerator term in the brackets.
-         * \param const floatType q: The denominator term in the brackets.
-         * \param const floatType A: The scaling factor.
-         * \param const floatType n: The exponent.
-         * \param const floatType &p: The value of the model.
+         * \param f: The numerator term in the brackets.
+         * \param q: The denominator term in the brackets.
+         * \param A: The scaling factor.
+         * \param n: The exponent.
+         * \param &p: The value of the model.
          */
 
         if (vectorTools::fuzzyEquals(q, 0.)){
@@ -1015,11 +1015,11 @@ namespace stressTools{
          *
          * where \langle \rangle are the Macaulay brackets.
          *
-         * \param const floatType f: The numerator term in the brackets.
-         * \param const floatType q: The denominator term in the brackets.
-         * \param const floatType A: The scaling factor.
-         * \param const floatVector &parameters: The parameters (currently just n)
-         * \param const floatType &p: The value of the model.
+         * \param f: The numerator term in the brackets.
+         * \param q: The denominator term in the brackets.
+         * \param A: The scaling factor.
+         * \param &parameters: The parameters (currently just n)
+         * \param &p: The value of the model.
          */
         if (parameters.size() != 1){
             return new errorNode("peryznaModel", "The parameters vector is one value long");
@@ -1037,14 +1037,14 @@ namespace stressTools{
          *
          * where \langle \rangle are the Macaulay brackets.
          *
-         * \param const floatType f: The numerator term in the brackets.
-         * \param const floatType q: The denominator term in the brackets.
-         * \param const floatType A: The scaling factor.
-         * \param const floatType n: The exponent.
-         * \param floatType &p: The value of the model.
-         * \param floatType &dpdf: The derivative of the value w.r.t. f.
-         * \param floatType &dpdq: The derivative of the value w.r.t. q.
-         * \param floatType &dpdA: The derivative of the value w.r.t. A.
+         * \param f: The numerator term in the brackets.
+         * \param q: The denominator term in the brackets.
+         * \param A: The scaling factor.
+         * \param n: The exponent.
+         * \param &p: The value of the model.
+         * \param &dpdf: The derivative of the value w.r.t. f.
+         * \param &dpdq: The derivative of the value w.r.t. q.
+         * \param &dpdA: The derivative of the value w.r.t. A.
          */
 
         if (vectorTools::fuzzyEquals(q, 0.)){
@@ -1077,14 +1077,14 @@ namespace stressTools{
          *
          * where \langle \rangle are the Macaulay brackets.
          *
-         * \param const floatType f: The numerator term in the brackets.
-         * \param const floatType q: The denominator term in the brackets.
-         * \param const floatType A: The scaling factor.
-         * \param const floatVector &parameters: The parameters (currently just n)
-         * \param const floatType &p: The value of the model.
-         * \param floatType &dpdf: The derivative of the value w.r.t. f.
-         * \param floatType &dpdq: The derivative of the value w.r.t. q.
-         * \param floatType &dpdA: The derivative of the value w.r.t. A.
+         * \param f: The numerator term in the brackets.
+         * \param q: The denominator term in the brackets.
+         * \param A: The scaling factor.
+         * \param &parameters: The parameters (currently just n)
+         * \param &p: The value of the model.
+         * \param &dpdf: The derivative of the value w.r.t. f.
+         * \param &dpdq: The derivative of the value w.r.t. q.
+         * \param &dpdA: The derivative of the value w.r.t. A.
          */
         if (parameters.size() != 1){
             return new errorNode("peryznaModel", "The parameters vector is one value long");
@@ -1099,10 +1099,10 @@ namespace stressTools{
          *
          * value = stateVariables_i linearModuli_i + scalarShift
          *
-         * \param const floatVector &stateVariables: The state variable vector
-         * \param const floatVector &linearModuli: The linear moduli vector.
-         * \param const floatType &scalarShift: The scalar shift value.
-         * \param floatType &value: The value of the linear hardening curve.
+         * \param &stateVariables: The state variable vector
+         * \param &linearModuli: The linear moduli vector.
+         * \param &scalarShift: The scalar shift value.
+         * \param &value: The value of the linear hardening curve.
          */
 
         if (stateVariables.size() != linearModuli.size()){
@@ -1120,11 +1120,11 @@ namespace stressTools{
          *
          * value = stateVariables_i linearModuli_i + scalarShift
          *
-         * \param const floatVector &stateVariables: The state variable vector
-         * \param const floatVector &linearModuli: The linear moduli vector.
-         * \param const floatType &scalarShift: The scalar shift value.
-         * \param floatType &value: The value of the linear hardening curve.
-         * \param floatVector &valueJacobian: The jacobian of value w.r.t. the state variables.
+         * \param &stateVariables: The state variable vector
+         * \param &linearModuli: The linear moduli vector.
+         * \param &scalarShift: The scalar shift value.
+         * \param &value: The value of the linear hardening curve.
+         * \param &valueJacobian: The jacobian of value w.r.t. the state variables.
          */
 
         errorOut error = linearHardening(stateVariables, linearModuli, scalarShift, value);
