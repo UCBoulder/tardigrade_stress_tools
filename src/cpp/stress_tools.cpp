@@ -1135,7 +1135,7 @@ namespace stressTools{
         /*!
          * Compute the linear hardening curve value.
          *
-         * value = stateVariables_i linearModuli_i + scalarShift
+         * \f$value = stateVariables_i linearModuli_i + scalarShift\f$
          *
          * \param &stateVariables: The state variable vector
          * \param &linearModuli: The linear moduli vector.
@@ -1156,7 +1156,7 @@ namespace stressTools{
         /*!
          * Compute the linear hardening curve value.
          *
-         * value = stateVariables_i linearModuli_i + scalarShift
+         * \f$value = stateVariables_i linearModuli_i + scalarShift\f$
          *
          * \param &stateVariables: The state variable vector
          * \param &linearModuli: The linear moduli vector.
