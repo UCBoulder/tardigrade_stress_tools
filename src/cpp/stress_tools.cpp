@@ -739,10 +739,10 @@ namespace stressTools{
          * \param &previousStrain: The previous value of strain
          * \param &previousStateVariables: The previous values of the state variables
          * \param &materialParameters: The material parameters
-         *     The order of the parameters is [Ginfty, taus, Gs] where
-         *         Ginfty: The infinite stiffness modulus
-         *         taus: The time constants
-         *         Gs: The stiffness values
+         *     The order of the parameters is [\f$G_{\infty}\f$, taus, \f$G\f$s] where
+         *         - \f$G_{\infty}\f$: The infinite stiffness modulus
+         *         - taus: The time constants
+         *         - \f$G\f$s: The stiffness values
          * \param &alpha: The integration parameter (0 for implicit, 1 for explicit)
          * \param &stress: The computed stress in the reference configuration (i.e. the same configuration as the strain)
          * \param &currentStateVariables: The current values of the state variables
@@ -818,7 +818,8 @@ namespace stressTools{
                                    floatVector &dstressdrateModifier){
         /*!
          * Compute the stress for linear viscoelasticity based on the potential function
-         * rho^0 \Psi = 0.5*(E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ}))
+         *
+         * \f$\rho^0 \Psi = 0.5*(E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ}))\f$
          *
          * \param &currentTime: The current time
          * \param &currentStrain: The current Green-Lagrange strain
@@ -830,10 +831,10 @@ namespace stressTools{
          *     which can be used for temperature effects or (potentially) other non-linear effects.
          * \param &previousStateVariables: The previous values of the state variables
          * \param &materialParameters: The material parameters
-         *     The order of the parameters is [Ginfty, taus, Gs] where
-         *         Ginfty: The infinite stiffness modulus
-         *         taus: The time constants
-         *         Gs: The stiffness values
+         *     The order of the parameters is [\f$G_{\infty}\f$, taus, \f$G\f$s] where
+         *         - \f$G_{\infty}\f$: The infinite stiffness modulus
+         *         - taus: The time constants
+         *         - \f$G\f$s: The stiffness values
          * \param &alpha: The integration parameter (0 for implicit, 1 for explicit)
          * \param &stress: The computed stress in the reference configuration (i.e. the same configuration as the strain)
          * \param &currentStateVariables: The current values of the state variables
