@@ -726,25 +726,26 @@ namespace stressTools{
                                    floatVector &stress, floatVector &currentStateVariables){
         /*!
          * Compute the stress for linear viscoelasticity based on the potential function
-         * rho^0 \Psi = 0.5*(E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ}))
+         *
+         * \f$\rho^0 \Psi = 0.5*(E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ}))\f$
          *
          * \param &currentTime: The current time
-         * :const floatVector &currentStrain: The current Green-Lagrange strain
-         * :const floatType &previousTime: The previous time
-         * :const floatType &currentRateModifier: The current value of the rate modifier
+         * \param &currentStrain: The current Green-Lagrange strain
+         * \param &previousTime: The previous time
+         * \param &currentRateModifier: The current value of the rate modifier
          *     which can be used for temperature effects or (potentially) other non-linear effects.
-         * :const floatType &previousRateModifier: The previous value of the rate modifier
+         * \param &previousRateModifier: The previous value of the rate modifier
          *     which can be used for temperature effects or (potentially) other non-linear effects.
-         * :const floatVector &previousStrain: The previous value of strain
-         * :const floatVector &previousStateVariables: The previous values of the state variables
-         * :const floatVector &materialParameters: The material parameters
+         * \param &previousStrain: The previous value of strain
+         * \param &previousStateVariables: The previous values of the state variables
+         * \param &materialParameters: The material parameters
          *     The order of the parameters is [Ginfty, taus, Gs] where
          *         Ginfty: The infinite stiffness modulus
          *         taus: The time constants
          *         Gs: The stiffness values
-         * :const floatType &alpha: The integration parameter (0 for implicit, 1 for explicit)
-         * :floatVector &stress: The computed stress in the reference configuration (i.e. the same configuration as the strain)
-         * :floatVector &currentStateVariables: The current values of the state variables
+         * \param &alpha: The integration parameter (0 for implicit, 1 for explicit)
+         * \param &stress: The computed stress in the reference configuration (i.e. the same configuration as the strain)
+         * \param &currentStateVariables: The current values of the state variables
          */
 
         floatType dt = currentTime - previousTime;
@@ -820,24 +821,24 @@ namespace stressTools{
          * rho^0 \Psi = 0.5*(E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ}))
          *
          * \param &currentTime: The current time
-         * :const floatVector &currentStrain: The current Green-Lagrange strain
-         * :const floatType &previousTime: The previous time
-         * :const floatVector &previousStrain: The previous value of strain
-         * :const floatType &currentRateModifier: The current value of the rate modifier
+         * \param &currentStrain: The current Green-Lagrange strain
+         * \param &previousTime: The previous time
+         * \param &previousStrain: The previous value of strain
+         * \param &currentRateModifier: The current value of the rate modifier
          *     which can be used for temperature effects or (potentially) other non-linear effects.
-         * :const floatType &previousRateModifier: The previous value of the rate modifier
+         * \param &previousRateModifier: The previous value of the rate modifier
          *     which can be used for temperature effects or (potentially) other non-linear effects.
-         * :const floatVector &previousStateVariables: The previous values of the state variables
-         * :const floatVector &materialParameters: The material parameters
+         * \param &previousStateVariables: The previous values of the state variables
+         * \param &materialParameters: The material parameters
          *     The order of the parameters is [Ginfty, taus, Gs] where
          *         Ginfty: The infinite stiffness modulus
          *         taus: The time constants
          *         Gs: The stiffness values
-         * :const floatType &alpha: The integration parameter (0 for implicit, 1 for explicit)
-         * :floatVector &stress: The computed stress in the reference configuration (i.e. the same configuration as the strain)
-         * :floatVector &currentStateVariables: The current values of the state variables
-         * :floatMatrix &dstressdstrain: The derivative of the stress w.r.t. the strain
-         * :floatVector &dstressdrateModifier: The derivative of the stress w.r.t. the rate modifier
+         * \param &alpha: The integration parameter (0 for implicit, 1 for explicit)
+         * \param &stress: The computed stress in the reference configuration (i.e. the same configuration as the strain)
+         * \param &currentStateVariables: The current values of the state variables
+         * \param &dstressdstrain: The derivative of the stress w.r.t. the strain
+         * \param &dstressdrateModifier: The derivative of the stress w.r.t. the rate modifier
          */
 
         errorOut lVresult = linearViscoelasticity(currentTime, currentStrain, previousTime, previousStrain,
