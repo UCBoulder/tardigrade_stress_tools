@@ -222,8 +222,10 @@ namespace stressTools{
     errorOut calculateVonMisesStress(const floatVector &stress, floatType &vonMises){
         /*!
          * Compute the von Mises stress from a 2nd rank stress tensor stored in row major format
-         * \sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}
-         * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
+         *
+         * \f$\sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}\f$
+         *
+         * \f$\sigma^{deviatoric} = \sigma - \sigma^{mean}I\f$
          *
          * \param &stress: The row major stress tensor
          * \param &meanStress: The scalar mean stress
@@ -238,8 +240,10 @@ namespace stressTools{
     floatType calculateVonMisesStress(const floatVector &stress){
         /*!
          * Compute the von Mises stress from a 2nd rank stress tensor stored in row major format
-         * \sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}
-         * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
+         *
+         * \f$\sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}\f$
+         *
+         * \f$\sigma^{deviatoric} = \sigma - \sigma^{mean}I\f$
          *
          * \param &stress: The row major stress tensor
          * \param &meanStress: The scalar mean stress
@@ -258,8 +262,10 @@ namespace stressTools{
     errorOut calculateVonMisesStress(const floatVector &stress, floatType &vonMises, floatVector &jacobian){
         /*!
          * Compute the von Mises stress from a 2nd rank stress tensor stored in row major format
-         * \sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}
-         * \sigma^{deviatoric} = \sigma - \sigma^{mean}I
+         *
+         * \f$\sigma^{vonMises} = \sqrt{\frac{3}{2}*\sigma^{deviatoric}\sigma^{deviatoric}}\f$
+         *
+         * \f$\sigma^{deviatoric} = \sigma - \sigma^{mean}I\f$
          *
          * \param &stress: The row major stress tensor
          * \param &meanStress: The scalar mean stress
