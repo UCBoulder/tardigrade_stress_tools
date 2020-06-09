@@ -1,13 +1,13 @@
-/*
-===============================================================================
-|                               stress_tools.h                                |
-===============================================================================
-| A collection of tools which implement and solve stress-strain relationships |
-| in such a way to enable more rapid development of constitutive models which |
-| have capabilities which may not be contained within a collection of         |
-| of constitutive models.                                                     |
-===============================================================================
-*/
+/**
+  ******************************************************************************
+  * \file stress_tools.h
+  ******************************************************************************
+  * A collection of tools which implement and solve stress-strain relationships
+  * in such a way to enable more rapid development of constitutive models which
+  * have capabilities which may not be contained within a collection of
+  * of constitutive models.
+  ******************************************************************************
+  */
 
 #ifndef STRESS_TOOLS_H
 #define STRESS_TOOLS_H
@@ -19,11 +19,11 @@
 
 namespace stressTools{
 
-    typedef constitutiveTools::errorNode errorNode; //!Redefinition for the error node
-    typedef constitutiveTools::errorOut errorOut; //!Redefinition for a pointer to the error node
-    typedef constitutiveTools::floatType floatType; //!Define the float values type.
-    typedef constitutiveTools::floatVector floatVector; //! Define a vector of floats
-    typedef constitutiveTools::floatMatrix floatMatrix; //!Define a matrix of floats
+    typedef constitutiveTools::errorNode errorNode; //!< Redefinition for the error node
+    typedef constitutiveTools::errorOut errorOut; //!< Redefinition for a pointer to the error node
+    typedef constitutiveTools::floatType floatType; //!< Define the float values type.
+    typedef constitutiveTools::floatVector floatVector; //!< Define a vector of floats
+    typedef constitutiveTools::floatMatrix floatMatrix; //!< Define a matrix of floats
 
     errorOut calculateMeanStress(const floatVector &stress, floatType &meanStress);
 
@@ -83,16 +83,16 @@ namespace stressTools{
 
     errorOut druckerPragerSurface(const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection, floatMatrix &unitDirectionJacobian);
 
-    errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
+    errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain,
                                    const floatType &previousTime, const floatVector &previousStrain,
-                                   const floatType &currentRateModifier, const floatType &previousRateModifier, 
+                                   const floatType &currentRateModifier, const floatType &previousRateModifier,
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
                                    const floatType &alpha,
                                    floatVector &stress, floatVector &currentStateVariables);
 
-    errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain, 
-                                   const floatType &previousTime, const floatVector &previousStrain,               
-                                   const floatType &currentRateModifier, const floatType &previousRateModifier,                        
+    errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain,
+                                   const floatType &previousTime, const floatVector &previousStrain,
+                                   const floatType &currentRateModifier, const floatType &previousRateModifier,
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
                                    const floatType &alpha,
                                    floatVector &stress, floatVector &currentStateVariables, floatMatrix &dstressdstrain,
@@ -120,10 +120,10 @@ namespace stressTools{
     errorOut peryznaModel(const floatType f, const floatType q, const floatType A, const floatVector &parameters, floatType &p,
                           floatType &dpdf, floatType &dpdq, floatType &dpdA);
 
-    errorOut linearHardening(const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift, 
+    errorOut linearHardening(const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift,
                              floatType &value);
 
-    errorOut linearHardening(const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift, 
+    errorOut linearHardening(const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift,
                              floatType &value, floatVector &valueJacobian);
 }
 
