@@ -28,12 +28,17 @@ FetchContent_Declare(
     GIT_REPOSITORY ssh://git@xcp-stash.lanl.gov:7999/mm/vector_tools.git
     GIT_TAG        origin/dev
 )
-FetchContent_MakeAvailable(error_tools vector_tools)
+FetchContent_Declare(
+    constitutive_tools
+    GIT_REPOSITORY ssh://git@xcp-stash.lanl.gov:7999/mm/constitutive_tools.git
+    GIT_TAG        origin/dev
+)
+FetchContent_MakeAvailable(error_tools vector_tools constitutive_tools)
 
 # Add project source directories
 add_subdirectory ("src/cpp")
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-#    add_subdirectory ("src/cpp/tests/${PROJECT_NAME}")
+    add_subdirectory ("src/cpp/tests/${PROJECT_NAME}")
     add_subdirectory ("docs")
 endif()
 
