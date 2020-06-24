@@ -1,9 +1,9 @@
 cmake_minimum_required (VERSION 3.14)
 
-project (stress_tools)
+project (stress_tools VERSION 0.0.1)
 
 # Configure version
-#configure_file("src/cpp/config.h.in" "${PROJECT_BINARY_DIR}/config.h")
+configure_file("src/cpp/config.h.in" "${PROJECT_BINARY_DIR}/config.h")
 
 # Find eigen
 set(CMAKE_PREFIX_PATH $ENV{HOME} $ENV{HOME}/local/ $ENV{HOME}/.local ${CMAKE_PREFIX_PATH})
