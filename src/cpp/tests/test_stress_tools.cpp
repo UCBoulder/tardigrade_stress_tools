@@ -5,6 +5,9 @@
 #include<fstream>
 #include<iostream>
 
+#define BOOST_TEST_MODULE test_vector_tools
+#include <boost/test/included/unit_test.hpp>
+
 typedef constitutiveTools::errorOut errorOut;
 typedef constitutiveTools::floatType floatType;
 typedef constitutiveTools::floatVector floatVector;
@@ -36,7 +39,7 @@ struct cerr_redirect{
         std::streambuf * old;
 };
 
-int testCalculateMeanStress(std::ofstream &results){
+BOOST_AUTO_TEST_CASE( testCalculateMeanStress ){
     /*!
      * Test the mean stress calculation
      *
@@ -111,7 +114,7 @@ int testCalculateMeanStress(std::ofstream &results){
     return 0;
 }
 
-int testCalculateDeviatoricStress(std::ofstream &results){
+BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress ){
     /*!
      * Test the deviatoric stress calculation
      *
@@ -207,7 +210,7 @@ int testCalculateDeviatoricStress(std::ofstream &results){
     return 0;
 }
 
-int testCalculateVonMisesStress(std::ofstream &results){
+BOOST_AUTO_TEST_CASE( testCalculateVonMisesStress ){
     /*!
      * Test the von Mises stress calculation
      *
@@ -256,7 +259,7 @@ int testCalculateVonMisesStress(std::ofstream &results){
     return 0;
 }
 
-int testDruckerPragerSurface(std::ofstream &results){
+BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
     /*!
      * Test the Drucker-Prager yield criterion calculation.
      *
@@ -587,7 +590,7 @@ int testDruckerPragerSurface(std::ofstream &results){
     return 0;
 }
 
-int testLinearViscoelasticity(std::ofstream &results){
+BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     /*!
      * Test the implementation of linear finite-deformation
      * viscoelasticity.
@@ -905,7 +908,7 @@ int testLinearViscoelasticity(std::ofstream &results){
     return 0;
 }
 
-int testVolumetricNeoHookean(std::ofstream &results){
+BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
     /*!
      * Test the computation of the mean stress (-pressure) using a Neo-Hookean model
      *
@@ -1011,7 +1014,7 @@ int testVolumetricNeoHookean(std::ofstream &results){
 
 }
 
-int testPeryznaModel(std::ofstream &results){
+BOOST_AUTO_TEST_CASE( testPeryznaModel ){
     /*!
      * Test the implementation of the Peryzna style model
      * 
@@ -1192,7 +1195,7 @@ int testPeryznaModel(std::ofstream &results){
     return 0;
 }
 
-int testLinearHardening(std::ofstream &results){
+BOOST_AUTO_TEST_CASE( testLinearHardening ){
     /*!
      * Test the linear hardening function.
      * 
@@ -1253,33 +1256,5 @@ int testLinearHardening(std::ofstream &results){
     }
 
     results << "testLinearHardening & True\n";
-    return 0;
-}
-
-int main(){
-    /*!
-    The main loop which runs the tests defined in the
-    accompanying functions. Each function should output
-    the function name followed by & followed by True or False
-    if the test passes or fails respectively.
-    */
-
-    //Open the results file
-    std::ofstream results;
-    results.open("results.tex");
-
-    //Run the tests
-    testCalculateMeanStress(results);
-    testCalculateVonMisesStress(results);
-    testDruckerPragerSurface(results);
-    testCalculateDeviatoricStress(results);
-    testLinearViscoelasticity(results);
-    testVolumetricNeoHookean(results);
-    testPeryznaModel(results);
-    testLinearHardening(results);
-
-    //Close the results file
-    results.close();
-
     return 0;
 }
