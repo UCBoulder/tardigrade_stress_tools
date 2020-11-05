@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE( testCalculateMeanStress ){
     meanStress = 0.;
     std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
     result = stressTools::calculateMeanStress(stressVector, meanStress, jacobianVector);
-    if (!vectorTools::fuzzyEquals(meanStress, meanStressExpected) || 
+    if (!vectorTools::fuzzyEquals(meanStress, meanStressExpected) ||
         !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
         results << "testCalculateMeanStress (test 5) & False\n";
         return 1;
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress ){
     for (unsigned int i=0; i<stressVector.size(); i++){
         floatVector delta(stressVector.size(), 0);
         delta[i] = eps * fabs(stressVector[i]) + eps;
-        
+
         result = stressTools::calculateDeviatoricStress(stressVector + delta, deviatoricVectorJ, jacobian);
 
         BOOST_CHECK( ! result );
@@ -234,7 +234,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
     floatType eps;
     floatVector delta(stressVector.size(), 0.);
     floatVector gradCol(stressVector.size(), 0);
-    
+
     //Declare test output variables
     floatType dpYield;
     floatVector jacobianVector(stressVector.size(), 0.);
@@ -246,36 +246,36 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
 
     //Test computation of DP yield criterion from vonMises and meanStress
     dpYield = 0;
-    stressTools::druckerPragerSurface(vonMises, meanStress, A, B, dpYield); 
+    stressTools::druckerPragerSurface(vonMises, meanStress, A, B, dpYield);
     BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
 
     dpYield = 0;
-    stressTools::druckerPragerSurface(vonMises, meanStress, dpParam, dpYield); 
+    stressTools::druckerPragerSurface(vonMises, meanStress, dpParam, dpYield);
     BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
 
     dpYield = 0;
-    dpYield = stressTools::druckerPragerSurface(vonMises, meanStress, A, B); 
+    dpYield = stressTools::druckerPragerSurface(vonMises, meanStress, A, B);
     BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
 
     dpYield = 0;
-    dpYield = stressTools::druckerPragerSurface(vonMises, meanStress, dpParam); 
+    dpYield = stressTools::druckerPragerSurface(vonMises, meanStress, dpParam);
     BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
 
-    //Test computation of DP yield criterion from row major stress tensor 
+    //Test computation of DP yield criterion from row major stress tensor
     dpYield = 0;
-    stressTools::druckerPragerSurface(stressVector, A, B, dpYield); 
-    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
-
-    dpYield = 0;
-    stressTools::druckerPragerSurface(stressVector, dpParam, dpYield); 
+    stressTools::druckerPragerSurface(stressVector, A, B, dpYield);
     BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
 
     dpYield = 0;
-    dpYield = stressTools::druckerPragerSurface(stressVector, A, B); 
+    stressTools::druckerPragerSurface(stressVector, dpParam, dpYield);
     BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
 
     dpYield = 0;
-    dpYield = stressTools::druckerPragerSurface(stressVector, dpParam); 
+    dpYield = stressTools::druckerPragerSurface(stressVector, A, B);
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
+
+    dpYield = 0;
+    dpYield = stressTools::druckerPragerSurface(stressVector, dpParam);
     BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
 
     //Test computation of DP yield and jacobian from row major stress tensor
@@ -314,7 +314,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         return 1;
     }
 
-    //Test the computation of the DP yield, jacobian, and the derivative of the jacobian 
+    //Test the computation of the DP yield, jacobian, and the derivative of the jacobian
     //w.r.t. the stress
     dpYield = 0;
     std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
@@ -327,7 +327,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
 
     BOOST_CHECK( ! error );
 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) || 
+    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
         !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
         results << "testDruckerPragerSurface (test 13) & False\n";
         return 1;
@@ -350,7 +350,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         }
     }
 
-    //Test the computation of the DP yield, jacobian, and the derivative of the jacobian 
+    //Test the computation of the DP yield, jacobian, and the derivative of the jacobian
     //w.r.t. the stress for the parameter vector interface
     dpYield = 0;
     std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
@@ -363,7 +363,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
 
     BOOST_CHECK( ! error );
 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) || 
+    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
         !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
         results << "testDruckerPragerSurface (test 15) & False\n";
         return 1;
@@ -386,7 +386,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         }
     }
 
-    //Test the computation of the DP yield, jacobian, unit direction, and the jacobian 
+    //Test the computation of the DP yield, jacobian, unit direction, and the jacobian
     //of the unit direction jacobian.
     dpYield = 0;
     std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
@@ -398,7 +398,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
 
     BOOST_CHECK( ! error );
 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) || 
+    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
         !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) ||
         !vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected)){
         results << "testDruckerPragerSurface (test 17) & False\n";
@@ -421,7 +421,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         }
     }
 
-    //Test the computation of the DP yield, jacobian, unit direction, and the jacobian 
+    //Test the computation of the DP yield, jacobian, unit direction, and the jacobian
     //of the unit direction jacobian from the parameter vector interface
     dpYield = 0;
     std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
@@ -433,7 +433,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
 
     BOOST_CHECK( ! error );
 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) || 
+    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
         !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) ||
         !vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected)){
         results << "testDruckerPragerSurface (test 19) & False\n";
@@ -447,7 +447,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         error = stressTools::druckerPragerSurface(stressVector + delta, dpParam, dpYield, jacobianVector, unitDirectionVectorJ);
 
         BOOST_CHECK( ! error );
-  
+
         std::fill(gradCol.begin(), gradCol.end(), 0.);
         gradCol = (unitDirectionVectorJ - unitDirectionVector)/delta[i];
 
@@ -455,7 +455,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
             BOOST_CHECK( vectorTools::fuzzyEquals(unitDirectionJacobian[j][i], gradCol[j]) );
         }
     }
-    
+
     results << "testDruckerPragerSurface & True\n";
     return 0;
 }
@@ -710,7 +710,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
                                               stress, currentStateVariables );
 
     BOOST_CHECK( ! res  );
-                                           
+
 
     results << "testLinearViscoelasticity & True\n";
     return 0;
@@ -797,7 +797,7 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
 BOOST_AUTO_TEST_CASE( testPeryznaModel ){
     /*!
      * Test the implementation of the Peryzna style model
-     * 
+     *
      * :param std::ofstream &results: The output file
      */
 
@@ -835,7 +835,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
     BOOST_CHECK( ! error );
 
     BOOST_CHECK( vectorTools::fuzzyEquals((pJ - p)/delta, dpdf, 1e-5, 1e-5) );
-    
+
     delta = eps*fabs(q) + eps;
     error = stressTools::peryznaModel(f, q + delta, A, n, pJ);
 
@@ -869,7 +869,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
     BOOST_CHECK( ! error );
 
     BOOST_CHECK( vectorTools::fuzzyEquals((pJ - p)/delta, dpdf, 1e-5, 1e-5) );
-    
+
     delta = eps*fabs(q) + eps;
     error = stressTools::peryznaModel(f, q + delta, A, n, pJ);
 
@@ -901,7 +901,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
 BOOST_AUTO_TEST_CASE( testLinearHardening ){
     /*!
      * Test the linear hardening function.
-     * 
+     *
      * :param std::ofstream &results: The output file.
      */
 
@@ -931,7 +931,7 @@ BOOST_AUTO_TEST_CASE( testLinearHardening ){
         delta[i] = eps*fabs(stateVariables[i]) + eps;
 
         error = stressTools::linearHardening(stateVariables + delta, linearModuli, shiftFactor, valueJ);
-        
+
         BOOST_CHECK( ! error );
 
         BOOST_CHECK( vectorTools::fuzzyEquals((valueJ - value)/delta[i], valueJacobian[i]) );
