@@ -293,23 +293,17 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
     std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
     std::fill(unitDirectionVector.begin(), unitDirectionVector.end(), 0.);
     stressTools::druckerPragerSurface(stressVector, A, B, dpYield, jacobianVector, unitDirectionVector);
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
-        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) ||
-        !vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected)){
-        results << "testDruckerPragerSurface (test 11) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) &&
+                 vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) &&
+                 vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected) );
 
     dpYield = 0;
     std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
     std::fill(unitDirectionVector.begin(), unitDirectionVector.end(), 0.);
     stressTools::druckerPragerSurface(stressVector, dpParam, dpYield, jacobianVector, unitDirectionVector);
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
-        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) ||
-        !vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected)){
-        results << "testDruckerPragerSurface (test 12) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) &&
+                 vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) &&
+                 vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected) );
 
     //Test the computation of the DP yield, jacobian, and the derivative of the jacobian
     //w.r.t. the stress
@@ -389,12 +383,9 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
 
     BOOST_CHECK( ! error );
 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
-        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) ||
-        !vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected)){
-        results << "testDruckerPragerSurface (test 17) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) &&
+                 vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) &&
+                 vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected) );
 
     for (unsigned int i=0; i<stressVector.size(); i++){
         floatVector delta(stressVector.size(), 0);
@@ -424,12 +415,9 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
 
     BOOST_CHECK( ! error );
 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
-        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) ||
-        !vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected)){
-        results << "testDruckerPragerSurface (test 19) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) &&
+                 vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) &&
+                 vectorTools::fuzzyEquals(unitDirectionVector, unitDirectionVectorExpected) );
 
     for (unsigned int i=0; i<stressVector.size(); i++){
         floatVector delta(stressVector.size(), 0);
