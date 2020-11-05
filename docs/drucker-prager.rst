@@ -5,17 +5,13 @@ The `Drucker-Prager yield criterion
 <https://en.wikipedia.org/wiki/Drucker%E2%80%93Prager_yield_criterion>`_ is
 defined as 
 
-.. math::
-
-    0 = \sigma^{vonMises} - A \sigma^{mean} - B
+.. math:: 0 = \sigma^{vonMises} - A \sigma^{mean} - B
     :label: drucker-prager
 
 For use in visco-plastic flow equations, Equation :eq:`drucker-prager` may be
 re-written as
 
-.. math::
-
-    f = \sigma^{vonMises} - A \sigma^{mean} - B
+.. math:: f = \sigma^{vonMises} - A \sigma^{mean} - B
     :label: drucker-prager-flow
 
 Equation :eq:`drucker-prager-flow` is implemented as ``druckerPragerSurface``.
@@ -27,10 +23,7 @@ minimal) inelastic flow.
 For these cases, it is important to also compute the inelastic strain increment
 direction. For associative flow this may be written as
 
-.. math::
-
-    n = \frac{\partial f}{\partial \sigma}  / \norm{\frac{\partial f}{\partial
-        \sigma}}
+.. math:: n = \frac{\partial f}{\partial \sigma}  / \norm{\frac{\partial f}{\partial \sigma}}
     :label: drucker-prager-direction
 
 and for non-associative flow
@@ -44,10 +37,7 @@ and for non-associative flow
 
 where
 
-.. math::
-
-    \frac{\partial g}{\partial \sigma} = \frac{\partial
-        \sigma^{vonMises}}{\sigma} - C \frac{\sigma^{mean}}{\sigma}
+.. math:: \frac{\partial g}{\partial \sigma} = \frac{\partial \sigma^{vonMises}}{\sigma} - C \frac{\sigma^{mean}}{\sigma}
     :label: drucker-prager-jacobian
 
 is the jacobian of the Drucker-Prager yield surface. Equation
@@ -84,7 +74,6 @@ From these definitions, we can calculate the partial derivatives in Equation
 :eq:`drucker-prager-jacobian` with the chain rule.
 
 .. math::
-
     \frac{\partial g}{\partial \sigma_{kl}} = \frac{\partial
         \sigma^{vonMises}}{\S_{ij}}\frac{\partial \S_{ij}}{\partial \sigma_{kl}}
         - C \frac{\sigma^{mean}}{\sigma_{kl}} 
@@ -96,16 +85,12 @@ von Mises stres with respect to the deviatoric stress tensor can be computed
 with the property of `second-order tensor derivatives
 <https://en.wikipedia.org/wiki/Tensor_derivative_(continuum_mechanics)>`_
 
-.. math::
-
-    \frac{\partial x_{ij}}{\partial y_{kl}} = \delta_{ik} \delta_{jl}
+.. math:: \frac{\partial x_{ij}}{\partial y_{kl}} = \delta_{ik} \delta_{jl}
     :label: tensor-partial
 
 and the property of the Kronecker delta
 
-.. math::
-
-    x_{kl} = x_{ij} \delta_{ik} \delta_{jl}
+.. math:: x_{kl} = x_{ij} \delta_{ik} \delta_{jl}
     :label: kronecker-property
 
 First, compute the partial derivative of the von Mises stress with respect to
