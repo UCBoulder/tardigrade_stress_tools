@@ -71,34 +71,22 @@ BOOST_AUTO_TEST_CASE( testCalculateMeanStress ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals(meanStress, meanStressExpected)){
-        results << "testCalculateMeanStress (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(meanStress, meanStressExpected) );
 
     //Test for correct mean stress calculation from stressVector without pointer output
     meanStress = 0.;
     meanStress = stressTools::calculateMeanStress(stressVector);
-    if (!vectorTools::fuzzyEquals(meanStress, meanStressExpected)){
-        results << "testCalculateMeanStress (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(meanStress, meanStressExpected) );
 
     //Test for correct mean stress calculation from stressMatrix with pointer output
     meanStress = 0.;
     result = stressTools::calculateMeanStress(stressMatrix, meanStress);
-    if (!vectorTools::fuzzyEquals(meanStress, meanStressExpected)){
-        results << "testCalculateMeanStress (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(meanStress, meanStressExpected) );
 
     //Test for correct mean stress calculation from stressMatrix without pointer output
     meanStress = 0.;
     meanStress = stressTools::calculateMeanStress(stressMatrix);
-    if (!vectorTools::fuzzyEquals(meanStress, meanStressExpected)){
-        results << "testCalculateMeanStress (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(meanStress, meanStressExpected) );
 
     //Test for correct mean stress and jacobian calculation
     meanStress = 0.;
@@ -141,19 +129,13 @@ BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals(expectedVector, deviatoricVector)){
-        results << "testCalculateDeviatoricStress (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(expectedVector, deviatoricVector) );
 
     std::fill(deviatoricVector.begin(), deviatoricVector.end(), 0.);
 
     deviatoricVector = stressTools::calculateDeviatoricStress(stressVector);
 
-    if (!vectorTools::fuzzyEquals(expectedVector, deviatoricVector)){
-        results << "testCalculateDeviatoricStress (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(expectedVector, deviatoricVector) );
 
     //Test the computation of the jacobian
     result = stressTools::calculateDeviatoricStress(stressVector, deviatoricVectorJ, jacobian);
@@ -164,10 +146,7 @@ BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals(expectedVector, deviatoricVectorJ)){
-        results << "testCalculateDeviatoricStress (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(expectedVector, deviatoricVectorJ) );
 
     //Test the jacobian
     for (unsigned int i=0; i<stressVector.size(); i++){
@@ -196,15 +175,9 @@ BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress ){
 
     deviatoricVector = stressTools::calculateDeviatoricStress(stressVector, jacobian2);
 
-    if (!vectorTools::fuzzyEquals(deviatoricVector, expectedVector)){
-        results << "testCalculateDeviatoricStress (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(deviatoricVector, expectedVector) );
 
-    if (!vectorTools::fuzzyEquals(jacobian, jacobian2)){
-        results << "testCalculateDeviatoricStress (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(jacobian, jacobian2) );
 
     results << "testCalculateDeviatoricStress & True\n";
     return 0;
@@ -233,17 +206,11 @@ BOOST_AUTO_TEST_CASE( testCalculateVonMisesStress ){
     //Test computation of vonMises stress from row major stress tensor
     vonMises = 0.;
     stressTools::calculateVonMisesStress(stressVector, vonMises);
-    if (!vectorTools::fuzzyEquals(vonMises, vonMisesExpected)){
-        results << "testCalculateVonMisesStress (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(vonMises, vonMisesExpected) );
 
     vonMises = 0.;
     vonMises = stressTools::calculateVonMisesStress(stressVector);
-    if (!vectorTools::fuzzyEquals(vonMises, vonMisesExpected)){
-        results << "testCalculateVonMisesStress (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(vonMises, vonMisesExpected) );
 
     //Test computation of vonMises stress and jacobian
     vonMises = 0.;
@@ -303,60 +270,36 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
     //Test computation of DP yield criterion from vonMises and meanStress
     dpYield = 0;
     stressTools::druckerPragerSurface(vonMises, meanStress, A, B, dpYield); 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected)){
-        results << "testDruckerPragerSurface (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
 
     dpYield = 0;
     stressTools::druckerPragerSurface(vonMises, meanStress, dpParam, dpYield); 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected)){
-        results << "testDruckerPragerSurface (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
 
     dpYield = 0;
     dpYield = stressTools::druckerPragerSurface(vonMises, meanStress, A, B); 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected)){
-        results << "testDruckerPragerSurface (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
 
     dpYield = 0;
     dpYield = stressTools::druckerPragerSurface(vonMises, meanStress, dpParam); 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected)){
-        results << "testDruckerPragerSurface (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
 
     //Test computation of DP yield criterion from row major stress tensor 
     dpYield = 0;
     stressTools::druckerPragerSurface(stressVector, A, B, dpYield); 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected)){
-        results << "testDruckerPragerSurface (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
 
     dpYield = 0;
     stressTools::druckerPragerSurface(stressVector, dpParam, dpYield); 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected)){
-        results << "testDruckerPragerSurface (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
 
     dpYield = 0;
     dpYield = stressTools::druckerPragerSurface(stressVector, A, B); 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected)){
-        results << "testDruckerPragerSurface (test 7) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
 
     dpYield = 0;
     dpYield = stressTools::druckerPragerSurface(stressVector, dpParam); 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected)){
-        results << "testDruckerPragerSurface (test 8) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) );
 
     //Test computation of DP yield and jacobian from row major stress tensor
     dpYield = 0;
@@ -440,10 +383,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         gradCol = (jacobianVectorJ - jacobianVector)/delta[i];
 
         for (unsigned int j=0; j<gradCol.size(); j++){
-            if (!vectorTools::fuzzyEquals(djacobiandstress[j][i], gradCol[j])){
-                results << "testDruckerPragerSurface (test 14b) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals(djacobiandstress[j][i], gradCol[j]) );
         }
     }
 
@@ -487,10 +427,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         gradCol = (jacobianVectorJ - jacobianVector)/delta[i];
 
         for (unsigned int j=0; j<gradCol.size(); j++){
-            if (!vectorTools::fuzzyEquals(djacobiandstress[j][i], gradCol[j])){
-                results << "testDruckerPragerSurface (test 16) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals(djacobiandstress[j][i], gradCol[j]) );
         }
     }
 
@@ -533,10 +470,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         gradCol = (unitDirectionVectorJ - unitDirectionVector)/delta[i];
 
         for (unsigned int j=0; j<gradCol.size(); j++){
-            if (!vectorTools::fuzzyEquals(unitDirectionJacobian[j][i], gradCol[j])){
-                results << "testDruckerPragerSurface (test 18) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals(unitDirectionJacobian[j][i], gradCol[j]) );
         }
     }
 
@@ -579,10 +513,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         gradCol = (unitDirectionVectorJ - unitDirectionVector)/delta[i];
 
         for (unsigned int j=0; j<gradCol.size(); j++){
-            if (!vectorTools::fuzzyEquals(unitDirectionJacobian[j][i], gradCol[j])){
-                results << "testDruckerPragerSurface (test 20) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals(unitDirectionJacobian[j][i], gradCol[j]) );
         }
     }
     
@@ -656,10 +587,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals(previousStateVariables, currentStateVariables)){
-        results << "testLinearViscoelasticity (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(previousStateVariables, currentStateVariables) );
 
     //!Test to make sure the state variable evolution is occurring
     //!as expected for very large dt and alpha=0 (fully implicit)
@@ -679,10 +607,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals(currentStrain*materialParameters[0], stress)){
-        results << "testLinearViscoelasticity (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(currentStrain*materialParameters[0], stress) );
 
     unsigned int dim = currentStrain.size();
 
@@ -695,10 +620,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
         }
 
         vectorTools::getValuesByIndex(currentStateVariables, indices, subv);
-        if (!vectorTools::fuzzyEquals(subv, currentStrain)){
-            results << "testLinearViscoelasticity (test 4) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals(subv, currentStrain) );
     }
 
     //!Test for frame invariance
@@ -794,10 +716,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals(stress, stresspp)){
-        results << "testLinearViscoelasticity (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(stress, stresspp) );
 
     for (unsigned int i=0; i<rotatedCurrentStateVariables.size()/dim; i++){
         std::vector< unsigned int > indices(dim, 0);
@@ -816,10 +735,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
             results << "testLinearViscoelasticity (test 5) & False\n";
             return 1;
         }
-        if (!vectorTools::fuzzyEquals(CSVpp, CSV)){
-            results << "testLinearViscoelasticity (test 5) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals(CSVpp, CSV) );
     }
 
     //Test the implementation of the jacobian
@@ -856,10 +772,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
         //Compare the values in the column to the jacobian's values
         for (unsigned int j=0; j<deltaStress.size(); j++){
-            if (! vectorTools::fuzzyEquals(jacobian[j][i], (deltaStress[j] - stress[j])/deltaStrain[i])){
-                results << "testLinearViscoelasticity (test 5) & False\n";
-                return 1;
-            }
+            BOOST_CHECK( vectorTools::fuzzyEquals(jacobian[j][i], (deltaStress[j] - stress[j])/deltaStrain[i]) );
         }
     }
 
@@ -931,10 +844,7 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
         return 1;
     }
 
-    if (! vectorTools::fuzzyEquals(meanStress, 0.)){
-        results << "testVolumetricNeoHookean (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(meanStress, 0.) );
 
     //Test the meanStress computation as compared to the expected value
     deformationGradient = {0.39874077,  0.11561812, -0.75485222,
@@ -969,10 +879,7 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
         return 1;
     }
 
-    if (! vectorTools::fuzzyEquals(meanStress, 0.5*bulkModulus*(J - 1/J))){
-        results << "testVolumetricNeoHookean (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(meanStress, 0.5*bulkModulus*(J - 1/J)) );
 
     //Test the computation of the derivative of the mean stress w.r.t. J
     floatType jacobianMeanStress;
@@ -985,10 +892,7 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
     }
 
     //Make sure the mean stress is identical
-    if (!vectorTools::fuzzyEquals(jacobianMeanStress, meanStress)){
-        results << "testVolumetricNeoHookean (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(jacobianMeanStress, meanStress) );
 
     //Make sure the jacobian is correct
     floatType ms;
@@ -1004,10 +908,7 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
 
     floatVector dJdF = vectorTools::computeDDetAdJ(deformationGradient, 3, 3);
 
-    if (!vectorTools::fuzzyEquals(dmeanStressdJ*dJdF, dmeanStressdF)){
-        results << "testVolumentricNeoHookean (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dmeanStressdJ*dJdF, dmeanStressdF) );
 
     results << "testVolumetricNeoHookean & True\n";
     return 0;
@@ -1036,10 +937,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals(p, A*pow((f/q), n))){
-        results << "testPeryznaModel (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(p, A*pow((f/q), n)) );
 
     error = stressTools::peryznaModel(f, q, A, parameters, p);
 
@@ -1049,10 +947,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals(p, A*pow((f/q), n))){
-        results << "testPeryznaModel (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(p, A*pow((f/q), n)) );
 
     floatType pJ;
     floatType dpdf, dpdq, dpdA;
@@ -1064,10 +959,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals(p, pJ)){
-        results << "testPeryznaModel (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(p, pJ) );
 
     floatType eps = 1e-6;
     floatType delta = eps*fabs(f) + eps;
@@ -1079,10 +971,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdf, 1e-5, 1e-5)){
-        results << "testPeryznaModel (test 4) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals((pJ - p)/delta, dpdf, 1e-5, 1e-5) );
     
     delta = eps*fabs(q) + eps;
     error = stressTools::peryznaModel(f, q + delta, A, n, pJ);
@@ -1093,10 +982,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdq, 1e-5, 1e-5)){
-        results << "testPeryznaModel (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals((pJ - p)/delta, dpdq, 1e-5, 1e-5) );
 
     delta = eps*fabs(A) + eps;
     error = stressTools::peryznaModel(f, q, A + delta, n, pJ);
@@ -1107,10 +993,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdA, 1e-5, 1e-5)){
-        results << "testPeryznaModel (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals((pJ - p)/delta, dpdA, 1e-5, 1e-5) );
 
     f = -1;
     error = stressTools::peryznaModel(f, q, A, n, p);
@@ -1121,10 +1004,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals(p, 0.)){
-        results << "testPeryznaModel (test 7) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(p, 0.) );
 
     error = stressTools::peryznaModel(f, q, A, n, pJ, dpdf, dpdq, dpdA);
 
@@ -1134,10 +1014,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals(p, pJ)){
-        results << "testPeryznaModel (test 8) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(p, pJ) );
 
     delta = eps*fabs(f) + eps;
     error = stressTools::peryznaModel(f + delta, q, A, n, pJ);
@@ -1148,10 +1025,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdf, 1e-5, 1e-5)){
-        results << "testPeryznaModel (test 9) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals((pJ - p)/delta, dpdf, 1e-5, 1e-5) );
     
     delta = eps*fabs(q) + eps;
     error = stressTools::peryznaModel(f, q + delta, A, n, pJ);
@@ -1162,10 +1036,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdq, 1e-5, 1e-5)){
-        results << "testPeryznaModel (test 10) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals((pJ - p)/delta, dpdq, 1e-5, 1e-5) );
 
     delta = eps*fabs(A) + eps;
     error = stressTools::peryznaModel(f, q, A + delta, n, pJ);
@@ -1176,10 +1047,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals((pJ - p)/delta, dpdA, 1e-5, 1e-5)){
-        results << "testPeryznaModel (test 11) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals((pJ - p)/delta, dpdA, 1e-5, 1e-5) );
 
     floatType pJv, dpdfv, dpdqv, dpdAv;
     error = stressTools::peryznaModel(f, q, A, parameters, pJv, dpdfv, dpdqv, dpdAv);
@@ -1215,10 +1083,7 @@ BOOST_AUTO_TEST_CASE( testLinearHardening ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals(value, 133.7)){
-        results << "testLinearHardening (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(value, 133.7) );
 
     floatType valueJ;
     floatVector valueJacobian;
@@ -1231,10 +1096,7 @@ BOOST_AUTO_TEST_CASE( testLinearHardening ){
         return 1;
     }
 
-    if (!vectorTools::fuzzyEquals(value, valueJ)){
-        results << "testLinearHardening (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(value, valueJ) );
 
     floatType eps = 1e-6;
     for (unsigned int i=0; i<stateVariables.size(); i++){
@@ -1249,10 +1111,7 @@ BOOST_AUTO_TEST_CASE( testLinearHardening ){
             return 1;
         }
 
-        if (!vectorTools::fuzzyEquals((valueJ - value)/delta[i], valueJacobian[i])){
-            results << "testLinearHardening (test 3) & False\n";
-            return 1;
-        }
+        BOOST_CHECK( vectorTools::fuzzyEquals((valueJ - value)/delta[i], valueJacobian[i]) );
     }
 
     results << "testLinearHardening & True\n";
