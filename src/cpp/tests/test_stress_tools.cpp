@@ -89,8 +89,6 @@ BOOST_AUTO_TEST_CASE( testCalculateMeanStress ){
     BOOST_CHECK( vectorTools::fuzzyEquals(meanStress, meanStressExpected) &&
                  vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) );
 
-    results << "testCalculateMeanStress & True\n";
-    return 0;
 }
 
 BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress ){
@@ -152,8 +150,6 @@ BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress ){
 
     BOOST_CHECK( vectorTools::fuzzyEquals(jacobian, jacobian2) );
 
-    results << "testCalculateDeviatoricStress & True\n";
-    return 0;
 }
 
 BOOST_AUTO_TEST_CASE( testCalculateVonMisesStress ){
@@ -190,8 +186,6 @@ BOOST_AUTO_TEST_CASE( testCalculateVonMisesStress ){
     BOOST_CHECK( vectorTools::fuzzyEquals(vonMises, vonMisesExpected) &&
                  vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) );
 
-    results << "testCalculateVonMisesStress & True\n";
-    return 0;
 }
 
 BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
@@ -427,8 +421,6 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         }
     }
 
-    results << "testDruckerPragerSurface & True\n";
-    return 0;
 }
 
 BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
@@ -475,7 +467,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     //!Test for symmetry in the output stress
     BOOST_CHECK( vectorTools::fuzzyEquals(stress[1], stress[3]) &&
                  vectorTools::fuzzyEquals(stress[2], stress[6]) &&
-                 vectorTools::fuzzyEquals(stress[5], stress[7]);
+                 vectorTools::fuzzyEquals(stress[5], stress[7]) );
 
     //!Test for passing the state variables through properly
     currentTime = previousTime;
@@ -670,8 +662,6 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     BOOST_CHECK( ! res  );
 
 
-    results << "testLinearViscoelasticity & True\n";
-    return 0;
 }
 
 BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
@@ -740,8 +730,6 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
 
     BOOST_CHECK( vectorTools::fuzzyEquals(dmeanStressdJ*dJdF, dmeanStressdF) );
 
-    results << "testVolumetricNeoHookean & True\n";
-    return 0;
 
 }
 
@@ -839,10 +827,8 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
     BOOST_CHECK( vectorTools::fuzzyEquals(pJv, p) &&
                  vectorTools::fuzzyEquals(dpdfv, dpdf) &&
                  vectorTools::fuzzyEquals(dpdqv, dpdq) &&
-                 vectorTools::fuzzyEquals(dpdAv, dpdA);
+                 vectorTools::fuzzyEquals(dpdAv, dpdA) );
 
-    results << "testPeryznaModel & True\n";
-    return 0;
 }
 
 BOOST_AUTO_TEST_CASE( testLinearHardening ){
@@ -882,6 +868,4 @@ BOOST_AUTO_TEST_CASE( testLinearHardening ){
         BOOST_CHECK( vectorTools::fuzzyEquals((valueJ - value)/delta[i], valueJacobian[i]) );
     }
 
-    results << "testLinearHardening & True\n";
-    return 0;
 }
