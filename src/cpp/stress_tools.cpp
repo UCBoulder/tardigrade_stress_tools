@@ -147,7 +147,7 @@ namespace stressTools{
          * Also return the jacobian
          *
          * \f$\frac{\partial \sigma_{ij}^{deviatoric}}{\partial \sigma_{kl}} = \delta_{ik}\delta{jl} - \frac{\partial
-         * \sigma^{\mean}}{\partial \sigma_{kl}} \delta_{ij}\f$
+         * \bar{\sigma}}{\partial \sigma_{kl}} \delta_{ij}\f$
          *
          * \param &stress: The stress tensor in row major format
          * \param &deviatoric: The deviatoric stress tensor in row major format
@@ -202,7 +202,7 @@ namespace stressTools{
          * Also return the jacobian
          *
          * \f$\frac{\partial \sigma_{ij}^{deviatoric}}{\partial \sigma_{kl}} = \delta_{ik}\delta{jl} - \frac{\partial
-         * \sigma^{\mean}}{\partial \sigma_{kl}} \delta_{ij}\f$
+         * \bar{\sigma}}{\partial \sigma_{kl}} \delta_{ij}\f$
          *
          * \param &stress: The stress tensor in row major format
          * \param &jacobian: The jacobian of the deviatoric stress tensor w.r.t. the stress.
