@@ -88,11 +88,8 @@ BOOST_AUTO_TEST_CASE( testCalculateMeanStress ){
     meanStress = 0.;
     std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
     result = stressTools::calculateMeanStress(stressVector, meanStress, jacobianVector);
-    if (!vectorTools::fuzzyEquals(meanStress, meanStressExpected) ||
-        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
-        results << "testCalculateMeanStress (test 5) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(meanStress, meanStressExpected) &&
+                 vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) );
 
     results << "testCalculateMeanStress & True\n";
     return 0;
@@ -327,11 +324,8 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
 
     BOOST_CHECK( ! error );
 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
-        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
-        results << "testDruckerPragerSurface (test 13) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) &&
+                 vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) );
 
     eps = 1e-6;
     for (unsigned int i=0; i<stressVector.size(); i++){
@@ -363,11 +357,8 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
 
     BOOST_CHECK( ! error );
 
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
-        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
-        results << "testDruckerPragerSurface (test 15) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) &&
+                 vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) );
 
     eps = 1e-6;
     for (unsigned int i=0; i<stressVector.size(); i++){
