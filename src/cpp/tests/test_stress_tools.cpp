@@ -483,12 +483,9 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
                                        stress, currentStateVariables);
 
     //!Test for symmetry in the output stress
-    if (!vectorTools::fuzzyEquals(stress[1], stress[3]) &&
-        !vectorTools::fuzzyEquals(stress[2], stress[6]) &&
-        !vectorTools::fuzzyEquals(stress[5], stress[7])){
-        results << "testLinearViscoelasticity (test 1) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(stress[1], stress[3]) &&
+                 vectorTools::fuzzyEquals(stress[2], stress[6]) &&
+                 vectorTools::fuzzyEquals(stress[5], stress[7]);
 
     //!Test for passing the state variables through properly
     currentTime = previousTime;
@@ -500,10 +497,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
                                                       materialParameters, alpha,
                                                       stress, currentStateVariables);
 
-    if (res){
-        results << "testLinearViscoelasticity (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( ! res );
 
     BOOST_CHECK( vectorTools::fuzzyEquals(previousStateVariables, currentStateVariables) );
 
@@ -670,12 +664,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
     BOOST_CHECK( ! res );
 
-    if (! vectorTools::fuzzyEquals((deltaStress - stress)/fabs(eps*currentRateModifier), dstressdrateModifier)){
-        std::cout << "dstressdrateModifier: "; vectorTools::print(dstressdrateModifier);
-        std::cout << "answer:               "; vectorTools::print((deltaStress - stress)/fabs(eps*currentRateModifier));
-        results << "testLinearViscoelasticity (test 6) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals((deltaStress - stress)/fabs(eps*currentRateModifier), dstressdrateModifier));
 
     //Test to make sure odd numbers of prony series terms can be passed in
     floatVector materialParametersOdd = { materialParameters[1], 1, 10, 100, 400, 300, 200 };
@@ -726,12 +715,7 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
     res = stressTools::volumetricNeoHookean(deformationGradient, bulkModulus, meanStress);
     BOOST_CHECK( ! res );
 
-    if (! vectorTools::fuzzyEquals(meanStress, 0.5*bulkModulus*(J - 1/J))){
-        std::cout << "meanStress: " << meanStress << "\n";
-        std::cout << "expected:   " << 0.5*bulkModulus*(J - 1)/J << "\n";
-        results << "testVolumetricNeoHookean (test 2) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(meanStress, 0.5*bulkModulus*(J - 1/J)));
 
     //Test the meanStress computation subject to a rotation
     deformationGradient = {-0.2350804 ,  0.16410551, -1.13402371,
@@ -866,12 +850,10 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
     floatType pJv, dpdfv, dpdqv, dpdAv;
     error = stressTools::peryznaModel(f, q, A, parameters, pJv, dpdfv, dpdqv, dpdAv);
 
-    if (!vectorTools::fuzzyEquals(pJv, p) ||
-        !vectorTools::fuzzyEquals(dpdfv, dpdf) ||
-        !vectorTools::fuzzyEquals(dpdqv, dpdq) ||
-        !vectorTools::fuzzyEquals(dpdAv, dpdA)){
-        results << "testPeryznaModel (test 12) & False\n";
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(pJv, p) &&
+                 vectorTools::fuzzyEquals(dpdfv, dpdf) &&
+                 vectorTools::fuzzyEquals(dpdqv, dpdq) &&
+                 vectorTools::fuzzyEquals(dpdAv, dpdA);
 
     results << "testPeryznaModel & True\n";
     return 0;
