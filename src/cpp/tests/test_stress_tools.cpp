@@ -196,11 +196,8 @@ BOOST_AUTO_TEST_CASE( testCalculateVonMisesStress ){
     vonMises = 0.;
     std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
     stressTools::calculateVonMisesStress(stressVector, vonMises, jacobianVector);
-    if (!vectorTools::fuzzyEquals(vonMises, vonMisesExpected) ||
-        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
-        results << "testCalculateVonMisesStress (test 3) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(vonMises, vonMisesExpected) &&
+                 vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) );
 
     results << "testCalculateVonMisesStress & True\n";
     return 0;
@@ -285,20 +282,14 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
     dpYield = 0;
     std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
     stressTools::druckerPragerSurface(stressVector, A, B, dpYield, jacobianVector);
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
-        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
-        results << "testDruckerPragerSurface (test 9) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) &&
+                 vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) );
 
     dpYield = 0;
     std::fill(jacobianVector.begin(), jacobianVector.end(), 0.);
     stressTools::druckerPragerSurface(stressVector, dpParam, dpYield, jacobianVector);
-    if (!vectorTools::fuzzyEquals(dpYield, dpYieldExpected) ||
-        !vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected)){
-        results << "testDruckerPragerSurface (test 10) & False\n";
-        return 1;
-    }
+    BOOST_CHECK( vectorTools::fuzzyEquals(dpYield, dpYieldExpected) &&
+                 vectorTools::fuzzyEquals(jacobianVector, jacobianVectorExpected) );
 
     //Test computation of DP yield, jacobian, and unit normal from row major stress tensor
     dpYield = 0;
