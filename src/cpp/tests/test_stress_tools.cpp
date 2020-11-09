@@ -1,4 +1,8 @@
-//Tests for stress_tools
+/**
+  * \file test_stress_tools.cpp
+  *
+  * Tests for stress_tools
+  */
 
 #include<stress_tools.h>
 #include<sstream>
