@@ -56,9 +56,9 @@ BOOST_AUTO_TEST_CASE( testCalculateMeanStress ){
                                  { 0., 1., 0. },
                                  { 0., 0., 1. } };
     floatType meanStressExpected = 1.;
-    floatVector jacobianVectorExpected = { 1./3., 0.,    0.,
-                                          0.,    1./3., 0.,
-                                          0.,    0.,    1./3. };
+    floatVector jacobianVectorExpected = { 1./3.,       0.,       0.,
+                                              0.,    1./3.,       0.,
+                                              0.,       0.,    1./3. };
 
     //Initialize test output
     floatType meanStress;
@@ -100,11 +100,11 @@ BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress ){
      * Test the deviatoric stress calculation
      */
     floatVector stressVector = { 1., 0., 0.,
-                                0., 1., 0.,
-                                0., 0., 1. };
+                                 0., 1., 0.,
+                                 0., 0., 1. };
     floatVector expectedVector = { 0., 0., 0.,
-                                  0., 0., 0.,
-                                  0., 0., 0. };
+                                   0., 0., 0.,
+                                   0., 0., 0. };
     floatVector deviatoricVector( stressVector.size( ), 0. ), deviatoricVectorJ;
     floatMatrix jacobian, jacobian2;
     floatType eps = 1e-6;
@@ -163,11 +163,11 @@ BOOST_AUTO_TEST_CASE( testCalculateVonMisesStress ){
 
     //Initialize test values
     floatVector stressVector = { 1., 1., 1.,
-                                1., 1., 1.,
-                                1., 1., 1. };
-    floatVector jacobianVectorExpected = { 0.,    1./2., 1./2.,
-                                          1./2., 0.,    1./2.,
-                                          1./2., 1./2., 0. };
+                                 1., 1., 1.,
+                                 1., 1., 1. };
+    floatVector jacobianVectorExpected = {    0., 1./2., 1./2.,
+                                           1./2.,    0., 1./2.,
+                                           1./2., 1./2.,    0. };
     floatType vonMisesExpected = 3.0;
 
     //Initialize test output
@@ -199,8 +199,8 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
 
     //Declare test input variables
     floatVector stressVector = { 1., 1., 1.,
-                                1., 1., 1.,
-                                1., 1., 1. };
+                                 1., 1., 1.,
+                                 1., 1., 1. };
     floatType vonMises = 3.;
     floatType meanStress = 1.;
     floatType A = 1.;
@@ -209,11 +209,11 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
 
     floatType dpYieldExpected = 2.;
     floatVector jacobianVectorExpected = { -1./3.,  1./2.,  1./2.,
-                                           1./2., -1./3.,  1./2.,
-                                           1./2.,  1./2., -1./3. };
+                                            1./2., -1./3.,  1./2.,
+                                            1./2.,  1./2., -1./3. };
     floatVector unitDirectionVectorExpected = { -1./3.,  1./2.,  1./2.,
-                                                1./2., -1./3.,  1./2.,
-                                                1./2.,  1./2., -1./3. };
+                                                 1./2., -1./3.,  1./2.,
+                                                 1./2.,  1./2., -1./3. };
     unitDirectionVectorExpected /= sqrt( 1.5 + 1./3 );
 
     //Declare internal testing variables
@@ -436,20 +436,20 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     floatType previousTime = 0.6;
     floatType currentTime = 23.8;
 
-    floatVector previousStrain = { 3.03768940e-01,  4.54626930e-17, -3.71231060e-01,
-                                  4.54626930e-17,  2.00000000e-01, -1.03633416e-16,
-                                 -3.71231060e-01, -1.03633416e-16,  1.04623106e+00 };
+    floatVector previousStrain = {  3.03768940e-01,  4.54626930e-17, -3.71231060e-01,
+                                    4.54626930e-17,  2.00000000e-01, -1.03633416e-16,
+                                   -3.71231060e-01, -1.03633416e-16,  1.04623106e+00 };
 
-    floatVector currentStrain = { 1.0163119 , -0.57654737,  0.33286978,
-                                -0.57654737,  0.45526608, -0.22243347,
-                                 0.33286978, -0.22243347,  0.19842203 };
+    floatVector currentStrain = {  1.0163119 , -0.57654737,  0.33286978,
+                                  -0.57654737,  0.45526608, -0.22243347,
+                                   0.33286978, -0.22243347,  0.19842203 };
 
     floatVector previousStateVariables = { 1, 2, 3,
-                                          2, 4, 5,
-                                          3, 5, 6,
-                                          1.0, 0.3, 0.2,
-                                          0.3, 2.0, 0.1,
-                                          0.2, 0.1, 3.0 };
+                                           2, 4, 5,
+                                           3, 5, 6,
+                                           1.0, 0.3, 0.2,
+                                           0.3, 2.0, 0.1,
+                                           0.2, 0.1, 3.0 };
 
     floatVector materialParameters = { 100, 1., 10, 150, 200 };
 
@@ -462,11 +462,11 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     floatVector currentStateVariables;
 
     stressTools::linearViscoelasticity( currentTime,  currentStrain,
-                                       previousTime, previousStrain,
-                                       currentRateModifier, previousRateModifier,
-                                       previousStateVariables,
-                                       materialParameters, alpha,
-                                       stress, currentStateVariables );
+                                        previousTime, previousStrain,
+                                        currentRateModifier, previousRateModifier,
+                                        previousStateVariables,
+                                        materialParameters, alpha,
+                                        stress, currentStateVariables );
 
     //!Test for symmetry in the output stress
     BOOST_CHECK( vectorTools::fuzzyEquals( stress[ 1 ], stress[ 3 ] ) &&
@@ -477,11 +477,11 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     currentTime = previousTime;
 
     errorOut res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
-                                                      previousTime, previousStrain,
-                                                      currentRateModifier, previousRateModifier,
-                                                      previousStateVariables,
-                                                      materialParameters, alpha,
-                                                      stress, currentStateVariables );
+                                                       previousTime, previousStrain,
+                                                       currentRateModifier, previousRateModifier,
+                                                       previousStateVariables,
+                                                       materialParameters, alpha,
+                                                       stress, currentStateVariables );
 
     BOOST_CHECK( ! res );
 
@@ -493,11 +493,11 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     currentTime = 1e10;
 
     res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
-                                             previousTime, previousStrain,
-                                             currentRateModifier, previousRateModifier,
-                                             previousStateVariables,
-                                             materialParameters, 0.,
-                                             stress, currentStateVariables );
+                                              previousTime, previousStrain,
+                                              currentRateModifier, previousRateModifier,
+                                              previousStateVariables,
+                                              materialParameters, 0.,
+                                              stress, currentStateVariables );
 
     BOOST_CHECK( ! res );
 
@@ -519,8 +519,8 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
     //!Test for frame invariance
     floatVector Q = { -0.44956296, -0.88488713, -0.12193405,
-                     -0.37866166,  0.31242661, -0.87120891,
-                      0.80901699, -0.3454915 , -0.47552826 };
+                      -0.37866166,  0.31242661, -0.87120891,
+                       0.80901699, -0.3454915 , -0.47552826 };
 
     floatVector QT( Q.size( ), 0 );
     for ( unsigned int i=0; i<3; i++ ){
@@ -564,21 +564,21 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
     //Calculate the rotated stress
     res = stressTools::linearViscoelasticity( currentTime,  rotatedCurrentStrain,
-                                             previousTime, rotatedPreviousStrain,
-                                             currentRateModifier, previousRateModifier,
-                                             rotatedPreviousStateVariables,
-                                             materialParameters, alpha,
-                                             rotatedStress, rotatedCurrentStateVariables );
+                                              previousTime, rotatedPreviousStrain,
+                                              currentRateModifier, previousRateModifier,
+                                              rotatedPreviousStateVariables,
+                                              materialParameters, alpha,
+                                              rotatedStress, rotatedCurrentStateVariables );
 
     BOOST_CHECK( ! res );
 
     //Re-calculate the initial values
     res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
-                                             previousTime, previousStrain,
-                                             currentRateModifier, previousRateModifier,
-                                             previousStateVariables,
-                                             materialParameters, alpha,
-                                             stress, currentStateVariables );
+                                              previousTime, previousStrain,
+                                              currentRateModifier, previousRateModifier,
+                                              previousStateVariables,
+                                              materialParameters, alpha,
+                                              stress, currentStateVariables );
 
     BOOST_CHECK( ! res );
 
@@ -613,23 +613,23 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
     //Compute the jacobian
     res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
-                                             previousTime, previousStrain,
-                                             currentRateModifier, previousRateModifier,
-                                             previousStateVariables,
-                                             materialParameters, alpha,
-                                             stress, currentStateVariables, jacobian,
-                                             dstressdrateModifier );
+                                              previousTime, previousStrain,
+                                              currentRateModifier, previousRateModifier,
+                                              previousStateVariables,
+                                              materialParameters, alpha,
+                                              stress, currentStateVariables, jacobian,
+                                              dstressdrateModifier );
 
     for ( unsigned int i=0; i<currentStrain.size( ); i++ ){
         floatVector deltaStrain( currentStrain.size( ), 0 );
         deltaStrain[ i ] = fabs( eps*currentStrain[ i ] );
 
         res = stressTools::linearViscoelasticity( currentTime,  currentStrain + deltaStrain,
-                                                 previousTime, previousStrain,
-                                                 currentRateModifier, previousRateModifier,
-                                                 previousStateVariables,
-                                                 materialParameters, alpha,
-                                                 deltaStress, currentStateVariables );
+                                                  previousTime, previousStrain,
+                                                  currentRateModifier, previousRateModifier,
+                                                  previousStateVariables,
+                                                  materialParameters, alpha,
+                                                  deltaStress, currentStateVariables );
         BOOST_CHECK( ! res );
 
         //Compare the values in the column to the jacobian's values
@@ -642,11 +642,11 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
     //Test the gradient w.r.t. the rate modifier
     res = stressTools::linearViscoelasticity( currentTime, currentStrain,
-                                             previousTime, previousStrain,
-                                             currentRateModifier + fabs( eps*currentRateModifier ), previousRateModifier,
-                                             previousStateVariables,
-                                             materialParameters, alpha,
-                                             deltaStress, currentStateVariables );
+                                              previousTime, previousStrain,
+                                              currentRateModifier + fabs( eps*currentRateModifier ), previousRateModifier,
+                                              previousStateVariables,
+                                              materialParameters, alpha,
+                                              deltaStress, currentStateVariables );
 
     BOOST_CHECK( ! res );
 
@@ -657,11 +657,11 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     floatVector previousStateVariablesOdd( 3 * 9, 0 );
 
     res = stressTools::linearViscoelasticity(  currentTime, currentStrain,
-                                              previousTime, previousStrain,
-                                              currentRateModifier, previousRateModifier,
-                                              previousStateVariablesOdd,
-                                              materialParametersOdd, alpha,
-                                              stress, currentStateVariables );
+                                               previousTime, previousStrain,
+                                               currentRateModifier, previousRateModifier,
+                                               previousStateVariablesOdd,
+                                               materialParametersOdd, alpha,
+                                               stress, currentStateVariables );
 
     BOOST_CHECK( ! res );
 
@@ -689,8 +689,8 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
 
     //Test the meanStress computation as compared to the expected value
     deformationGradient = { 0.39874077,  0.11561812, -0.75485222,
-                           0.14034205,  0.15851022,  1.29640525,
-                           0.26235075, -0.26051883,  0.45378251 };
+                            0.14034205,  0.15851022,  1.29640525,
+                            0.26235075, -0.26051883,  0.45378251 };
 
     floatType J = 0.25430054895115856;
 
@@ -701,8 +701,8 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
 
     //Test the meanStress computation subject to a rotation
     deformationGradient = { -0.2350804 ,  0.16410551, -1.13402371,
-                            0.1296644 , -0.22975865, -1.03460443,
-                           -0.4188584 , -0.16322821,  0.31618178 };
+                             0.1296644 , -0.22975865, -1.03460443,
+                            -0.4188584 , -0.16322821,  0.31618178 };
 
     res = stressTools::volumetricNeoHookean( deformationGradient, bulkModulus, meanStress );
     BOOST_CHECK( ! res );
