@@ -663,7 +663,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
                                               materialParametersOdd, alpha,
                                               stress, currentStateVariables );
 
-    BOOST_CHECK( ! res  );
+    BOOST_CHECK( ! res );
 
 
 }
