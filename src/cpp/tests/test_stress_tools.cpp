@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE( testCalculateMeanStress ){
     floatVector stressVector = { 1., 0., 0.,
                                  0., 1., 0.,
                                  0., 0., 1. };
-    floatMatrix stressMatrix = { {1., 0., 0. },
+    floatMatrix stressMatrix = { { 1., 0., 0. },
                                  { 0., 1., 0. },
                                  { 0., 0., 1. } };
     floatType meanStressExpected = 1.;
