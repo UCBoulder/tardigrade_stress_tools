@@ -191,7 +191,6 @@ $ pwd
 $ make
 ```
 
-
 ### Building the documentation
 
 To build just the documentation pick up the steps here:
