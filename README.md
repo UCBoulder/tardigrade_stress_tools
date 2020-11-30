@@ -179,9 +179,9 @@ $ ccmake .. -DCMAKE_FETCH_SOURCE=LOCAL
 ```
 
 The configuration will throw errors because `error_tools`, `vector_tools`, and `constitutive_tools` cannot be
-located. The user must define the path to these repositories in the `CMAKE_ERROR_TOOLS_PATH` and
-`CMAKE_VECTOR_TOOLS_PATH` cache variables. Once defined, one configures cmake by entering `c` and then
-generating with `g`.
+located. The user must define the path to these repositories in the `CMAKE_ERROR_TOOLS_PATH`,
+`CMAKE_VECTOR_TOOLS_PATH` and `CMAKE_CONSTITUTIVE_TOOLS_PATH` cache variables. Once defined, one configures
+cmake by entering `c` and then generating with `g`.
 
 3) Building the library
 
