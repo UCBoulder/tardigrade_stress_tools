@@ -52,10 +52,11 @@ $ conda env create --file environment.yaml
 * BOOST >= 1.53.0
 * error\_tools: https://xcp-stash.lanl.gov/projects/MM/repos/error_tools
 * vector\_tools: https://xcp-stash.lanl.gov/projects/MM/repos/vector_tools
+* constitutive\_tools: https://xcp-stash.lanl.gov/projects/MM/repos/constitutive_tools
 
 #### "Internal" project libraries
 
-All of the ``{error,vector}_tools`` libraries are pulled from their git repos by
+All of the ``{error,vector,constitutive}_tools`` libraries are pulled from their git repos by
 branch name and built with their respective cmake files as part of the cmake
 build for this project.
 
@@ -69,7 +70,7 @@ install directory.  However, if you don't have admin privileges, you can also
 insall Eigen to your home directory in ``~/include`` (or possibly in
 ``~/.local/include``, but this is untested by this project).
 
-#### Non-admin Eigen install for constitutive_tools
+#### Non-admin Eigen install for stress_tools
 [Reference](https://unix.stackexchange.com/questions/36871/where-should-a-local-executable-be-placed)
 
 ```
@@ -150,6 +151,44 @@ firefox build/docs/sphinx/index.html &
 
 # Doxygen
 firefox build/docs/doxygen/html/index.html &
+```
+
+### Local development
+
+In some cases it is not convenient to pull down every repository required but it may be desired that local
+versions of the repository are used. An example of when this may be needed is if development is across
+multiple libraries and is proceeding faster than collaborators can check in results. In this case, and
+outside of developers no-one should need to do this, a version of the code using local repositories can be
+built. The steps below assume that the user has a working version of ccmake in addition to cmake.
+
+1) Activate a [W-13 Python Environment](https://xcp-confluence.lanl.gov/display/PYT/The+W-13+Python+3+environment)
+
+```
+$ module load python/2019.10-python-3.7
+$ sv3r
+```
+
+2) Perform the initial configuration
+
+```
+$ pwd
+/path/to/stress_tools
+$ mkdir build
+$ cd build
+$ ccmake .. -DCMAKE_FETCH_SOURCE=LOCAL
+```
+
+The configuration will throw errors because `error_tools`, `vector_tools`, and `constitutive_tools` cannot be
+located. The user must define the path to these repositories in the `CMAKE_ERROR_TOOLS_PATH` and
+`CMAKE_VECTOR_TOOLS_PATH` cache variables. Once defined, one configures cmake by entering `c` and then
+generating with `g`.
+
+3) Building the library
+
+```
+$ pwd
+/path/to/stress_tools/build
+$ make
 ```
 
 ### Building the documentation
