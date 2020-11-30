@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.14)
-project (stress_tools VERSION 0.0.1)
+project (stress_tools VERSION 0.1.0)
 enable_testing()
 
 # Make the code position independent
@@ -20,7 +20,6 @@ set(CMAKE_EIGEN_DIR ${EIGEN3_INCLUDE_DIR} CACHE PATH "The path to the eigen incl
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 # Find related, but external, projects
-
 set(CMAKE_FETCH_SOURCE "REPO" CACHE STRING "The source of the external projects. Options are REPO and LOCAL if LOCAL then the paths must be defined")
 set(CMAKE_ERROR_TOOLS_PATH "" CACHE PATH "The path to the local version of error_tools")
 set(CMAKE_VECTOR_TOOLS_PATH "" CACHE PATH "The path to the local version of vector_tools")
