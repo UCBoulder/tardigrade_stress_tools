@@ -207,13 +207,13 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
     floatType B = 0.;
     floatVector dpParam = { A, B };
 
-    floatType dpYieldExpected = 2.;
-    floatVector jacobianVectorExpected = { -1./3.,  1./2.,  1./2.,
-                                            1./2., -1./3.,  1./2.,
-                                            1./2.,  1./2., -1./3. };
-    floatVector unitDirectionVectorExpected = { -1./3.,  1./2.,  1./2.,
-                                                 1./2., -1./3.,  1./2.,
-                                                 1./2.,  1./2., -1./3. };
+    floatType dpYieldExpected = 4.;
+    floatVector jacobianVectorExpected = {  1./3.,  1./2.,  1./2.,
+                                            1./2.,  1./3.,  1./2.,
+                                            1./2.,  1./2.,  1./3. };
+    floatVector unitDirectionVectorExpected = {  1./3.,  1./2.,  1./2.,
+                                                 1./2.,  1./3.,  1./2.,
+                                                 1./2.,  1./2.,  1./3. };
     unitDirectionVectorExpected /= sqrt( 1.5 + 1./3 );
 
     //Declare internal testing variables
