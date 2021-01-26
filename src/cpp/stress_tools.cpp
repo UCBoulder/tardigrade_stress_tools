@@ -294,7 +294,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -306,7 +306,7 @@ namespace stressTools{
          * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
          */
 
-        dpYield = vonMises - A*meanStress - B;
+        dpYield = vonMises + A*meanStress - B;
 
         return NULL;
     }
@@ -315,7 +315,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
          *
-         * \f$f = \sigma^{vonMises} - dpParam[0]*\sigma^{mean} - dpParam[1]\f$
+         * \f$f = \sigma^{vonMises} + dpParam[0]*\sigma^{mean} - dpParam[1]\f$
          *
          * \param &vonMises: The von Mises stress
          * \param &meanStress: The mean Stress
@@ -337,7 +337,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -361,7 +361,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
          *
-         * \f$f = \sigma^{vonMises} - dpParam[0]*\sigma^{mean} - dpParam[1]\f$
+         * \f$f = \sigma^{vonMises} + dpParam[0]*\sigma^{mean} - dpParam[1]\f$
          *
          * \param &vonMises: The von Mises stress
          * \param &meanStress: The mean Stress
@@ -380,7 +380,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -407,7 +407,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * \param &vonMises: The von Mises stress
          * \param &meanStress: The mean Stress
@@ -430,7 +430,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -453,7 +453,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * \param &vonMises: The von Mises stress
          * \param &meanStress: The mean Stress
@@ -474,7 +474,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -504,7 +504,7 @@ namespace stressTools{
         druckerPragerSurface(stress, A, B, dpYield);
 
         //Calculate the Drucker-Prager jacobian
-        jacobian = vonMisesJacobian - A * meanStressJacobian;
+        jacobian = vonMisesJacobian + A * meanStressJacobian;
 
         return NULL;
     }
@@ -513,7 +513,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -538,7 +538,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -569,7 +569,7 @@ namespace stressTools{
         druckerPragerSurface(stress, A, B, dpYield);
 
         //Calculate the Drucker-Prager jacobian
-        jacobian = vonMisesJacobian - A * meanStressJacobian;
+        jacobian = vonMisesJacobian + A * meanStressJacobian;
 
         //Compute the gradient of the jacobian w.r.t. the stress
         floatVector eye(stress.size(), 0);
@@ -588,7 +588,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -614,7 +614,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -640,7 +640,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * \param &stress: The stress tensor
          * \param &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
@@ -662,7 +662,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -694,7 +694,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * \param &stress: The stress tensor
          * \param &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
