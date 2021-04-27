@@ -1257,7 +1257,7 @@ namespace stressTools{
                         for ( unsigned int r = 0; r < dim; r++ ){
 
                             C[ dim * dim * dim * i + dim * dim * j + dim * k + l ] +=
-                                dCauchydF[ dim * i + j, dim * k + r ] * currentDeformationGradient[ dim * l + r ]
+                                dCauchydF[ dim * i + j ][ dim * k + r ] * currentDeformationGradient[ dim * l + r ]
                               + Pasymm[ dim * dim * dim * i + dim * dim * r + dim * k + l ] * cauchyStress[ dim * r + j ]
                               - Pasymm[ dim * dim * dim * r + dim * dim * j + dim * k + l ] * cauchyStress[ dim * i + r ];
 
