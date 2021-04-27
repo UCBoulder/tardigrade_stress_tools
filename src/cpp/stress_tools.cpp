@@ -1294,7 +1294,7 @@ namespace stressTools{
 
                         for ( unsigned int K = 0; K < dim; K++ ){
 
-                                C[ dim * i + j ][ dim * k + l ] +=
+                                C[ dim * i + j ][ dim * m + n ] +=
                                     dCauchydF[ dim * i + j ][ dim * m + K ] * currentDeformationGradient[ dim * n + K ];
 
                         }
@@ -1308,7 +1308,7 @@ namespace stressTools{
         }
 
         // Get the symmetric part
-        C *= Psymm;
+        C = vectorTools::dot( C, Psymm );
 
         return NULL;
 
