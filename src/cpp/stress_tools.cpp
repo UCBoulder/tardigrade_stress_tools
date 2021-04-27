@@ -1212,6 +1212,44 @@ namespace stressTools{
          * \param &C: The Jaumann stiffness tensor
          */
 
+        // Perform error handling
+        if ( cauchyStress.size( ) != currentDeformationGradient.size( ) ){
+
+            std::string message = "The cauchy stress (length " + std::to_string( cauchyStress.size( ) ) +
+                                  ") and the deformation gradient (length " +
+                                  std::to_string( currentDeformationGradient.size( ) ) +
+                                  ") must have the same size";
+
+            return new errorNode( __func__, message );
+
+        }
+
+        if ( cauchyStress.size( ) != dCauchydF.size( ) ){
+
+            std::string message = "The derivative of the Cauchy stress w.r.t. the deformation gradient has "
+                                + std::to_string( dCauchydF.size( ) ) + " rows. It needs to have "
+                                + std::to_string( cauchyStress.size( ) ) +
+                                " to be consistent with the provided Cauchy stress";
+
+            return new errorNode( __func__, message );
+
+        }
+
+        for ( unsigned int i = 0; i < dCauchydF.size( ); i++ ){
+
+            if ( dCauchydF[ i ].size( ) != currentDeformationGradient.size( ) ){
+
+                std::string message = "Row " + std::to_string( i ) + " of dCauchydF is of length " +
+                                      std::to_string( dCauchydF[ i ].size( ) ) +
+                                      " and it should have a length of " +
+                                      std::to_string( currentDeformationGradient.size( ) );
+
+                return new errorNode( __func__, message );
+
+            }
+
+        }
+
         // Build the second order identity tensor
         floatVector eye( cauchyStress.size( ), 0 );
         vectorTools::eye( eye );
@@ -1231,7 +1269,7 @@ namespace stressTools{
                     for ( unsigned int l = 0; l < dim; l++ ){
 
                         Pasymm[ dim * dim * dim * i + dim * dim * j + dim * k + l ] =
-                            eye[ dim * i + k ] * eye[ dim * j + l ] - eye[ dim * j + k ] * eye[ dim * i + l ];
+                            0.5 * ( eye[ dim * i + k ] * eye[ dim * j + l ] - eye[ dim * j + k ] * eye[ dim * i + l ] );
 
                     }
 
@@ -1256,7 +1294,7 @@ namespace stressTools{
 
                         for ( unsigned int r = 0; r < dim; r++ ){
 
-                            C[ dim * dim * dim * i + dim * dim * j + dim * k + l ] +=
+                            C[ dim * i + j ][ dim * k + l ] +=
                                 dCauchydF[ dim * i + j ][ dim * k + r ] * currentDeformationGradient[ dim * l + r ]
                               + Pasymm[ dim * dim * dim * i + dim * dim * r + dim * k + l ] * cauchyStress[ dim * r + j ]
                               - Pasymm[ dim * dim * dim * r + dim * dim * j + dim * k + l ] * cauchyStress[ dim * i + r ];
