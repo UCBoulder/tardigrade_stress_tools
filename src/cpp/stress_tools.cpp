@@ -1199,10 +1199,10 @@ namespace stressTools{
          * \f$\text{asymm}\left(\bf{A}\right) = \frac{1}{2}\left(\bf{A} - \bf{A}^T\right)\f$
          * 
          * It can be shown that
-         * \f$\mathbb{C}_{ijkl} = \delta_{kl} \sigma_{ij} + \frac{D \sigma_{ij}}{D F_{kK}} F_{lK} + \mathbb{P}_{irkl}^{asymm} \sigma_{rj} - \mathbb{P}_{rjkl}^{asymm} \sigma_{ir}\f$
+         * \f$\mathbb{C}_{ijkl} = \left(\delta_{mn} \sigma_{ij} + \frac{D \sigma_{ij}}{D F_{mK}} F_{nK}\right)\mathbb{P}_{mnkl}^{symm}\f$
          * 
          * Where
-         * \f$\mathbb{P}_{ijkl}^{asymm} = \frac{1}{2}\left(\delta_{ik} \delta_{jl} - \delta_{jk} \delta_{il}\right)\f$
+         * \f$\mathbb{P}_{ijkl}^{symm} = \frac{1}{2}\left(\delta_{ik} \delta_{jl} + \delta_{jk} \delta_{il}\right)\f$
          * 
          * \param &cauchyStress: The Cauchy stress
          * \param &currentDeformationGradient: The current deformation gradient i.e. the mapping for differential
@@ -1257,8 +1257,8 @@ namespace stressTools{
         // Set the dimension of the problem
         unsigned int dim = vectorTools::trace( eye );
 
-        // Construct the asymmetric projection tensor as a vector
-        floatVector Pasymm( cauchyStress.size( ) * cauchyStress.size( ), 0 );
+        // Construct the symmetric projection tensor
+        floatMatrix Psymm( cauchyStress.size( ), floatVector( cauchyStress.size( ), 0 ) );
 
         for ( unsigned int i = 0; i < dim; i++ ){
 
@@ -1268,8 +1268,8 @@ namespace stressTools{
 
                     for ( unsigned int l = 0; l < dim; l++ ){
 
-                        Pasymm[ dim * dim * dim * i + dim * dim * j + dim * k + l ] =
-                            0.5 * ( eye[ dim * i + k ] * eye[ dim * j + l ] - eye[ dim * j + k ] * eye[ dim * i + l ] );
+                        Psymm[ dim * i + j ][ dim * k + l ] =
+                            0.5 * ( eye[ dim * i + k ] * eye[ dim * j + l ] + eye[ dim * j + k ] * eye[ dim * i + l ] );
 
                     }
 
@@ -1282,22 +1282,20 @@ namespace stressTools{
         // Initialize the stiffness tensor by including cauchyStress dyad eye
         C = vectorTools::dyadic( cauchyStress, eye );
 
-        // Add the dCauchydF and skew symmetric terms
+        // Add the dCauchydF term
 
         for ( unsigned int i = 0; i < dim; i++ ){
 
             for ( unsigned int j = 0; j < dim; j++ ){
 
-                for ( unsigned int k = 0; k < dim; k++ ){
+                for ( unsigned int m = 0; m < dim; m++ ){
 
-                    for ( unsigned int l = 0; l < dim; l++ ){
+                    for ( unsigned int n = 0; n < dim; n++ ){
 
-                        for ( unsigned int r = 0; r < dim; r++ ){
+                        for ( unsigned int K = 0; K < dim; K++ ){
 
-                            C[ dim * i + j ][ dim * k + l ] +=
-                                dCauchydF[ dim * i + j ][ dim * k + r ] * currentDeformationGradient[ dim * l + r ]
-                              + Pasymm[ dim * dim * dim * i + dim * dim * r + dim * k + l ] * cauchyStress[ dim * r + j ]
-                              - Pasymm[ dim * dim * dim * r + dim * dim * j + dim * k + l ] * cauchyStress[ dim * i + r ];
+                                C[ dim * i + j ][ dim * k + l ] +=
+                                    dCauchydF[ dim * i + j ][ dim * m + K ] * currentDeformationGradient[ dim * n + K ];
 
                         }
 
@@ -1308,6 +1306,9 @@ namespace stressTools{
             }
 
         }
+
+        // Get the symmetric part
+        C *= Psymm;
 
         return NULL;
 
