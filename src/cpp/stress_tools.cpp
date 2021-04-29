@@ -1177,4 +1177,146 @@ namespace stressTools{
         return NULL;
     }
 
+    errorOut computeJaumannStiffnessTensor( const floatVector &cauchyStress, const floatVector &currentDeformationGradient,
+                                            const floatMatrix &dCauchydF, floatMatrix &C ){
+        /*!
+         * Compute the Jaumann stiffness tensor from the cauchy stress, the current deformation gradient,
+         * and the total derivative of the Cauchy stress w.r.t. the deformation gradient
+         * 
+         * From the variation of the Jaumann rate
+         * \f$J \mathbb{C}_{ijkl} \delta D_{kl} = \delta \left(J \sigma_{ij}\right) + \delta W_{ik} \sigma_{kj} - \sigma_{ik} \delta W_{kj}\f$
+         * 
+         * Where \f$J$\f is the Jacobian of deformation, \f$\mathbb{C}\f$ is the Jaumann stiffness tensor,
+         * \f$\bf{\sigma}\f$ is the Cauchy stress and \f$\delta \bf{D}\f$ is the perturbation of the rate of
+         * deformation, and \f$\delta \bf{W}\f$ is the perturbation of the rate of spin.
+         * 
+         * By using the properties that
+         * 
+         * \f$\delta D_{kl} = \text{symm}\left(\delta F_{kK} F_{Kl}^{-1}\right)\f$
+         * 
+         * \f$\delta W_{kl} = \text{asymm}\left(\delta F_{kK} F_{Kl}^{-1}\right)\f$
+         * 
+         * Where
+         * 
+         * \f$\text{symm}\left(\bf{A}\right) = \frac{1}{2}\left(\bf{A} + \bf{A}^T\right)\f$
+         * 
+         * \f$\text{asymm}\left(\bf{A}\right) = \frac{1}{2}\left(\bf{A} - \bf{A}^T\right)\f$
+         * 
+         * It can be shown that
+         * 
+         * \f$\mathbb{C}_{ijkl} = \delta_{kl} \sigma_{ij} + \frac{D \sigma_{ij}}{D F_{kK}} F_{lK} + \mathbb{P}_{irkl}^{asymm} \sigma_{rj} - \mathbb{P}_{rjkl}^{asymm} \sigma_{ir}\f$
+         * 
+         * Where
+         * 
+         * \f$\mathbb{P}_{ijkl}^{asymm} = \frac{1}{2}\left(\delta_{ik} \delta_{jl} - \delta_{jk} \delta_{il}\right)\f$
+         * 
+         * \param &cauchyStress: The Cauchy stress
+         * \param &currentDeformationGradient: The current deformation gradient i.e. the mapping for differential
+         *     lengths from the reference to the current configuration
+         * \param &dCauchydF: The Jacobian (total derivative) of the Cauchy stress w.r.t. the deformation
+         *     gradient
+         * \param &C: The Jaumann stiffness tensor
+         */
+
+        // Perform error handling
+        if ( cauchyStress.size( ) != currentDeformationGradient.size( ) ){
+
+            std::string message = "The cauchy stress (length " + std::to_string( cauchyStress.size( ) ) +
+                                  ") and the deformation gradient (length " +
+                                  std::to_string( currentDeformationGradient.size( ) ) +
+                                  ") must have the same size";
+
+            return new errorNode( __func__, message );
+
+        }
+
+        if ( cauchyStress.size( ) != dCauchydF.size( ) ){
+
+            std::string message = "The derivative of the Cauchy stress w.r.t. the deformation gradient has "
+                                + std::to_string( dCauchydF.size( ) ) + " rows. It needs to have "
+                                + std::to_string( cauchyStress.size( ) ) +
+                                " to be consistent with the provided Cauchy stress";
+
+            return new errorNode( __func__, message );
+
+        }
+
+        for ( unsigned int i = 0; i < dCauchydF.size( ); i++ ){
+
+            if ( dCauchydF[ i ].size( ) != currentDeformationGradient.size( ) ){
+
+                std::string message = "Row " + std::to_string( i ) + " of dCauchydF is of length " +
+                                      std::to_string( dCauchydF[ i ].size( ) ) +
+                                      " and it should have a length of " +
+                                      std::to_string( currentDeformationGradient.size( ) );
+
+                return new errorNode( __func__, message );
+
+            }
+
+        }
+
+        // Build the second order identity tensor
+        floatVector eye( cauchyStress.size( ), 0 );
+        vectorTools::eye( eye );
+
+        // Set the dimension of the problem
+        unsigned int dim = vectorTools::trace( eye );
+
+        // Construct the asymmetric projection tensor as a vector
+        floatVector Pasymm( cauchyStress.size( ) * cauchyStress.size( ), 0 );
+
+        for ( unsigned int i = 0; i < dim; i++ ){
+
+            for ( unsigned int j = 0; j < dim; j++ ){
+
+                for ( unsigned int k = 0; k < dim; k++ ){
+
+                    for ( unsigned int l = 0; l < dim; l++ ){
+
+                        Pasymm[ dim * dim * dim * i + dim * dim * j + dim * k + l ] =
+                            0.5 * ( eye[ dim * i + k ] * eye[ dim * j + l ] - eye[ dim * j + k ] * eye[ dim * i + l ] );
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        // Initialize the stiffness tensor by including cauchyStress dyad eye
+        C = vectorTools::dyadic( cauchyStress, eye );
+
+        // Add the dCauchydF and skew symmetric terms
+
+        for ( unsigned int i = 0; i < dim; i++ ){
+
+            for ( unsigned int j = 0; j < dim; j++ ){
+
+                for ( unsigned int k = 0; k < dim; k++ ){
+
+                    for ( unsigned int l = 0; l < dim; l++ ){
+
+                        for ( unsigned int r = 0; r < dim; r++ ){
+
+                            C[ dim * i + j ][ dim * k + l ] +=
+                                dCauchydF[ dim * i + j ][ dim * k + r ] * currentDeformationGradient[ dim * l + r ]
+                              + Pasymm[ dim * dim * dim * i + dim * dim * r + dim * k + l ] * cauchyStress[ dim * r + j ]
+                              - Pasymm[ dim * dim * dim * r + dim * dim * j + dim * k + l ] * cauchyStress[ dim * i + r ];
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        return NULL;
+
+    }
+
 }
