@@ -1191,17 +1191,23 @@ namespace stressTools{
          * deformation, and \f$\delta \bf{W}\f$ is the perturbation of the rate of spin.
          * 
          * By using the properties that
+         * 
          * \f$\delta D_{kl} = \text{symm}\left(\delta F_{kK} F_{Kl}^{-1}\right)\f$
+         * 
          * \f$\delta W_{kl} = \text{asymm}\left(\delta F_{kK} F_{Kl}^{-1}\right)\f$
          * 
          * Where
+         * 
          * \f$\text{symm}\left(\bf{A}\right) = \frac{1}{2}\left(\bf{A} + \bf{A}^T\right)\f$
+         * 
          * \f$\text{asymm}\left(\bf{A}\right) = \frac{1}{2}\left(\bf{A} - \bf{A}^T\right)\f$
          * 
          * It can be shown that
+         * 
          * \f$\mathbb{C}_{ijkl} = \left(\delta_{mn} \sigma_{ij} + \frac{D \sigma_{ij}}{D F_{mK}} F_{nK}\right)\mathbb{P}_{mnkl}^{symm}\f$
          * 
          * Where
+         * 
          * \f$\mathbb{P}_{ijkl}^{symm} = \frac{1}{2}\left(\delta_{ik} \delta_{jl} + \delta_{jk} \delta_{il}\right)\f$
          * 
          * \param &cauchyStress: The Cauchy stress
