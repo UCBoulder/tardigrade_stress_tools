@@ -92,7 +92,7 @@ testing.
 2) Build everything
 
        $ pwd
-       /path/to/constitutive_tools/
+       /path/to/stress_tools/
 
        # Just perform the build
        ./new_build.sh
@@ -133,7 +133,7 @@ built.
 3) Perform the initial configuration
 
        $ pwd
-       /path/to/constitutive_tools
+       /path/to/stress_tools
        $ mkdir build
        $ cd build
        $ cmake .. -DFETCH_SOURCE=LOCAL -DERROR_TOOLS_PATH=${my_error_tools} -DVECTOR_TOOLS_PATH=${my_vector_tools}
@@ -141,7 +141,7 @@ built.
 4) Building the library
 
        $ pwd
-       /path/to/constitutive_tools/build
+       /path/to/stress_tools/build
        $ make
 
 ### Building the documentation
@@ -151,14 +151,14 @@ To build just the documentation pick up the steps here:
 2) Create the build directory and move there
 
        $ pwd
-       /path/to/constitutive_tools/
+       /path/to/stress_tools/
        $ mkdir build/
        $ cd build/
 
 3) Run cmake3 configuration
 
        $ pwd
-       /path/to/constitutive_tools/build/
+       /path/to/stress_tools/build/
        $ cmake3 ..
 
 4) Build the docs
@@ -167,16 +167,16 @@ To build just the documentation pick up the steps here:
 
 5) Documentation builds to:
 
-       constitutive_tools/build/docs/sphinx/index.html
+       stress_tools/build/docs/sphinx/index.html
 
 6) Display docs
 
        $ pwd
-       /path/to/constitutive_tools/build/
+       /path/to/stress_tools/build/
        $ firefox docs/sphinx/index.html &
 
 7) While the Sphinx API is still a WIP, try the doxygen API
 
        $ pwd
-       /path/to/constitutive_tools/build/
+       /path/to/stress_tools/build/
        $ firefox docs/doxygen/html/index.html &
