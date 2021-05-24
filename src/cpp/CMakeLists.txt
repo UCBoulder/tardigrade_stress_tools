@@ -11,7 +11,7 @@ if(NOT cmake_build_type_lower STREQUAL "release")
                                "${vector_tools_SOURCE_DIR}/src/cpp"
                                "${error_tools_SOURCE_DIR}/src/cpp"
                                "${constitutive_SOURCE_DIR}/src/cpp")
-endif
+endif()
 
 install(TARGETS ${PROJECT_NAME}
         EXPORT ${PROJECT_NAME}_Targets
