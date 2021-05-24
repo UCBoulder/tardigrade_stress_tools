@@ -7,7 +7,7 @@ target_link_libraries(${TEST_NAME} PUBLIC ${PROJECT_NAME} error_tools constituti
 # Local builds of upstream projects require local include paths
 if(NOT cmake_build_type_lower STREQUAL "release")
     target_include_directories(${PROJECT_NAME} PUBLIC
-                               ${Boost_INCLUDE_DIRS}
+                               ${Boost_INCLUDE_DIRS}  # Required for MacOSX CMake builds. Not sure if it's a CMake or clang issue.
                                ${vector_tools_SOURCE_DIR}/src/cpp
                                ${error_tools_SOURCE_DIR}/src/cpp
                                ${constitutive_SOURCE_DIR}/src/cpp)
