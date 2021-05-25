@@ -10,7 +10,7 @@ if(NOT cmake_build_type_lower STREQUAL "release")
     target_include_directories(${PROJECT_NAME} PUBLIC
                                "${vector_tools_SOURCE_DIR}/src/cpp"
                                "${error_tools_SOURCE_DIR}/src/cpp"
-                               "${constitutive_SOURCE_DIR}/src/cpp")
+                               "${constitutive_tools_SOURCE_DIR}/src/cpp")
 endif()
 
 install(TARGETS ${PROJECT_NAME}

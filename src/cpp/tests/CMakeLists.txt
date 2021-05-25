@@ -10,5 +10,5 @@ if(NOT cmake_build_type_lower STREQUAL "release")
                                ${Boost_INCLUDE_DIRS}  # Required for MacOSX CMake builds. Not sure if it's a CMake or clang issue.
                                ${vector_tools_SOURCE_DIR}/src/cpp
                                ${error_tools_SOURCE_DIR}/src/cpp
-                               ${constitutive_SOURCE_DIR}/src/cpp)
+                               ${constitutive_tools_SOURCE_DIR}/src/cpp)
 endif()
