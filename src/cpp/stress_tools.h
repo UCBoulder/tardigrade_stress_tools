@@ -125,6 +125,9 @@ namespace stressTools{
 
     errorOut linearHardening(const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift,
                              floatType &value, floatVector &valueJacobian);
+
+    errorOut computeJaumannStiffnessTensor( const floatVector &cauchyStress, const floatVector &currentDeformationGradient,
+                                            const floatMatrix &dCauchydF, floatMatrix &C );
 }
 
 #endif

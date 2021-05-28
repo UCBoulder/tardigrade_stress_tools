@@ -294,7 +294,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -306,7 +306,7 @@ namespace stressTools{
          * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
          */
 
-        dpYield = vonMises - A*meanStress - B;
+        dpYield = vonMises + A*meanStress - B;
 
         return NULL;
     }
@@ -315,7 +315,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
          *
-         * \f$f = \sigma^{vonMises} - dpParam[0]*\sigma^{mean} - dpParam[1]\f$
+         * \f$f = \sigma^{vonMises} + dpParam[0]*\sigma^{mean} - dpParam[1]\f$
          *
          * \param &vonMises: The von Mises stress
          * \param &meanStress: The mean Stress
@@ -337,7 +337,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -361,7 +361,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
          *
-         * \f$f = \sigma^{vonMises} - dpParam[0]*\sigma^{mean} - dpParam[1]\f$
+         * \f$f = \sigma^{vonMises} + dpParam[0]*\sigma^{mean} - dpParam[1]\f$
          *
          * \param &vonMises: The von Mises stress
          * \param &meanStress: The mean Stress
@@ -380,7 +380,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -407,7 +407,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * \param &vonMises: The von Mises stress
          * \param &meanStress: The mean Stress
@@ -430,7 +430,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -453,7 +453,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * \param &vonMises: The von Mises stress
          * \param &meanStress: The mean Stress
@@ -474,7 +474,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -504,7 +504,7 @@ namespace stressTools{
         druckerPragerSurface(stress, A, B, dpYield);
 
         //Calculate the Drucker-Prager jacobian
-        jacobian = vonMisesJacobian - A * meanStressJacobian;
+        jacobian = vonMisesJacobian + A * meanStressJacobian;
 
         return NULL;
     }
@@ -513,7 +513,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -538,7 +538,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -569,7 +569,7 @@ namespace stressTools{
         druckerPragerSurface(stress, A, B, dpYield);
 
         //Calculate the Drucker-Prager jacobian
-        jacobian = vonMisesJacobian - A * meanStressJacobian;
+        jacobian = vonMisesJacobian + A * meanStressJacobian;
 
         //Compute the gradient of the jacobian w.r.t. the stress
         floatVector eye(stress.size(), 0);
@@ -588,7 +588,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -614,7 +614,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -640,7 +640,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * \param &stress: The stress tensor
          * \param &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
@@ -662,7 +662,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * TODO: find the common name for which material parameter, if a common
          * name exists to distinguish between the two DP parameters.
@@ -694,7 +694,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
-         * \f$f = \sigma^{vonMises} - A*\sigma^{mean} - B\f$
+         * \f$f = \sigma^{vonMises} + A*\sigma^{mean} - B\f$
          *
          * \param &stress: The stress tensor
          * \param &dpParam: The two Drucker-Prager material parameters in a vector {A, B}
@@ -1175,6 +1175,149 @@ namespace stressTools{
 
         valueJacobian = linearModuli;
         return NULL;
+    }
+
+    errorOut computeJaumannStiffnessTensor( const floatVector &cauchyStress, const floatVector &currentDeformationGradient,
+                                            const floatMatrix &dCauchydF, floatMatrix &C ){
+        /*!
+         * Compute the Jaumann stiffness tensor from the cauchy stress, the current deformation gradient,
+         * and the total derivative of the Cauchy stress w.r.t. the deformation gradient
+         * 
+         * From the variation of the Jaumann rate
+         * \f$J \mathbb{C}_{ijkl} \delta D_{kl} = \delta \left(J \sigma_{ij}\right) + \delta W_{ik} \sigma_{kj} - \sigma_{ik} \delta W_{kj}\f$
+         * 
+         * Where \f$J$\f is the Jacobian of deformation, \f$\mathbb{C}\f$ is the Jaumann stiffness tensor,
+         * \f$\bf{\sigma}\f$ is the Cauchy stress and \f$\delta \bf{D}\f$ is the perturbation of the rate of
+         * deformation, and \f$\delta \bf{W}\f$ is the perturbation of the rate of spin.
+         * 
+         * By using the properties that
+         * 
+         * \f$\delta D_{kl} = \text{symm}\left(\delta F_{kK} F_{Kl}^{-1}\right)\f$
+         * 
+         * \f$\delta W_{kl} = \text{asymm}\left(\delta F_{kK} F_{Kl}^{-1}\right)\f$
+         * 
+         * Where
+         * 
+         * \f$\text{symm}\left(\bf{A}\right) = \frac{1}{2}\left(\bf{A} + \bf{A}^T\right)\f$
+         * 
+         * \f$\text{asymm}\left(\bf{A}\right) = \frac{1}{2}\left(\bf{A} - \bf{A}^T\right)\f$
+         * 
+         * It can be shown that
+         * 
+         * \f$\mathbb{C}_{ijkl} = \left(\delta_{mn} \sigma_{ij} + \frac{D \sigma_{ij}}{D F_{mK}} F_{nK}\right)\mathbb{P}_{mnkl}^{symm}\f$
+         * 
+         * Where
+         * 
+         * \f$\mathbb{P}_{ijkl}^{symm} = \frac{1}{2}\left(\delta_{ik} \delta_{jl} + \delta_{jk} \delta_{il}\right)\f$
+         * 
+         * \param &cauchyStress: The Cauchy stress
+         * \param &currentDeformationGradient: The current deformation gradient i.e. the mapping for differential
+         *     lengths from the reference to the current configuration
+         * \param &dCauchydF: The Jacobian (total derivative) of the Cauchy stress w.r.t. the deformation
+         *     gradient
+         * \param &C: The Jaumann stiffness tensor
+         */
+
+        // Perform error handling
+        if ( cauchyStress.size( ) != currentDeformationGradient.size( ) ){
+
+            std::string message = "The cauchy stress (length " + std::to_string( cauchyStress.size( ) ) +
+                                  ") and the deformation gradient (length " +
+                                  std::to_string( currentDeformationGradient.size( ) ) +
+                                  ") must have the same size";
+
+            return new errorNode( __func__, message );
+
+        }
+
+        if ( cauchyStress.size( ) != dCauchydF.size( ) ){
+
+            std::string message = "The derivative of the Cauchy stress w.r.t. the deformation gradient has "
+                                + std::to_string( dCauchydF.size( ) ) + " rows. It needs to have "
+                                + std::to_string( cauchyStress.size( ) ) +
+                                " to be consistent with the provided Cauchy stress";
+
+            return new errorNode( __func__, message );
+
+        }
+
+        for ( unsigned int i = 0; i < dCauchydF.size( ); i++ ){
+
+            if ( dCauchydF[ i ].size( ) != currentDeformationGradient.size( ) ){
+
+                std::string message = "Row " + std::to_string( i ) + " of dCauchydF is of length " +
+                                      std::to_string( dCauchydF[ i ].size( ) ) +
+                                      " and it should have a length of " +
+                                      std::to_string( currentDeformationGradient.size( ) );
+
+                return new errorNode( __func__, message );
+
+            }
+
+        }
+
+        // Build the second order identity tensor
+        floatVector eye( cauchyStress.size( ), 0 );
+        vectorTools::eye( eye );
+
+        // Set the dimension of the problem
+        unsigned int dim = vectorTools::trace( eye );
+
+        // Construct the symmetric projection tensor
+        floatMatrix Psymm( cauchyStress.size( ), floatVector( cauchyStress.size( ), 0 ) );
+
+        for ( unsigned int i = 0; i < dim; i++ ){
+
+            for ( unsigned int j = 0; j < dim; j++ ){
+
+                for ( unsigned int k = 0; k < dim; k++ ){
+
+                    for ( unsigned int l = 0; l < dim; l++ ){
+
+                        Psymm[ dim * i + j ][ dim * k + l ] =
+                            0.5 * ( eye[ dim * i + k ] * eye[ dim * j + l ] + eye[ dim * j + k ] * eye[ dim * i + l ] );
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        // Initialize the stiffness tensor by including cauchyStress dyad eye
+        C = vectorTools::dyadic( cauchyStress, eye );
+
+        // Add the dCauchydF term
+
+        for ( unsigned int i = 0; i < dim; i++ ){
+
+            for ( unsigned int j = 0; j < dim; j++ ){
+
+                for ( unsigned int m = 0; m < dim; m++ ){
+
+                    for ( unsigned int n = 0; n < dim; n++ ){
+
+                        for ( unsigned int K = 0; K < dim; K++ ){
+
+                                C[ dim * i + j ][ dim * m + n ] +=
+                                    dCauchydF[ dim * i + j ][ dim * m + K ] * currentDeformationGradient[ dim * n + K ];
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        // Get the symmetric part
+        C = vectorTools::dot( C, Psymm );
+
+        return NULL;
+
     }
 
 }
