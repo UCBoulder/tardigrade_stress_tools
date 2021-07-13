@@ -68,7 +68,7 @@ foreach(package ${upstream_packages})
         if(${package_upper}_PATH)
             set(PACKAGE_REPOSITORY ${${package_upper}_PATH})
         else()
-            set(PACKAGE_REPOSITORY ssh://git@xcp-stash.lanl.gov:7999/mm/${package}.git)
+            set(PACKAGE_REPOSITORY ssh://git@re-git.lanl.gov:10022/aea/material-models/${package}.git)
         endif()
         message(STATUS "Building ${package} from ${PACKAGE_REPOSITORY}")
         # Pick repository Git tag to build
