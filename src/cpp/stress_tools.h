@@ -83,6 +83,21 @@ namespace stressTools{
 
     errorOut druckerPragerSurface(const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection, floatMatrix &unitDirectionJacobian);
 
+//    errorOut linearViscoelasticity(const floatType &currentTime, const floatType &currentStrain,
+//                                   const floatType &previousTime, const floatType &previousStrain,
+//                                   const floatType &currentRateModifier, const floatType &previousRateModifier,
+//                                   const floatVector &previousStateVariables, const floatVector &materialParameters,
+//                                   const floatType &alpha,
+//                                   floatVector &stress, floatVector &currentStateVariables);
+//
+//    errorOut linearViscoelasticity(const floatType &currentTime, const floatType &currentStrain,
+//                                   const floatType &previousTime, const floatType &previousStrain,
+//                                   const floatType &currentRateModifier, const floatType &previousRateModifier,
+//                                   const floatVector &previousStateVariables, const floatVector &materialParameters,
+//                                   const floatType &alpha,
+//                                   floatVector &stress, floatVector &currentStateVariables, floatMatrix &dstressdstrain,
+//                                   floatVector &dstressdrateModifier);
+
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain,
                                    const floatType &previousTime, const floatVector &previousStrain,
                                    const floatType &currentRateModifier, const floatType &previousRateModifier,
@@ -95,8 +110,23 @@ namespace stressTools{
                                    const floatType &currentRateModifier, const floatType &previousRateModifier,
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
                                    const floatType &alpha,
-                                   floatVector &stress, floatVector &currentStateVariables, floatMatrix &dstressdstrain,
-                                   floatVector &dstressdrateModifier);
+                                   floatVector &stress, floatVector &currentStateVariables,
+                                   floatMatrix &dstressdstrain, floatVector &dstressdrateModifier);
+
+    errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain,
+                                   const floatType &previousTime, const floatVector &previousStrain,
+                                   const floatType &currentRateModifier, const floatType &previousRateModifier,
+                                   const floatVector &previousStateVariables, const floatVector &materialParameters,
+                                   const floatType &alpha,
+                                   floatVector &dStress, floatVector &stress, floatVector &currentStateVariables);
+
+    errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain,
+                                   const floatType &previousTime, const floatVector &previousStrain,
+                                   const floatType &currentRateModifier, const floatType &previousRateModifier,
+                                   const floatVector &previousStateVariables, const floatVector &materialParameters,
+                                   const floatType &alpha,
+                                   floatVector &dStress, floatVector &stress, floatVector &currentStateVariables,
+                                   floatMatrix &dstressdstrain, floatVector &dstressdrateModifier);
 
     errorOut volumetricNeoHookean(const floatType &jacobian, const floatType &bulkModulus,
                                   floatType &meanStress);
