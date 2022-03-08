@@ -889,7 +889,7 @@ namespace stressTools{
 
         errorOut lVresult = linearViscoelasticity(currentTime, currentStrain, previousTime, previousStrain,
                                                   currentRateModifier, previousRateModifier, previousStateVariables,
-                                                  materialParameters, alpha, stress, currentStateVariables);
+                                                  materialParameters, alpha, dStress, stress, currentStateVariables);
 
         //Error handling
         if (lVresult){
@@ -926,10 +926,10 @@ namespace stressTools{
             //Get the previous values of the state variables
             vectorTools::getValuesByIndex(currentStateVariables, indices, Xic);
 
-            factor = taui/(taui + dt*(1 - alpha)*currentRateModifier);
+            factor = 1./(taui + dt*(1 - alpha)*currentRateModifier);
 
             //Add terms to the gradient w.r.t. the strain
-            scalarTerm += Gi*(1 - factor*(1 - alpha)*dt/taui*currentRateModifier);
+            scalarTerm += Gi*(1 - factor*(1 - alpha)*dt*currentRateModifier);
 
             //Add terms to the gradient w.r.t. the rate modifier
             dstressdrateModifier -= Gi*(dt*(1-alpha)/(taui + dt*(1-alpha)*currentRateModifier))*(currentStrain - Xic);
