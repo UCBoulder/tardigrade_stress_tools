@@ -456,6 +456,13 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     floatType currentRateModifier = 2.7;
     floatType previousRateModifier = 3.5;
 
+    // Compute the previous stress value
+    floatVector previousStress = materialParameters[ 0 ] *   previousStrain
+                               + materialParameters[ 3 ] * ( previousStrain - floatVector( previousStateVariables.begin( ),
+                                                                                           previousStateVariables.begin( ) + 9 ) )
+                               + materialParameters[ 4 ] * ( previousStrain - floatVector( previousStateVariables.begin( ) + 9,
+                                                                                           previousStateVariables.begin( ) + 18 ) );
+
     floatType alpha = 0.5; //Trapezoidal rule
 
     floatVector stress;
@@ -472,6 +479,17 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     BOOST_CHECK( vectorTools::fuzzyEquals( stress[ 1 ], stress[ 3 ] ) &&
                  vectorTools::fuzzyEquals( stress[ 2 ], stress[ 6 ] ) &&
                  vectorTools::fuzzyEquals( stress[ 5 ], stress[ 7 ] ) );
+
+    //!Check that dStress is being computed correctly
+    floatVector dStress;
+    stressTools::linearViscoelasticity( currentTime,  currentStrain,
+                                        previousTime, previousStrain,
+                                        currentRateModifier, previousRateModifier,
+                                        previousStateVariables,
+                                        materialParameters, alpha,
+                                        dStress, stress, currentStateVariables );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( dStress, stress - previousStress ) );    
 
     //!Test for passing the state variables through properly
     currentTime = previousTime;
@@ -606,7 +624,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
     //Test the implementation of the jacobian
     floatType eps = 1e-6;
-    floatVector deltaStress;
+    floatVector deltaStress, deltaDStress;
 
     floatMatrix jacobian;
     floatVector dstressdrateModifier;
@@ -636,6 +654,47 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
         for ( unsigned int j=0; j<deltaStress.size( ); j++ ){
             BOOST_CHECK( vectorTools::fuzzyEquals( jacobian[ j ][ i ], ( deltaStress[ j ] - stress[ j ] )/deltaStrain[ i ] ) );
         }
+
+    }
+
+    res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+                                              previousTime, previousStrain,
+                                              currentRateModifier, previousRateModifier,
+                                              previousStateVariables,
+                                              materialParameters, alpha,
+                                              dStress, stress, currentStateVariables, jacobian,
+                                              dstressdrateModifier );
+
+    for ( unsigned int i=0; i<currentStrain.size( ); i++ ){
+        floatVector deltaStrain( currentStrain.size( ), 0 );
+        deltaStrain[ i ] = fabs( eps*currentStrain[ i ] );
+
+        res = stressTools::linearViscoelasticity( currentTime,  currentStrain + deltaStrain,
+                                                  previousTime, previousStrain,
+                                                  currentRateModifier, previousRateModifier,
+                                                  previousStateVariables,
+                                                  materialParameters, alpha,
+                                                  deltaStress, currentStateVariables );
+        BOOST_CHECK( ! res );
+
+        //Compare the values in the column to the jacobian's values
+        for ( unsigned int j=0; j<deltaStress.size( ); j++ ){
+            BOOST_CHECK( vectorTools::fuzzyEquals( jacobian[ j ][ i ], ( deltaStress[ j ] - stress[ j ] )/deltaStrain[ i ] ) );
+        }
+
+        res = stressTools::linearViscoelasticity( currentTime,  currentStrain + deltaStrain,
+                                                  previousTime, previousStrain,
+                                                  currentRateModifier, previousRateModifier,
+                                                  previousStateVariables,
+                                                  materialParameters, alpha,
+                                                  deltaDStress, deltaStress, currentStateVariables );
+        BOOST_CHECK( ! res );
+
+        //Compare the values in the column to the jacobian's values
+        for ( unsigned int j=0; j<deltaStress.size( ); j++ ){
+            BOOST_CHECK( vectorTools::fuzzyEquals( jacobian[ j ][ i ], ( deltaDStress[ j ] - dStress[ j ] )/deltaStrain[ i ] ) );
+        }
+
     }
 
     floatVector deltaStrain( currentStrain.size( ), 0 );
@@ -651,6 +710,19 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     BOOST_CHECK( ! res );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( (deltaStress - stress )/fabs( eps*currentRateModifier ), dstressdrateModifier ) );
+
+    res = stressTools::linearViscoelasticity( currentTime, currentStrain,
+                                              previousTime, previousStrain,
+                                              currentRateModifier + fabs( eps*currentRateModifier ), previousRateModifier,
+                                              previousStateVariables,
+                                              materialParameters, alpha,
+                                              deltaDStress, deltaStress, currentStateVariables );
+
+    BOOST_CHECK( ! res );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( (deltaStress - stress )/fabs( eps*currentRateModifier ), dstressdrateModifier ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( (deltaDStress - dStress )/fabs( eps*currentRateModifier ), dstressdrateModifier ) );
 
     //Test to make sure odd numbers of prony series terms can be passed in
     floatVector materialParametersOdd = { materialParameters[ 1 ], 1, 10, 100, 400, 300, 200 };
