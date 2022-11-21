@@ -64,13 +64,13 @@ environment:
     - cp ${PWD}/modulefiles/* ${aea_modulefiles}
   only:
     refs:
-      - main
+      - master
       - dev
     changes:
       - "modulefiles/*"
       - "environment.txt"
   tags:
-    - shell-aea
+    - sstelmo-shell-aea
 
 microbump:
   stage: version
@@ -97,14 +97,14 @@ microbump:
     - git config user.email "${GITLAB_USER_EMAIL}"
     - git remote add oauth2-origin https://gitlab-ci-token:${GITLAB_ACCESS_TOKEN}@re-git.lanl.gov/${CI_PROJECT_PATH}.git
     - git tag -a ${production_version} -m "production release ${production_version}" || true
-    # Assume last merge was dev->main. Pick previous.
+    # Assume last merge was dev->master. Pick previous.
     - last_merge_hash=$(git log --pretty=format:"%H" --merges -n 2 | tail -n 1)
     - git tag -a ${developer_version} -m "developer pre-release ${developer_version}" ${last_merge_hash} || true
     - git push oauth2-origin --tags
   tags:
-    - shell-aea
+    - sstelmo-shell-aea
   only:
-    - main
+    - master
 
 fast-test:
   stage: test
@@ -125,7 +125,7 @@ fast-test:
     paths:
       - build/results.txt
   tags:
-    - shell-aea
+    - sstelmo-shell-aea
 
 conda-build:
   stage: build
@@ -146,10 +146,10 @@ conda-build:
     paths:
       - conda-build-artifacts/linux-64/stress_tools-*-*.tar.bz2
   tags:
-    - shell-aea
+    - sstelmo-shell-aea
   only:
     - merge_requests
-    - main
+    - master
     - dev
 
 deploy:
@@ -169,9 +169,9 @@ deploy:
     # Troubleshooting conda channel deploy and index update
     - conda search --channel file://${aea_conda_channel}/ --override-channels stress_tools
   tags:
-    - shell-aea
+    - sstelmo-shell-aea
   only:
-    - main
+    - master
     - dev
 
 # It MUST be called pages
@@ -194,6 +194,6 @@ pages:
       # It MUST be called public
       - public
   tags:
-    - shell-aea
+    - sstelmo-shell-aea
   only:
-    - main
+    - master
