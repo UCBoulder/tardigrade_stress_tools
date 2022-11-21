@@ -18,7 +18,6 @@ set(DOCUMENTATION_SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
     ${CMAKE_CURRENT_SOURCE_DIR}/devops.rst
     ${CMAKE_CURRENT_SOURCE_DIR}/drucker-prager.rst
-    ${CMAKE_CURRENT_SOURCE_DIR}/gitlab_setup.rst
     ${CMAKE_CURRENT_SOURCE_DIR}/index.rst
     ${CMAKE_CURRENT_SOURCE_DIR}/project_brief.txt
     ${CMAKE_CURRENT_SOURCE_DIR}/release_philosophy.rst
@@ -45,6 +44,3 @@ add_custom_command(OUTPUT ${SPHINX_HTML_FILE}
                        ${DOCUMENTATION_SOURCE}
                    MAIN_DEPENDENCY ${SPHINX_IN} ${SPHINX_OUT}
                    COMMENT "Generating ${PROJECT_NAME} Sphinx documentation")
-
-# Add sphinx target
-add_custom_target(Sphinx ALL DEPENDS Doxygen ${SPHINX_HTML_FILE} test_abaqus_integration)

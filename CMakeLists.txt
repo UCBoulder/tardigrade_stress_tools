@@ -71,12 +71,6 @@ endif()
 
 # Save the eigen directory for use in the python interface
 set(EIGEN_DIR ${EIGEN3_INCLUDE_DIR} CACHE PATH "The path to the eigen include directory")
-# Set build type checks
-string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
-set(upstream_required "")
-if(cmake_build_type_lower STREQUAL "release")
-    set(upstream_required "REQUIRED")
-endif()
 
 # Find related, but external, projects in installed environment
 include(FetchContent)
