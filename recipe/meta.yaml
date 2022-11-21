@@ -1,0 +1,56 @@
+package:
+  name: stress_tools
+  # TODO: setup and use pyproject.toml and a Conda build Jinja template
+  version: {{ VERSION }}
+
+source:
+  path: '..'
+
+build:
+  script:
+    - mkdir build-package
+    - cd build-package
+    - cmake .. -DCMAKE_BUILD_TYPE=Release
+    - cmake --build . --target stress_tools
+    - cmake --install . --prefix ${PREFIX}
+  ignore_run_exports:
+    - python_abi
+
+requirements:
+  build:
+    - {{ compiler('cxx') }}
+    - cmake >=3.18
+    - doxygen
+    - eigen >=3.3.7
+    - setuptools
+    - setuptools_scm
+    - constitutive_tools
+    - error_tools
+    - vector_tools
+  host:
+    - eigen >=3.3.7
+    - setuptools
+    - setuptools_scm
+  run:
+    - {{ compiler('cxx') }}
+    - eigen >=3.3.7
+    - constitutive_tools
+    - error_tools
+    - vector_tools
+
+test:
+  requires:
+    - cmake >=3.18
+    - boost >=1.59
+  source_files:
+    - CMakeLists.txt
+    - src/cpp/tests/CMakeLists.txt
+    - src/cpp/tests/test_stress_tools.cpp
+  commands:
+    - mkdir build-tests
+    - cd build-tests
+    - installed_linked_library_parent="$(dirname $(find ${PREFIX} -name libstress_tools.so))"
+    - export LD_LIBRARY_PATH="${installed_linked_library_parent}:${LD_LIBRARY_PATH}"
+    - cmake .. -DCMAKE_BUILD_TYPE=conda-test
+    - cmake --build . --verbose
+    - ctest --output-on-failure

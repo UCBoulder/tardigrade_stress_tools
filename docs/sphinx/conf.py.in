@@ -1,0 +1,59 @@
+# -- Path setup --------------------------------------------------------------
+import os
+
+# -- Project information -----------------------------------------------------
+# Meta data from CMake configure()
+project = '@PROJECT_NAME@'
+VERSION_STRING_FULL = '@stress_tools_VERSION_STRING_FULL@'
+VERSION = '@stress_tools_VERSION@'
+
+# Hardcoded project information
+copyright = '2020, Nathan A. Miller and Kyle A. Brindley'
+author = 'Nathan A. Miller and Kyle A. Brindley'
+
+# Set version to clean Git tag or else use meta data in version
+release = VERSION
+version = VERSION_STRING_FULL
+
+# -- Project Variables -------------------------------------------------------
+rst_prolog = f'.. |project| replace:: {project}\n.. include:: targets.txt'
+
+# -- General configuration ---------------------------------------------------
+# Add custom style sheet to make the html docs wider
+def setup(app):
+    app.add_css_file('custom.css')
+
+# Add any Sphinx extension module names here, as strings.
+extensions = ["breathe", 'sphinxcontrib.bibtex', 'sphinx.ext.extlinks']
+bibtex_bibfiles = ['software.bib']
+
+# Breathe Configuration
+breathe_projects = {project: "../doxygen/xml"}
+breathe_default_project = project
+
+# Links to PRs, Jira issues.
+extlinks = {
+     "merge": ("https://re-git.lanl.gov/aea/material-models/stress_tools/-/merge_requests/%s", "MERGE-%s"),
+     "issue": ("https://re-git.lanl.gov/aea/material-models/stress_tools/-/issues/%s", "ISSUE-%s"),
+     # Maintain the old Atlassian links until the servers don't exist. Required for changelog entries.
+     "pull": ("https://xcp-stash.lanl.gov/projects/MM/repos/stress_tools/pull-requests/%s/overview", "PR%s"),
+     "jira": ("https://xcp-jira.lanl.gov/browse/VIP-%s", "VIP-%s"),
+}
+
+# Add any paths that contain templates here, relative to this directory.
+templates_path = ['_templates']
+
+# The suffix(es) of source filenames.
+source_suffix = [
+    '.rst',
+    '.md'
+]
+
+# List of patterns, relative to source directory, that match files and
+# directories to ignore when looking for source files.
+# This pattern also affects html_static_path and html_extra_path.
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+# -- Options for HTML output -------------------------------------------------
+html_theme = 'sphinx_rtd_theme'
+html_static_path = ['_static']
