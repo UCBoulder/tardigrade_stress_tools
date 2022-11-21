@@ -1,0 +1,3 @@
+.. include:: README.txt
+   :start-after: project-brief-start-do-not-remove
+   :end-before: project-brief-end-do-not-remove
