@@ -14,9 +14,9 @@
 
 typedef errorTools::Node errorNode; //!< Redefinition for the error node
 typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
-typedef stressTools::floatType floatType; //!< Redefinition for the float type
-typedef stressTools::floatVector floatVector; //1< Redefinition for the float vector
-typedef stressTools::floatMatrix floatMatrix; //1< Redefinition for the float matrix
+typedef stressTools::linearElasticity::floatType floatType; //!< Redefinition for the float type
+typedef stressTools::linearElasticity::floatVector floatVector; //1< Redefinition for the float vector
+typedef stressTools::linearElasticity::floatMatrix floatMatrix; //1< Redefinition for the float matrix
 
 struct cout_redirect{
     cout_redirect( std::streambuf * new_buffer)
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
 
     floatMatrix C;
 
-    BOOST_CHECK( !stressTools::formReferenceStiffnessTensor( parameters, C ) );
+    BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( parameters, C ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( C, C_answer ) );
 
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     floatType energy;
 
-    BOOST_CHECK( !stressTools::evaluateEnergy( chi, parameters, energy ) );
+    BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi, parameters, energy ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( energy, energy_answer ) );
 
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     energy = 0;
 
-    BOOST_CHECK( !stressTools::evaluateEnergy( chi, parameters, energy, cauchyStress ) );
+    BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi, parameters, energy, cauchyStress ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( energy, energy_answer ) );
 
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     floatMatrix dCauchyStressdChi;
 
-    BOOST_CHECK( !stressTools::evaluateEnergy( chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi ) );
+    BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( energy, energy_answer ) );
 
@@ -122,15 +122,15 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
         floatVector cauchyStressp, cauchyStressm;
 
-        BOOST_CHECK( !stressTools::evaluateEnergy( chi + delta, parameters, ep ) );
+        BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi + delta, parameters, ep ) );
 
-        BOOST_CHECK( !stressTools::evaluateEnergy( chi - delta, parameters, em ) );
+        BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em ) );
 
         dEnergydChi_answer[ i ] = ( ep - em ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( !stressTools::evaluateEnergy( chi + delta, parameters, ep, cauchyStressp ) );
+        BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi + delta, parameters, ep, cauchyStressp ) );
 
-        BOOST_CHECK( !stressTools::evaluateEnergy( chi - delta, parameters, em, cauchyStressm ) );
+        BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em, cauchyStressm ) );
 
         BOOST_CHECK( vectorTools::fuzzyEquals( ( ep - em ) / ( 2 * delta[ i ] ), dEnergydChi_answer[ i ] ) );
 
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     floatMatrix d2CauchyStressdChi2_answer( chi.size( ), floatVector( chi.size( ) * chi.size( ), 0 ) );
 
-    BOOST_CHECK( !stressTools::evaluateEnergy( chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi, d2EnergydChi2, d2CauchyStressdChi2 ) );
+    BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi, d2EnergydChi2, d2CauchyStressdChi2 ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( energy, energy_answer ) );
 
@@ -178,15 +178,15 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
         floatVector cauchyStressp, cauchyStressm;
 
-        BOOST_CHECK( !stressTools::evaluateEnergy( chi + delta, parameters, ep ) );
+        BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi + delta, parameters, ep ) );
 
-        BOOST_CHECK( !stressTools::evaluateEnergy( chi - delta, parameters, em ) );
+        BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em ) );
 
         dEnergydChi_answer[ i ] = ( ep - em ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( !stressTools::evaluateEnergy( chi + delta, parameters, ep, cauchyStressp ) );
+        BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi + delta, parameters, ep, cauchyStressp ) );
 
-        BOOST_CHECK( !stressTools::evaluateEnergy( chi - delta, parameters, em, cauchyStressm ) );
+        BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em, cauchyStressm ) );
 
         BOOST_CHECK( vectorTools::fuzzyEquals( ( ep - em ) / ( 2 * delta[ i ] ), dEnergydChi_answer[ i ] ) );
 
@@ -200,9 +200,9 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
         floatMatrix dCauchydChip, dCauchydChim;
 
-        BOOST_CHECK( !stressTools::evaluateEnergy( chi + delta, parameters, ep, cauchyStressp, dedChip, dCauchydChip ) );
+        BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi + delta, parameters, ep, cauchyStressp, dedChip, dCauchydChip ) );
 
-        BOOST_CHECK( !stressTools::evaluateEnergy( chi - delta, parameters, em, cauchyStressm, dedChim, dCauchydChim ) );
+        BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em, cauchyStressm, dedChim, dCauchydChim ) );
 
         BOOST_CHECK( vectorTools::fuzzyEquals( ( ep - em ) / ( 2 * delta[ i ] ), dEnergydChi_answer[ i ] ) );
 

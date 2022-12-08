@@ -2,6 +2,7 @@
 #include<sstream>
 
 namespace stressTools{
+namespace linearElasticity{
 
     /** Define the expected number of spatial dimensions */
     unsigned int spatialDimensions = 3;
@@ -521,5 +522,5 @@ namespace stressTools{
 
     }
 
-}
-
+}  // linearElasticity
+}  // stressTools

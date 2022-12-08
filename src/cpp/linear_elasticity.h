@@ -16,6 +16,7 @@
 #include<constitutive_tools.h>
 
 namespace stressTools{
+namespace linearElasticity{
 
     typedef constitutiveTools::errorNode errorNode; //!< Redefinition for the error node
     typedef constitutiveTools::errorOut errorOut; //!< Redefinition for a pointer to the error node
@@ -36,6 +37,7 @@ namespace stressTools{
                              floatVector &dEnergydChi, floatMatrix &dCauchyStressdChi,
                              floatVector &d2EnergydChi2, floatMatrix &d2CauchyStressdChi2 );
 
-}
+}  // linearElasticity
+}  // stressTools
 
 #endif
