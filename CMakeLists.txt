@@ -29,7 +29,7 @@ if(cmake_build_type_lower STREQUAL "release")
 elseif(cmake_build_type_lower STREQUAL "conda-test")
     set(upstream_required "REQUIRED")
     set(not_conda_test "false")
-    # Find the installed project library
+    # Find the installed project libraries
     foreach(package ${PROJECT_NAME} ${INTERNAL_SUPPORT_LIBRARIES})
         find_file(${package}_linked_library
                   "lib${package}.so"
