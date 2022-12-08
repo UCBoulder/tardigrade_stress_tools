@@ -30,12 +30,14 @@ elseif(cmake_build_type_lower STREQUAL "conda-test")
     set(upstream_required "REQUIRED")
     set(not_conda_test "false")
     # Find the installed project library
-    find_file(installed_linked_library
-              "lib${PROJECT_NAME}.so"
-              PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
-              NO_CACHE
-              REQUIRED)
-    set(project_link_string ${installed_linked_library})
+    foreach(package ${PROJECT_NAME} ${INTERNAL_SUPPORT_LIBRARIES})
+        find_file(${package}_linked_library
+                  "lib${package}.so"
+                  PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
+                  NO_CACHE
+                  REQUIRED)
+        set(project_link_string ${${package}_linked_library})
+    endforeach(package)
     # Find the installed project umat
 endif()
 
@@ -129,14 +131,14 @@ if(${not_conda_test} STREQUAL "true")
           "${PROJECT_BINARY_DIR}/${package}Config.cmake"
           INSTALL_DESTINATION
           ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
-        
+
         # CMake won't build the targets for local builds of upstream projects
         if(cmake_build_type_lower STREQUAL release)
             install(EXPORT ${package}_Targets
                     FILE ${package}Targets.cmake
                     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
         endif()
-        
+
         install(FILES "${PROJECT_BINARY_DIR}/${package}Config.cmake"
                       "${PROJECT_BINARY_DIR}/${package}ConfigVersion.cmake"
                 DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
