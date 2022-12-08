@@ -15,7 +15,7 @@
 #include<error_tools.h>
 #include<constitutive_tools.h>
 
-namespace linearElasticity{
+namespace stressTools{
 
     typedef constitutiveTools::errorNode errorNode; //!< Redefinition for the error node
     typedef constitutiveTools::errorOut errorOut; //!< Redefinition for a pointer to the error node

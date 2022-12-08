@@ -1,7 +1,7 @@
 #include<linear_elasticity.h>
 #include<sstream>
 
-namespace linearElasticity{
+namespace stressTools{
 
     /** Define the expected number of spatial dimensions */
     unsigned int spatialDimensions = 3;
