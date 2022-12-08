@@ -9,6 +9,9 @@ set(CMAKE_SRC_PATH "src/cmake")
 set(CMAKE_SRC_PATH "src/cmake")
 set(DOXYGEN_SRC_PATH "docs/doxygen")
 set(SPHINX_SRC_PATH "docs/sphinx")
+# Set the internal support libraries
+set(INTERNAL_SUPPORT_LIBRARIES "linear_elasticity")
+set(LINEAR_ELASTICITY_UPSTREAM_LIBRARIES "constitutive_tools")
 
 # Added a flag for whether the python bindings for stress tools get built
 set(STRESS_TOOLS_BUILD_PYTHON_BINDINGS ON CACHE BOOL "Flag for whether the python bindings should be built")
