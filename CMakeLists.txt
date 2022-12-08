@@ -121,7 +121,7 @@ endif()
 
 #==================================================================================== SETUP INSTALLATION CMAKE FILES ===
 if(${not_conda_test} STREQUAL "true")
-    foreach(package ${PROJECT_NAME} ${INTERNAL_SUPPORT_LIBRARIES})
+    foreach(package ${PROJECT_NAME})
         include(CMakePackageConfigHelpers)
         write_basic_package_version_file("${package}ConfigVersion.cmake"
                                          VERSION ${PROJECT_VERSION}
