@@ -12,8 +12,6 @@
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
-typedef errorTools::Node errorNode; //!< Redefinition for the error node
-typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
 typedef stressTools::linearElasticity::floatType floatType; //!< Redefinition for the float type
 typedef stressTools::linearElasticity::floatVector floatVector; //1< Redefinition for the float vector
 typedef stressTools::linearElasticity::floatMatrix floatMatrix; //1< Redefinition for the float matrix
