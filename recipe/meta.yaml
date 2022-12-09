@@ -11,7 +11,7 @@ build:
     - mkdir build-package
     - cd build-package
     - cmake .. -DCMAKE_BUILD_TYPE=Release
-    - cmake --build . --target stress_tools
+    - cmake --build . --target stress_tools linear_elasticity
     - cmake --install . --prefix ${PREFIX}
   ignore_run_exports:
     - python_abi
@@ -50,5 +50,5 @@ test:
     - mkdir build-tests
     - cd build-tests
     - cmake .. -DCMAKE_BUILD_TYPE=conda-test
-    - cmake --build . --verbose
+    - cmake --build . --target all --verbose
     - ctest --output-on-failure
