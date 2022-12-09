@@ -29,6 +29,7 @@ if(cmake_build_type_lower STREQUAL "release")
 elseif(cmake_build_type_lower STREQUAL "conda-test")
     set(upstream_required "REQUIRED")
     set(not_conda_test "false")
+    set(project_link_string "")
     # Find the installed project libraries
     foreach(package ${PROJECT_NAME} ${INTERNAL_SUPPORT_LIBRARIES})
         find_file(${package}_linked_library
@@ -36,7 +37,7 @@ elseif(cmake_build_type_lower STREQUAL "conda-test")
                   PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
                   NO_CACHE
                   REQUIRED)
-        set(project_link_string ${${package}_linked_library})
+        set(project_link_string ${project_link_string} ${${package}_linked_library})
     endforeach(package)
     # Find the installed project umat
 endif()
