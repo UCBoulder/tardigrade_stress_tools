@@ -23,24 +23,23 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_P
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
 set(upstream_required "")
 set(not_conda_test "true")
-set(project_link_string ${PROJECT_NAME})
-if(cmake_build_type_lower STREQUAL "release")
-    set(upstream_required "REQUIRED")
-elseif(cmake_build_type_lower STREQUAL "conda-test")
-    set(upstream_required "REQUIRED")
-    set(not_conda_test "false")
-    set(project_link_string "")
-    # Find the installed project libraries
-    foreach(package ${PROJECT_NAME} ${INTERNAL_SUPPORT_LIBRARIES})
+foreach(package ${PROJECT_NAME} ${INTERNAL_SUPPORT_LIBRARIES})
+    set(${package}_link_string ${package})
+    if(cmake_build_type_lower STREQUAL "release")
+        set(upstream_required "REQUIRED")
+    elseif(cmake_build_type_lower STREQUAL "conda-test")
+        set(upstream_required "REQUIRED")
+        set(not_conda_test "false")
+        # Find the installed project libraries
         find_file(${package}_linked_library
                   "lib${package}.so"
                   PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
                   NO_CACHE
                   REQUIRED)
-        set(project_link_string ${project_link_string} ${${package}_linked_library})
-    endforeach(package)
-    # Find the installed project umat
-endif()
+        set(${package}_link_string ${${package}_linked_library})
+        # Find the installed project umat
+    endif()
+endforeach(package)
 
 # Get version number from Git
 set(VERSION_UPDATE_FROM_GIT True)
