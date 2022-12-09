@@ -44,8 +44,7 @@ test:
     - boost >=1.59
   source_files:
     - CMakeLists.txt
-    - src/cpp/tests/CMakeLists.txt
-    - src/cpp/tests/test_stress_tools.cpp
+    - src/cpp/tests/*
   commands:
     - mkdir build-tests
     - cd build-tests
