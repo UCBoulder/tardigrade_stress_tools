@@ -7,10 +7,34 @@ namespace linearElasticity{
     /** Define the expected number of spatial dimensions */
     unsigned int spatialDimensions = 3;
 
+    errorOut formReferenceStiffnessTensor( const floatVector &parameters, floatMatrix &C ){
+        /*!
+         * Form the stiffness tensor in the reference configuration.
+         *
+         * \f$\begin{bmatrix}
+         *   C_{1111} & C_{1112} & C_{1113} & C_{1121} & C_{1122} & C_{1123} & C_{1131} & C_{1132} & C_{1133} \\
+         *   C_{1211} & C_{1212} & C_{1213} & C_{1221} & C_{1222} & C_{1223} & C_{1231} & C_{1232} & C_{1233} \\
+         *   C_{1311} & C_{1312} & C_{1313} & C_{1321} & C_{1322} & C_{1323} & C_{1331} & C_{1332} & C_{1333} \\
+         *   C_{2111} & C_{2112} & C_{2113} & C_{2121} & C_{2122} & C_{2123} & C_{2131} & C_{2132} & C_{2133} \\
+         *   C_{2211} & C_{2212} & C_{2213} & C_{2221} & C_{2222} & C_{2223} & C_{2231} & C_{2232} & C_{2233} \\
+         *   C_{2311} & C_{2312} & C_{2313} & C_{2321} & C_{2322} & C_{2323} & C_{2331} & C_{2332} & C_{2333} \\
+         *   C_{3111} & C_{3112} & C_{3113} & C_{3121} & C_{3122} & C_{3123} & C_{3131} & C_{3132} & C_{3133} \\
+         *   C_{3211} & C_{3212} & C_{3213} & C_{3221} & C_{3222} & C_{3223} & C_{3231} & C_{3232} & C_{3233} \\
+         *   C_{3311} & C_{3312} & C_{3313} & C_{3321} & C_{3322} & C_{3323} & C_{3331} & C_{3332} & C_{3333}
+         * \end{bmatrix}\f$
+         *
+         * \param &parameters: The tensor components of the 9x9 stiffness tensor.
+         * \param &C: The resulting stiffness tensor.
+         */
+
+        return NULL;
+
+    }
+
     errorOut formReferenceStiffnessTensorEngineeringConstants( const floatVector &parameters, floatMatrix &C ){
         /*!
          * Form the stiffness tensor in the reference configuration.
-         * 
+         *
          * \param &parameters: The parameters. The first index is the type of stiffness tensor and the later values are the coefficients.
          *     -type 0: Isotropic stiffness parameterized by lambda and mu
          * \param &C: The resulting stiffness tensor.
@@ -44,7 +68,7 @@ namespace linearElasticity{
                     {               0,      0, 2 * mu,      0,               0,      0,      0,      0,               0 },
                     {               0,      0,      0,      0,               0, 2 * mu,      0,      0,               0 },
                     {          lambda,      0,      0,      0,          lambda,      0,      0,      0, lambda + 2 * mu }
-                }; 
+                };
 
         }
         else{
@@ -60,9 +84,9 @@ namespace linearElasticity{
     errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy ){
         /*!
          * Compute the value of the linear elastic energy which we define via
-         * 
+         *
          * \f$\rho \psi = \frac{1}{J} \left[ \frac{\lambda}{2} \left( E_{II} \right)^2 + \mu E_{IJ} E_{JI} \right] \f$
-         * 
+         *
          * \param &chi: The micro-deformation
          * \param &parameters: The parameters used in the calculation. The two Lame parameters are expected lambda and mu.
          * \param &energy: The resulting free energy in the current configuration
@@ -118,13 +142,13 @@ namespace linearElasticity{
     errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress ){
         /*!
          * Compute the value of the linear elastic energy which we define via
-         * 
+         *
          * \f$\rho \psi = \frac{1}{J} \left[ \frac{\lambda}{2} \left( E_{II} \right)^2 + \mu E_{IJ} E_{JI} \right] \f$
-         * 
+         *
          * and the value of the Cauchy stress which is defined via
-         * 
+         *
          * \f$\sigma_{ij} = \frac{1}{J} \frac{ \partial \left( \rho \psi \right ) }{\partial F_{iI}} F_{jI} \f$
-         * 
+         *
          * \param &chi: The micro-deformation
          * \param &parameters: The parameters used in the calculation. The two Lame parameters are expected lambda and mu.
          * \param &energy: The resulting free energy in the current configuration
@@ -203,20 +227,20 @@ namespace linearElasticity{
                              floatVector &dEnergydChi, floatMatrix &dCauchyStressdChi ){
         /*!
          * Compute the value of the linear elastic energy which we define via
-         * 
+         *
          * \f$\rho \psi = \frac{1}{J} \left[ \frac{\lambda}{2} \left( E_{II} \right)^2 + \mu E_{IJ} E_{JI} \right] \f$
-         * 
+         *
          * and the value of the Cauchy stress which is defined via
-         * 
+         *
          * \f$\sigma_{ij} = \frac{1}{J} \frac{ \partial \left( \rho \psi \right ) }{\partial F_{iI}} F_{jI} \f$
-         * 
+         *
          * \param &chi: The micro-deformation
          * \param &parameters: The parameters used in the calculation. The two Lame parameters are expected lambda and mu.
          * \param &energy: The resulting free energy in the current configuration
          * \param &cauchyStress; The expected cauchy stress
          * \param &dEnergydChi: The gradient of the energy w.r.t. the micro deformation
          * \param &dCauchyStressdChi: The gradient of the Cauchy stress w.r.t. the micro deformation
-         * 
+         *
          */
 
         if ( chi.size( ) != spatialDimensions * spatialDimensions ){
@@ -335,13 +359,13 @@ namespace linearElasticity{
                              floatVector &d2EnergydChi2, floatMatrix &d2CauchyStressdChi2 ){
         /*!
          * Compute the value of the linear elastic energy which we define via
-         * 
+         *
          * \f$\rho \psi = \frac{1}{J} \left[ \frac{\lambda}{2} \left( E_{II} \right)^2 + \mu E_{IJ} E_{JI} \right] \f$
-         * 
+         *
          * and the value of the Cauchy stress which is defined via
-         * 
+         *
          * \f$\sigma_{ij} = \frac{1}{J} \frac{ \partial \left( \rho \psi \right ) }{\partial F_{iI}} F_{jI} \f$
-         * 
+         *
          * \param &chi: The micro-deformation
          * \param &parameters: The parameters used in the calculation. The two Lame parameters are expected lambda and mu.
          * \param &energy: The resulting free energy in the current configuration
@@ -350,7 +374,7 @@ namespace linearElasticity{
          * \param &dCauchyStressdChi: The gradient of the Cauchy stress w.r.t. the micro deformation
          * \param &d2EnergydChi2: The second gradient of the energy w.r.t. the micro deformation
          * \param &d2CauchyStressdChi2: The second gradient of the Cauchy stress w.r.t. the micro deformation
-         * 
+         *
          */
 
         if ( chi.size( ) != spatialDimensions * spatialDimensions ){
@@ -447,7 +471,7 @@ namespace linearElasticity{
                                      + dEnergydChi[ spatialDimensions * m + M ] * invChi[ spatialDimensions * K + l ] * invChi[ spatialDimensions * L + k ]
                                      - energy * invChi[ spatialDimensions * K + m ] * invChi[ spatialDimensions * M + l ] * invChi[ spatialDimensions * L + k ]
                                      - energy * invChi[ spatialDimensions * K + l ] * invChi[ spatialDimensions * L + m ] * invChi[ spatialDimensions * M + k ]
-                                     + ( eye[ spatialDimensions * m + k ] * dCEdChi[ spatialDimensions * K + M ][ spatialDimensions * l + L ] 
+                                     + ( eye[ spatialDimensions * m + k ] * dCEdChi[ spatialDimensions * K + M ][ spatialDimensions * l + L ]
                                        - eye[ spatialDimensions * m + k ] * CE[ spatialDimensions * K + M ] * invChi[ spatialDimensions * L + l ]
                                        )/ detChi;
                                 for ( unsigned int I = 0; I < spatialDimensions; I++ ){
@@ -488,7 +512,7 @@ namespace linearElasticity{
                                                                                                            + dEnergydChi[ spatialDimensions * i + I ] * eye[ spatialDimensions * j + k ] * eye[ spatialDimensions * I + K ]
                                                                                                            - dEnergydChi[ spatialDimensions * i + I ] * chi[ spatialDimensions * j + I ] * invChi[ spatialDimensions * K + k ] ) / detChi;
                             for ( unsigned int l = 0; l < spatialDimensions; l++ ){
-                                
+
                                 for ( unsigned int L = 0; L < spatialDimensions; L++ ){
 
                                     d2CauchyStressdChi2[ spatialDimensions * i + j ][ spatialDimensions * spatialDimensions * spatialDimensions * k + spatialDimensions * spatialDimensions * K + spatialDimensions * l + L ]
