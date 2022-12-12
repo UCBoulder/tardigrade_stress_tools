@@ -7,7 +7,7 @@ namespace linearElasticity{
     /** Define the expected number of spatial dimensions */
     unsigned int spatialDimensions = 3;
 
-    errorOut formReferenceStiffnessTensor( const floatVector &parameters, floatMatrix &C ){
+    errorOut formReferenceStiffnessTensorEngineeringConstants( const floatVector &parameters, floatMatrix &C ){
         /*!
          * Form the stiffness tensor in the reference configuration.
          * 
@@ -100,7 +100,7 @@ namespace linearElasticity{
 
         floatMatrix C;
 
-        error = formReferenceStiffnessTensor( parameters, C );
+        error = formReferenceStiffnessTensorEngineeringConstants( parameters, C );
 
         if ( error ){
 
@@ -167,7 +167,7 @@ namespace linearElasticity{
         }
 
         floatMatrix C;
-        error = formReferenceStiffnessTensor( parameters, C );
+        error = formReferenceStiffnessTensorEngineeringConstants( parameters, C );
 
         if ( error ){
 
@@ -257,7 +257,7 @@ namespace linearElasticity{
         }
 
         floatMatrix C;
-        error = formReferenceStiffnessTensor( parameters, C );
+        error = formReferenceStiffnessTensorEngineeringConstants( parameters, C );
 
         if ( error ){
 
@@ -391,7 +391,7 @@ namespace linearElasticity{
         }
 
         floatMatrix C;
-        error = formReferenceStiffnessTensor( parameters, C );
+        error = formReferenceStiffnessTensorEngineeringConstants( parameters, C );
 
         if ( error ){
 

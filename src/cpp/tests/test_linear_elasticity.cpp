@@ -29,7 +29,7 @@ struct cout_redirect{
         std::streambuf * old;
 };
 
-BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
+BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensorEngineeringConstants ){
 
     floatType lamb = 12.3;
     floatType mu   = 43.4;
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
 
     floatMatrix C;
 
-    BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( parameters, C ) );
+    BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensorEngineeringConstants( parameters, C ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( C, C_answer ) );
 
