@@ -11,7 +11,7 @@ build:
     - mkdir build-package
     - cd build-package
     - cmake .. -DCMAKE_BUILD_TYPE=Release
-    - cmake --build . --target stress_tools
+    - cmake --build . --target stress_tools linear_elasticity
     - cmake --install . --prefix ${PREFIX}
   ignore_run_exports:
     - python_abi
@@ -20,17 +20,17 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - cmake >=3.18
-    - doxygen
+    - setuptools_scm >=6.2
     - eigen >=3.3.7
-    - setuptools
-    - setuptools_scm
     - constitutive_tools
     - error_tools
     - vector_tools
+    - boost >=1.59  # TODO: Separate the package/test configuration to make BOOST an optional build dependency
+    - doxygen >=1.9  # TODO: Separate the package/documentation configuration to make Doxygen an optional build dependency
+    - sphinx  # TODO: Separate the package/documentation configuration to make Sphinx an optional build dependency
   host:
+    - boost >=1.59
     - eigen >=3.3.7
-    - setuptools
-    - setuptools_scm
   run:
     - {{ compiler('cxx') }}
     - eigen >=3.3.7
@@ -42,15 +42,14 @@ test:
   requires:
     - cmake >=3.18
     - boost >=1.59
+    - doxygen  # TODO: Separate the package/documentation configuration to make Doxygen an optional build dependency
+    - sphinx  # TODO: Separate the package/documentation configuration to make Sphinx an optional build dependency
   source_files:
     - CMakeLists.txt
-    - src/cpp/tests/CMakeLists.txt
-    - src/cpp/tests/test_stress_tools.cpp
+    - src/cpp/tests/*
   commands:
     - mkdir build-tests
     - cd build-tests
-    - installed_linked_library_parent="$(dirname $(find ${PREFIX} -name libstress_tools.so))"
-    - export LD_LIBRARY_PATH="${installed_linked_library_parent}:${LD_LIBRARY_PATH}"
     - cmake .. -DCMAKE_BUILD_TYPE=conda-test
-    - cmake --build . --verbose
+    - cmake --build . --target all --verbose
     - ctest --output-on-failure

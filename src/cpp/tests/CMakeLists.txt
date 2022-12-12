@@ -3,7 +3,7 @@ add_executable(${TEST_NAME} "${TEST_NAME}.cpp")
 add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
 set_target_properties(${TEST_NAME} PROPERTIES CXX_STANDARD 11)
 target_compile_options(${TEST_NAME} PRIVATE "-lrt")
-target_link_libraries(${TEST_NAME} PUBLIC ${project_link_string} error_tools constitutive_tools)
+target_link_libraries(${TEST_NAME} PUBLIC ${${PROJECT_NAME}_link_string} error_tools constitutive_tools)
 
 # Local builds of upstream projects require local include paths
 if(NOT cmake_build_type_lower STREQUAL "release")
@@ -13,3 +13,22 @@ if(NOT cmake_build_type_lower STREQUAL "release")
                                ${error_tools_SOURCE_DIR}/src/cpp
                                ${constitutive_tools_SOURCE_DIR}/src/cpp)
 endif()
+
+foreach(support_module ${INTERNAL_SUPPORT_LIBRARIES})
+
+    set(TEST_NAME "test_${support_module}")
+    add_executable(${TEST_NAME} "${TEST_NAME}.cpp")
+    add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+    set_target_properties(${TEST_NAME} PROPERTIES CXX_STANDARD 11)
+    target_compile_options(${TEST_NAME} PRIVATE "-lrt")
+    target_link_libraries(${TEST_NAME} PUBLIC ${${support_module}_link_string})
+
+    # Local builds of upstream projects require local include paths
+    if(NOT cmake_build_type_lower STREQUAL "release")
+        target_include_directories(${TEST_NAME} PUBLIC
+                                   ${Boost_INCLUDE_DIRS}  # Required for MacOSX CMake builds. Not sure if it's a CMake or clang issue.
+                                   ${vector_tools_SOURCE_DIR}/${CPP_SRC_PATH}
+                                   ${error_tools_SOURCE_DIR}/${CPP_SRC_PATH})
+    endif()
+
+endforeach(support_module)
