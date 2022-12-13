@@ -29,7 +29,7 @@ namespace linearElasticity{
          *   \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1213}\f$, \f$C_{1222}\f$, \f$C_{1223}\f$, \f$C_{1233}\f$,
          *   \f$C_{1313}\f$, \f$C_{1322}\f$, \f$C_{1323}\f$, \f$C_{1333}\f$, \f$C_{2222}\f$, \f$C_{2223}\f$,
          *   \f$C_{2233}\f$, \f$C_{2323}\f$, \f$C_{2333}\f$, \f$C_{3333}\f$
-         * - 3: cubic \f$C_{1111}\f$, \f$C_{1112}\f$, \f$C_{2222}\f$
+         * - 3: cubic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1212}\f$
          *
          * \param &stiffnessTensor: The resulting stiffness tensor.
          */
@@ -82,14 +82,14 @@ namespace linearElasticity{
         }elseif{
 
             C1111 = parameters[  0 ];
-            C1112 = parameters[  1 ];
-            C1113 = C1112;
-            C1212 = C1111;
-            C1213 = C1112;
-            C1313 = C1111;
-            C2222 = parameters[  2 ];
-            C2323 = C2222;
-            C3333 = C2222;
+            C1122 = parameters[  1 ];
+            C1133 = C1122;
+            C1212 = parameters[  2 ];
+            C1313 = C1212;
+            C2222 = C1111;
+            C2233 = C1122;
+            C2323 = C1212;
+            C3333 = C1111;
 
         }else{
 
