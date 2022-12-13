@@ -26,7 +26,12 @@ namespace linearElasticity{
          * \end{bmatrix}\f$
          *
          * \param &parameters: The tensor components of the 9x9 stiffness tensor. Vector length determines the symmetry.
-         *     - 21: fully anistropic \f$C_{1111}, C_{1112}, C_{1113}, C_{1122}, C_{1123}, C_{1133}, C_{1212}, C_{1213}, C_{1222}, C_{1223}, C_{1233}, C_{1313}, C_{1322}, C_{1323}, C_{1333}, C_{2222}, C_{2223}, C_{2233}, C_{2323}, C_{2333}, C_{3333}\f$
+         *     - 21: fully anistropic \f$C_{1111}\f$, \f$C_{1112}\f$, \f$C_{1113}\f$, \f$C_{1122}\f$, \f$C_{1123}\f$, \f$C_{1133}\f$,
+         *                                            \f$C_{1212}\f$, \f$C_{1213}\f$, \f$C_{1222}\f$, \f$C_{1223}\f$, \f$C_{1233}\f$,
+         *                                                            \f$C_{1313}\f$, \f$C_{1322}\f$, \f$C_{1323}\f$, \f$C_{1333}\f$,
+         *                                                                            \f$C_{2222}\f$, \f$C_{2223}\f$, \f$C_{2233}\f$,
+         *                                                                                            \f$C_{2323}\f$, \f$C_{2333}\f$,
+         *                                                                                                            \f$C_{3333}\f$
          * \param &C: The resulting stiffness tensor.
          */
 
