@@ -29,7 +29,7 @@ namespace linearElasticity{
          *   \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1213}\f$, \f$C_{1222}\f$, \f$C_{1223}\f$, \f$C_{1233}\f$,
          *   \f$C_{1313}\f$, \f$C_{1322}\f$, \f$C_{1323}\f$, \f$C_{1333}\f$, \f$C_{2222}\f$, \f$C_{2223}\f$,
          *   \f$C_{2233}\f$, \f$C_{2323}\f$, \f$C_{2333}\f$, \f$C_{3333}\f$
-         * - 5: cubic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1313}\f$, \f$C_{3333}\f$
+         * - 5: transversly isotropic or hexagonal \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1313}\f$, \f$C_{3333}\f$
          * - 3: cubic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1212}\f$
          *
          * \param &stiffnessTensor: The resulting stiffness tensor.
