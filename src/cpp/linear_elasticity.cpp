@@ -7,7 +7,7 @@ namespace linearElasticity{
     /** Define the expected number of spatial dimensions */
     unsigned int spatialDimensions = 3;
 
-    errorOut formReferenceStiffnessTensor( const floatVector &parameters, floatMatrix &C ){
+    errorOut formReferenceStiffnessTensor( const floatVector &parameters, floatMatrix &stiffnessTensor ){
         /*!
          * Form the stiffness tensor in the reference configuration.
          *
@@ -32,7 +32,7 @@ namespace linearElasticity{
          *                                                                                        \f$C_{2323}\f$, \f$C_{2333}\f$,
          *                                                                                                        \f$C_{3333}\f$
          *
-         * \param &C: The resulting stiffness tensor.
+         * \param &stiffnessTensor: The resulting stiffness tensor.
          */
         if ( parameters.size( ) == 21 ){
 
@@ -58,16 +58,16 @@ namespace linearElasticity{
             floatType C2333 = parameters[ 19 ];
             floatType C3333 = parameters[ 20 ];
 
-            C = {
-                    { C1111, C1112, C1113, C1112, C1122, C1123, C1113, C1123, C1133 },
-                    { C1112, C1212, C1213, C1212, C1222, C1223, C1213, C1223, C1233 },
-                    { C1113, C1213, C1313, C1213, C1322, C1323, C1313, C1323, C1333 },
-                    { C1112, C1212, C1213, C1212, C1222, C1223, C1213, C1223, C1233 },
-                    { C1122, C1222, C1322, C1222, C2222, C2223, C1322, C2223, C2233 },
-                    { C1123, C1223, C1323, C1223, C2223, C2323, C1323, C2323, C2333 },
-                    { C1113, C1213, C1313, C1213, C1322, C1323, C1313, C1323, C1333 },
-                    { C1123, C1223, C1323, C1223, C2223, C2323, C1323, C2323, C2333 },
-                    { C1133, C1233, C1333, C1233, C2233, C2333, C1333, C2333, C3333 }
+            stiffnessTensor = {
+                { C1111, C1112, C1113, C1112, C1122, C1123, C1113, C1123, C1133 },
+                { C1112, C1212, C1213, C1212, C1222, C1223, C1213, C1223, C1233 },
+                { C1113, C1213, C1313, C1213, C1322, C1323, C1313, C1323, C1333 },
+                { C1112, C1212, C1213, C1212, C1222, C1223, C1213, C1223, C1233 },
+                { C1122, C1222, C1322, C1222, C2222, C2223, C1322, C2223, C2233 },
+                { C1123, C1223, C1323, C1223, C2223, C2323, C1323, C2323, C2333 },
+                { C1113, C1213, C1313, C1213, C1322, C1323, C1313, C1323, C1333 },
+                { C1123, C1223, C1323, C1223, C2223, C2323, C1323, C2323, C2333 },
+                { C1133, C1233, C1333, C1233, C2233, C2333, C1333, C2333, C3333 }
             };
 
         }
