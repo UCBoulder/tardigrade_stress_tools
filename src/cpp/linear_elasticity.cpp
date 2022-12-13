@@ -34,6 +34,47 @@ namespace linearElasticity{
          *
          * \param &C: The resulting stiffness tensor.
          */
+        if ( parameters.size( ) == 21 ){
+
+            floatType C1111 = parameters[  0 ];
+            floatType C1112 = parameters[  1 ];
+            floatType C1113 = parameters[  2 ];
+            floatType C1122 = parameters[  3 ];
+            floatType C1123 = parameters[  4 ];
+            floatType C1133 = parameters[  5 ];
+            floatType C1212 = parameters[  6 ];
+            floatType C1213 = parameters[  7 ];
+            floatType C1222 = parameters[  8 ];
+            floatType C1223 = parameters[  9 ];
+            floatType C1233 = parameters[ 10 ];
+            floatType C1313 = parameters[ 11 ];
+            floatType C1322 = parameters[ 12 ];
+            floatType C1323 = parameters[ 13 ];
+            floatType C1333 = parameters[ 14 ];
+            floatType C2222 = parameters[ 15 ];
+            floatType C2223 = parameters[ 16 ];
+            floatType C2233 = parameters[ 17 ];
+            floatType C2323 = parameters[ 18 ];
+            floatType C2333 = parameters[ 19 ];
+            floatType C3333 = parameters[ 20 ];
+
+            C = {
+                    { C1111, C1112, C1113, C1112, C1122, C1123, C1113, C1123, C1133 },
+                    { C1112, C1212, C1213, C1212, C1222, C1223, C1213, C1223, C1233 },
+                    { C1113, C1213, C1313, C1213, C1322, C1323, C1313, C1323, C1333 },
+                    { C1112, C1212, C1213, C1212, C1222, C1223, C1213, C1223, C1233 },
+                    { C1122, C1222, C1322, C1222, C2222, C2223, C1322, C2223, C2233 },
+                    { C1123, C1223, C1323, C1223, C2223, C2323, C1323, C2323, C2333 },
+                    { C1113, C1213, C1313, C1213, C1322, C1323, C1313, C1323, C1333 },
+                    { C1123, C1223, C1323, C1223, C2223, C2323, C1323, C2323, C2333 },
+                    { C1133, C1233, C1333, C1233, C2233, C2333, C1333, C2333, C3333 }
+            };
+
+        else{
+
+                return new errorNode( __func__, "Requires 21 parameters. Parameters only defines " + std::to_string( parameters.size( ) ) );
+
+        }
 
         return NULL;
 
