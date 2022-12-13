@@ -58,10 +58,10 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
     floatMatrix stiffness_tensor;
 
     // Fully anisotropic: 21 components
-    floatVector fully_anisotropic_parameters = { C1111, C1112, C1113, C1122, C1123, C1133, C1212, C1213, C1222, C1223,
+    floatVector anisotropic_parameters = { C1111, C1112, C1113, C1122, C1123, C1133, C1212, C1213, C1222, C1223,
                                                  C1233, C1313, C1322, C1323, C1333, C2222, C2223, C2233, C2323, C2333,
                                                  C3333 };
-    floatMatrix stiffness_answer =  {
+    floatMatrix anisotropic_answer =  {
         { C1111, C1112, C1113, C1112, C1122, C1123, C1113, C1123, C1133 },
         { C1112, C1212, C1213, C1212, C1222, C1223, C1213, C1223, C1233 },
         { C1113, C1213, C1313, C1213, C1322, C1323, C1313, C1323, C1333 },
@@ -72,12 +72,43 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
         { C1123, C1223, C1323, C1223, C2223, C2323, C1323, C2323, C2333 },
         { C1133, C1233, C1333, C1233, C2233, C2333, C1333, C2333, C3333 }
     };
-    BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( fully_anisotropic_parameters, stiffness_tensor ) );
-    BOOST_CHECK( vectorTools::fuzzyEquals( stiffness_tensor, stiffness_answer ) );
+    BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( anisotropic_parameters, stiffness_tensor ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( stiffness_tensor, anisotropic_answer ) );
+
+    // Orthotropic: 9 components
+    floatMatrix orthotropic_answer = {
+        { C1111,    0.,    0.,    0., C1122,    0.,    0.,    0., C1133 },
+        {    0., C1212,    0., C1212,    0.,    0.,    0.,    0.,    0. },
+        {    0.,    0., C1313,    0.,    0.,    0., C1313,    0.,    0. },
+        {    0., C1212,    0., C1212,    0.,    0.,    0.,    0.,    0. },
+        { C1122,    0.,    0.,    0., C2222,    0.,    0.,    0., C2233 },
+        {    0.,    0.,    0.,    0.,    0., C2323,    0., C2323,    0. },
+        {    0.,    0., C1313,    0.,    0.,    0., C1313,    0.,    0. },
+        {    0.,    0.,    0.,    0.,    0., C2323,    0., C2323,    0. },
+        { C1133,    0.,    0.,    0., C2233,    0.,    0.,    0., C3333 }
+    };
+
+    // Transversely isotropic/hexagonal: 5 components
+    floatVector hexagonal_parameters = { C1111, C1122, C1133, C1313, C3333 };
+    C1212 = 0.5 * (C1111 - C1122);  // Calculation specific to this symmetry
+    floatMatrix hexagonal_answer = {
+        { C1111,    0.,    0.,    0., C1122,    0.,    0.,    0., C1133 },
+        {    0., C1212,    0., C1212,    0.,    0.,    0.,    0.,    0. },
+        {    0.,    0., C1313,    0.,    0.,    0., C1313,    0.,    0. },
+        {    0., C1212,    0., C1212,    0.,    0.,    0.,    0.,    0. },
+        { C1122,    0.,    0.,    0., C1111,    0.,    0.,    0., C1133 },
+        {    0.,    0.,    0.,    0.,    0., C1313,    0., C1313,    0. },
+        {    0.,    0., C1313,    0.,    0.,    0., C1313,    0.,    0. },
+        {    0.,    0.,    0.,    0.,    0., C1313,    0., C1313,    0. },
+        { C1133,    0.,    0.,    0., C1133,    0.,    0.,    0., C3333 }
+    };
+    BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( hexagonal_parameters, stiffness_tensor ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( stiffness_tensor, hexagonal_answer ) );
+    C1212 = 6;  // Reset to match fully anisotropic index
 
     // Cubic symmetry: 3 components
     floatVector cubic_parameters = { C1111, C1122, C1212 };
-    stiffness_answer = {
+    floatMatrix cubic_answer = {
         { C1111,    0.,    0.,    0., C1122,    0.,    0.,    0., C1122 },
         {    0., C1212,    0., C1212,    0.,    0.,    0.,    0.,    0. },
         {    0.,    0., C1212,    0.,    0.,    0., C1212,    0.,    0. },
@@ -89,7 +120,7 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
         { C1122,    0.,    0.,    0., C1122,    0.,    0.,    0., C1111 }
     };
     BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( cubic_parameters, stiffness_tensor ) );
-    BOOST_CHECK( vectorTools::fuzzyEquals( stiffness_tensor, stiffness_answer ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( stiffness_tensor, cubic_answer ) );
 
 }
 
