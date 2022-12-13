@@ -70,9 +70,10 @@ namespace linearElasticity{
                     { C1133, C1233, C1333, C1233, C2233, C2333, C1333, C2333, C3333 }
             };
 
+        }
         else{
 
-                return new errorNode( __func__, "Requires 21 parameters. Parameters only defines " + std::to_string( parameters.size( ) ) );
+            return new errorNode( __func__, "Requires 21 parameters. Parameters only defines " + std::to_string( parameters.size( ) ) );
 
         }
 
