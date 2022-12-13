@@ -29,6 +29,55 @@ struct cout_redirect{
         std::streambuf * old;
 };
 
+BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
+
+    floatType C1111 =  0.;
+    floatType C1112 =  1.;
+    floatType C1113 =  2.;
+    floatType C1122 =  3.;
+    floatType C1123 =  4.;
+    floatType C1133 =  5.;
+    floatType C1212 =  6.;
+    floatType C1213 =  7.;
+    floatType C1222 =  8.;
+    floatType C1223 =  9.;
+    floatType C1233 = 10.;
+    floatType C1313 = 11.;
+    floatType C1322 = 12.;
+    floatType C1323 = 13.;
+    floatType C1333 = 14.;
+    floatType C2222 = 15.;
+    floatType C2223 = 16.;
+    floatType C2233 = 17.;
+    floatType C2323 = 18.;
+    floatType C2333 = 19.;
+    floatType C3333 = 20.;
+    floatVector fully_anisotropic_parameters = { C1111, C1112, C1113, C1122, C1123, C1133,
+                                                        C1212, C1213, C1222, C1223, C1233,
+                                                               C1313, C1322, C1323, C1333,
+                                                                      C2222, C2223, C2233,
+                                                                             C2323, C2333,
+                                                                                    C3333 };
+    floatMatrix stiffness_answer =  {
+        { C1111, C1112, C1113, C1112, C1122, C1123, C1113, C1123, C1133 },
+        { C1112, C1212, C1213, C1212, C1222, C1223, C1213, C1223, C1233 },
+        { C1113, C1213, C1313, C1213, C1322, C1323, C1313, C1323, C1333 },
+        { C1112, C1212, C1213, C1212, C1222, C1223, C1213, C1223, C1233 },
+        { C1122, C1222, C1322, C1222, C2222, C2223, C1322, C2223, C2233 },
+        { C1123, C1223, C1323, C1223, C2223, C2323, C1323, C2323, C2333 },
+        { C1113, C1213, C1313, C1213, C1322, C1323, C1313, C1323, C1333 },
+        { C1123, C1223, C1323, C1223, C2223, C2323, C1323, C2323, C2333 },
+        { C1133, C1233, C1333, C1233, C2233, C2333, C1333, C2333, C3333 }
+    };
+
+    floatMatrix stiffness_tensor;
+
+    BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( fully_anisotropic_parameters, stiffness_tensor ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( stiffness_tensor, stiffness_answer ) );
+
+}
+
 BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensorEngineeringConstants ){
 
     floatType lamb = 12.3;
