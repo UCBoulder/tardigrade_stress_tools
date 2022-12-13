@@ -78,15 +78,15 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
     // Cubic symmetry: 3 components
     floatVector cubic_parameters = { C1111, C1122, C1212 };
     stiffness_answer = {
-        { C1111,    0.,    0.,    0., C1122,    0.,    0.,    0., C1133 },
+        { C1111,    0.,    0.,    0., C1122,    0.,    0.,    0., C1122 },
         {    0., C1212,    0., C1212,    0.,    0.,    0.,    0.,    0. },
-        {    0.,    0., C1313,    0.,    0.,    0., C1313,    0.,    0. },
+        {    0.,    0., C1212,    0.,    0.,    0., C1212,    0.,    0. },
         {    0., C1212,    0., C1212,    0.,    0.,    0.,    0.,    0. },
-        { C1122,    0.,    0.,    0., C2222,    0.,    0.,    0., C2233 },
-        {    0.,    0.,    0.,    0.,    0., C2323,    0., C2323,    0. },
-        {    0.,    0., C1313,    0.,    0.,    0., C1313,    0.,    0. },
-        {    0.,    0.,    0.,    0.,    0., C2323,    0., C2323,    0. },
-        { C1133,    0.,    0.,    0., C2233,    0.,    0.,    0., C3333 }
+        { C1122,    0.,    0.,    0., C1111,    0.,    0.,    0., C1122 },
+        {    0.,    0.,    0.,    0.,    0., C1212,    0., C1212,    0. },
+        {    0.,    0., C1212,    0.,    0.,    0., C1212,    0.,    0. },
+        {    0.,    0.,    0.,    0.,    0., C1212,    0., C1212,    0. },
+        { C1122,    0.,    0.,    0., C1122,    0.,    0.,    0., C1111 }
     };
     BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( cubic_parameters, stiffness_tensor ) );
     BOOST_CHECK( vectorTools::fuzzyEquals( stiffness_tensor, stiffness_answer ) );
