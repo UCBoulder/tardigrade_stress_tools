@@ -79,7 +79,8 @@ namespace linearElasticity{
             C2333 = parameters[ 19 ];
             C3333 = parameters[ 20 ];
 
-        }elseif{
+        }
+        else if ( parameters.size( ) == 3 ){
 
             C1111 = parameters[  0 ];
             C1122 = parameters[  1 ];
@@ -91,9 +92,10 @@ namespace linearElasticity{
             C2323 = C1212;
             C3333 = C1111;
 
-        }else{
+        }
+        else{
 
-            return new errorNode( __func__, "Requires 21 parameters. Parameters only defines " + std::to_string( parameters.size( ) ) );
+            return new errorNode( __func__, "Requires 21 or 3 parameters. Parameters only defines " + std::to_string( parameters.size( ) ) );
 
         }
 
