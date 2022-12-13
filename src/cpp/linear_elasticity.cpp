@@ -29,6 +29,8 @@ namespace linearElasticity{
          *   \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1213}\f$, \f$C_{1222}\f$, \f$C_{1223}\f$, \f$C_{1233}\f$,
          *   \f$C_{1313}\f$, \f$C_{1322}\f$, \f$C_{1323}\f$, \f$C_{1333}\f$, \f$C_{2222}\f$, \f$C_{2223}\f$,
          *   \f$C_{2233}\f$, \f$C_{2323}\f$, \f$C_{2333}\f$, \f$C_{3333}\f$
+         * - 9: orthotropic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1313}\f$,
+         *   \f$C_{2222}\f$, \f$C_{2323}\f$, \f$C_{3333}\f$
          * - 5: transversly isotropic or hexagonal \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1313}\f$, \f$C_{3333}\f$
          * - 3: cubic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1212}\f$
          *
@@ -79,6 +81,19 @@ namespace linearElasticity{
             C2323 = parameters[ 18 ];
             C2333 = parameters[ 19 ];
             C3333 = parameters[ 20 ];
+
+        }
+        else if ( parameters.size( ) == 9 ){
+
+            C1111 = parameters[  0 ];
+            C1122 = parameters[  1 ];
+            C1133 = parameters[  2 ];
+            C1212 = parameters[  3 ];
+            C1313 = parameters[  4 ];
+            C2222 = parameters[  5 ];
+            C2233 = parameters[  6 ];
+            C2323 = parameters[  7 ];
+            C3333 = parameters[  8 ];
 
         }
         else if ( parameters.size( ) == 5 ){

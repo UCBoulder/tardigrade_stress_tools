@@ -76,6 +76,7 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
     BOOST_CHECK( vectorTools::fuzzyEquals( stiffness_tensor, anisotropic_answer ) );
 
     // Orthotropic: 9 components
+    floatVector orthotropic_parameters = { C1111, C1122, C1133, C1212, C1313, C2222, C2233, C2323, C3333 };
     floatMatrix orthotropic_answer = {
         { C1111,    0.,    0.,    0., C1122,    0.,    0.,    0., C1133 },
         {    0., C1212,    0., C1212,    0.,    0.,    0.,    0.,    0. },
@@ -87,6 +88,8 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
         {    0.,    0.,    0.,    0.,    0., C2323,    0., C2323,    0. },
         { C1133,    0.,    0.,    0., C2233,    0.,    0.,    0., C3333 }
     };
+    BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( orthotropic_parameters, stiffness_tensor ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( stiffness_tensor, orthotropic_answer ) );
 
     // Transversely isotropic/hexagonal: 5 components
     floatVector hexagonal_parameters = { C1111, C1122, C1133, C1313, C3333 };
