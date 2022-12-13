@@ -76,6 +76,15 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
 
     BOOST_CHECK( vectorTools::fuzzyEquals( stiffness_tensor, stiffness_answer ) );
 
+
+    cubic_parameters = {
+       { C1111, C1112, C1112,    0.,    0.,     0. };
+       { C1112, C1111, C1112,    0.,    0.,     0. };
+       { C1112, C1112, C1111,    0.,    0.,     0. };
+       {    0.,    0.,    0., C2222,    0.,     0. };
+       {    0.,    0.,    0.,    0., C2222,     0. };
+       {    0.,    0.,    0.,    0.,     0., C2222 };
+
 }
 
 BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensorEngineeringConstants ){
