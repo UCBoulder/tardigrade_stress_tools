@@ -34,29 +34,51 @@ namespace linearElasticity{
          *
          * \param &stiffnessTensor: The resulting stiffness tensor.
          */
+        floatType C1111 = 0.;
+        floatType C1112 = 0.;
+        floatType C1113 = 0.;
+        floatType C1122 = 0.;
+        floatType C1123 = 0.;
+        floatType C1133 = 0.;
+        floatType C1212 = 0.;
+        floatType C1213 = 0.;
+        floatType C1222 = 0.;
+        floatType C1223 = 0.;
+        floatType C1233 = 0.;
+        floatType C1313 = 0.;
+        floatType C1322 = 0.;
+        floatType C1323 = 0.;
+        floatType C1333 = 0.;
+        floatType C2222 = 0.;
+        floatType C2223 = 0.;
+        floatType C2233 = 0.;
+        floatType C2323 = 0.;
+        floatType C2333 = 0.;
+        floatType C3333 = 0.;
+
         if ( parameters.size( ) == 21 ){
 
-            floatType C1111 = parameters[  0 ];
-            floatType C1112 = parameters[  1 ];
-            floatType C1113 = parameters[  2 ];
-            floatType C1122 = parameters[  3 ];
-            floatType C1123 = parameters[  4 ];
-            floatType C1133 = parameters[  5 ];
-            floatType C1212 = parameters[  6 ];
-            floatType C1213 = parameters[  7 ];
-            floatType C1222 = parameters[  8 ];
-            floatType C1223 = parameters[  9 ];
-            floatType C1233 = parameters[ 10 ];
-            floatType C1313 = parameters[ 11 ];
-            floatType C1322 = parameters[ 12 ];
-            floatType C1323 = parameters[ 13 ];
-            floatType C1333 = parameters[ 14 ];
-            floatType C2222 = parameters[ 15 ];
-            floatType C2223 = parameters[ 16 ];
-            floatType C2233 = parameters[ 17 ];
-            floatType C2323 = parameters[ 18 ];
-            floatType C2333 = parameters[ 19 ];
-            floatType C3333 = parameters[ 20 ];
+            C1111 = parameters[  0 ];
+            C1112 = parameters[  1 ];
+            C1113 = parameters[  2 ];
+            C1122 = parameters[  3 ];
+            C1123 = parameters[  4 ];
+            C1133 = parameters[  5 ];
+            C1212 = parameters[  6 ];
+            C1213 = parameters[  7 ];
+            C1222 = parameters[  8 ];
+            C1223 = parameters[  9 ];
+            C1233 = parameters[ 10 ];
+            C1313 = parameters[ 11 ];
+            C1322 = parameters[ 12 ];
+            C1323 = parameters[ 13 ];
+            C1333 = parameters[ 14 ];
+            C2222 = parameters[ 15 ];
+            C2223 = parameters[ 16 ];
+            C2233 = parameters[ 17 ];
+            C2323 = parameters[ 18 ];
+            C2333 = parameters[ 19 ];
+            C3333 = parameters[ 20 ];
 
         }
         else{
