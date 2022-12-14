@@ -10,6 +10,12 @@ Changelog
 0.2.5 (unreleased)
 ******************
 
+New Features
+============
+- Add linear elasticity submodule from asp (:issue:`5`, :merge:`14`). By `Kyle Brindley`_.
+- Add fully anisotropic, orthotropic, transverse isotropic, and cubic linear elasticity (:issue:`6`, :merge:`15`). By
+  `Kyle Brindley`_.
+
 Internal Changes
 ================
 - Updating framework to current cpp_stub standard (:merge:`12`). By `Nathan Miller`_.
