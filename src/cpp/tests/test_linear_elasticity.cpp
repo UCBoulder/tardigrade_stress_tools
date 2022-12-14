@@ -141,9 +141,8 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
             {    0.0,  0.0,  0.0,  0.0,    0.0,   mu,  0.0,   mu,    0.0 },
             { lambda,  0.0,  0.0,  0.0, lambda,  0.0,  0.0,  0.0,   calc }
         };
-    floatMatrix C;
-    BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( isotropic_parameters, C ) );
-    BOOST_TEST( C == isotropic_answer );
+    BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( isotropic_parameters, stiffness_tensor ) );
+    BOOST_TEST( stiffness_tensor == isotropic_answer );
 
 }
 
