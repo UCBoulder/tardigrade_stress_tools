@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
         };
     floatMatrix C;
     BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( parameters, C ) );
-    BOOST_CHECK( vectorTools::fuzzyEquals( C, C_answer ) );
+    BOOST_TEST( C == C_answer );
 
 }
 
@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     BOOST_TEST( energy == energy_answer );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( cauchyStress, cauchyStress_answer ) );
+    BOOST_TEST( cauchyStress == cauchyStress_answer, boost::test_tools::per_element() );
 
     // Perform tests of the gradients
 
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     BOOST_TEST( energy == energy_answer );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( cauchyStress, cauchyStress_answer ) );
+    BOOST_TEST( cauchyStress == cauchyStress_answer, boost::test_tools::per_element() );
 
     for ( unsigned int i = 0; i < chi.size( ); i++ ){
 
