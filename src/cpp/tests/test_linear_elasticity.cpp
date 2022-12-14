@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
                         0.10262954,  0.43893794, -0.15378708,
                         0.9615284 ,  0.36965948, -0.0381362 };
 
-    floatVector parameters = { 0., 12.3, 43.4 };
+    floatVector parameters = { 12.3, 43.4 };
 
     floatType energy_answer = 43.98356158963631;
 
