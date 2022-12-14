@@ -162,8 +162,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi, parameters, energy ) );
 
-    BOOST_CHECK_MESSAGE( vectorTools::fuzzyEquals( energy, energy_answer ),
-                         "Energy = " << energy << ". Expected = " << energy_answer << "." );
+    BOOST_TEST( energy == energy_answer );
 
     floatVector cauchyStress_answer = { -293.41192005,   43.43903202,   60.23179078,
                                           43.43903204, -224.0643919 ,   11.23726669,
@@ -175,8 +174,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi, parameters, energy, cauchyStress ) );
 
-    BOOST_CHECK_MESSAGE( vectorTools::fuzzyEquals( energy, energy_answer ),
-                         "Energy = " << energy << ". Expected = " << energy_answer << "." );
+    BOOST_TEST( energy == energy_answer );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( cauchyStress, cauchyStress_answer ) );
 
@@ -190,8 +188,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi ) );
 
-    BOOST_CHECK_MESSAGE( vectorTools::fuzzyEquals( energy, energy_answer ),
-                         "Energy = " << energy << ". Expected = " << energy_answer << "." );
+    BOOST_TEST( energy == energy_answer );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( cauchyStress, cauchyStress_answer ) );
 
@@ -254,8 +251,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi, d2EnergydChi2, d2CauchyStressdChi2 ) );
 
-    BOOST_CHECK_MESSAGE( vectorTools::fuzzyEquals( energy, energy_answer ),
-                         "Energy = " << energy << ". Expected = " << energy_answer << "." );
+    BOOST_TEST( energy == energy_answer );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( cauchyStress, cauchyStress_answer ) );
 
