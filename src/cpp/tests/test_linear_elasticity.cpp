@@ -58,9 +58,8 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
     floatMatrix stiffness_tensor;
 
     // Fully anisotropic: 21 components
-    floatVector anisotropic_parameters = { C1111, C1112, C1113, C1122, C1123, C1133, C1212, C1213, C1222, C1223,
-                                                 C1233, C1313, C1322, C1323, C1333, C2222, C2223, C2233, C2323, C2333,
-                                                 C3333 };
+    floatVector anisotropic_parameters = { C1111, C1112, C1113, C1122, C1123, C1133, C1212, C1213, C1222, C1223, C1233,
+                                           C1313, C1322, C1323, C1333, C2222, C2223, C2233, C2323, C2333, C3333 };
     floatMatrix anisotropic_answer =  {
         { C1111, C1112, C1113, C1112, C1122, C1123, C1113, C1123, C1133 },
         { C1112, C1212, C1213, C1212, C1222, C1223, C1213, C1223, C1233 },
@@ -73,7 +72,8 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
         { C1133, C1233, C1333, C1233, C2233, C2333, C1333, C2333, C3333 }
     };
     BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( anisotropic_parameters, stiffness_tensor ) );
-    BOOST_TEST( stiffness_tensor == anisotropic_answer );
+    BOOST_TEST( vectorTools::appendVectors( stiffness_tensor ) == vectorTools::appendVectors( anisotropic_answer ),
+                boost::test_tools::per_element() );
 
     // Orthotropic: 9 components
     floatVector orthotropic_parameters = { C1111, C1122, C1133, C1212, C1313, C2222, C2233, C2323, C3333 };
