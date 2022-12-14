@@ -33,6 +33,7 @@ namespace linearElasticity{
          *   \f$C_{2222}\f$, \f$C_{2323}\f$, \f$C_{3333}\f$
          * - 5: transversly isotropic or hexagonal \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1313}\f$, \f$C_{3333}\f$
          * - 3: cubic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1212}\f$
+         * - 2: isotropic: lambda (\f$C_{1122}\f$), mu (\f$C_{1212}\f$)
          *
          * \param &stiffnessTensor: The resulting stiffness tensor.
          */
@@ -122,6 +123,22 @@ namespace linearElasticity{
             C3333 = C1111;
 
         }
+        else if ( parameters.size( ) == 2 ){
+
+            floatType lambda = parameters[ 0 ];
+            floatType mu     = parameters[ 1 ];
+
+            C1111 = lambda + 2 * mu;
+            C1122 = lambda;
+            C1133 = lambda;
+            C1212 = 2 * mu;
+            C1313 = C1212;
+            C2222 = C1111;
+            C2233 = lambda;
+            C2323 = C1212;
+            C3333 = C1111;
+
+        }
         else{
 
             return new errorNode( __func__, "Requires 21 or 3 parameters. Parameters only defines " + std::to_string( parameters.size( ) ) );
@@ -139,58 +156,6 @@ namespace linearElasticity{
             { C1123, C1223, C1323, C1223, C2223, C2323, C1323, C2323, C2333 },
             { C1133, C1233, C1333, C1233, C2233, C2333, C1333, C2333, C3333 }
         };
-
-        return NULL;
-
-    }
-
-    errorOut formReferenceStiffnessTensorEngineeringConstants( const floatVector &parameters, floatMatrix &C ){
-        /*!
-         * Form the stiffness tensor in the reference configuration.
-         *
-         * \param &parameters: The parameters. The first index is the type of stiffness tensor and the later values are the coefficients.
-         *
-         * - type 0: Isotropic stiffness parameterized by lambda and mu
-         *
-         * \param &C: The resulting stiffness tensor.
-         */
-
-        if ( parameters.size( ) < 1 ){
-
-            return new errorNode( __func__, "The parameters must at least define the type" );
-
-        }
-
-        // Form isotropic stiffness tensor
-        if ( int( parameters[ 0 ] + 0.5 ) == 0 ){
-
-            if ( parameters.size( ) != 3 ){
-
-                return new errorNode( __func__, "Isotropic stiffeness requires two parameters. Parameters only defines " + std::to_string( parameters.size( ) - 1 ) );
-
-            }
-
-            floatType lambda = parameters[ 1 ];
-            floatType mu     = parameters[ 2 ];
-
-            C = {
-                    { lambda + 2 * mu,      0,      0,      0,          lambda,      0,      0,      0,          lambda },
-                    {               0,      0,      0, 2 * mu,               0,      0,      0,      0,               0 },
-                    {               0,      0,      0,      0,               0,      0, 2 * mu,      0,               0 },
-                    {               0, 2 * mu,      0,      0,               0,      0,      0,      0,               0 },
-                    {          lambda,      0,      0,      0, lambda + 2 * mu,      0,      0,      0,          lambda },
-                    {               0,      0,      0,      0,               0,      0,      0, 2 * mu,               0 },
-                    {               0,      0, 2 * mu,      0,               0,      0,      0,      0,               0 },
-                    {               0,      0,      0,      0,               0, 2 * mu,      0,      0,               0 },
-                    {          lambda,      0,      0,      0,          lambda,      0,      0,      0, lambda + 2 * mu }
-                };
-
-        }
-        else{
-
-            return new errorNode( __func__, "Type " + std::to_string( parameters[ 0 ] ) + " is not recognized" );
-
-        }
 
         return NULL;
 
@@ -239,7 +204,7 @@ namespace linearElasticity{
 
         floatMatrix C;
 
-        error = formReferenceStiffnessTensorEngineeringConstants( parameters, C );
+        error = formReferenceStiffnessTensor( parameters, C );
 
         if ( error ){
 
@@ -306,7 +271,7 @@ namespace linearElasticity{
         }
 
         floatMatrix C;
-        error = formReferenceStiffnessTensorEngineeringConstants( parameters, C );
+        error = formReferenceStiffnessTensor( parameters, C );
 
         if ( error ){
 
@@ -396,7 +361,7 @@ namespace linearElasticity{
         }
 
         floatMatrix C;
-        error = formReferenceStiffnessTensorEngineeringConstants( parameters, C );
+        error = formReferenceStiffnessTensor( parameters, C );
 
         if ( error ){
 
@@ -530,7 +495,7 @@ namespace linearElasticity{
         }
 
         floatMatrix C;
-        error = formReferenceStiffnessTensorEngineeringConstants( parameters, C );
+        error = formReferenceStiffnessTensor( parameters, C );
 
         if ( error ){
 

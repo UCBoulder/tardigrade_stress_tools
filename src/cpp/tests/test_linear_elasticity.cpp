@@ -125,15 +125,9 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
     BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( cubic_parameters, stiffness_tensor ) );
     BOOST_CHECK( vectorTools::fuzzyEquals( stiffness_tensor, cubic_answer ) );
 
-}
-
-BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensorEngineeringConstants ){
-
-    floatType lamb = 12.3;
-    floatType mu   = 43.4;
-
-    floatVector parameters = { 0, lamb, mu };
-
+    floatType lambda = 12.3;
+    floatType mu     = 43.4;
+    floatVector parameters = { lambda, mu };
     floatMatrix C_answer =
         {
             { 99.1,  0.0,  0.0,  0.0, 12.3,  0.0,  0.0,  0.0, 12.3 },
@@ -146,11 +140,8 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensorEngineeringConstants ){
             {  0.0,  0.0,  0.0,  0.0,  0.0, 86.8,  0.0,  0.0,  0.0 },
             { 12.3,  0.0,  0.0,  0.0, 12.3,  0.0,  0.0,  0.0, 99.1 }
         };
-
     floatMatrix C;
-
-    BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensorEngineeringConstants( parameters, C ) );
-
+    BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( parameters, C ) );
     BOOST_CHECK( vectorTools::fuzzyEquals( C, C_answer ) );
 
 }
