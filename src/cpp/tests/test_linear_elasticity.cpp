@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     floatVector parameters = { 12.3, 43.4 };
 
-    floatType energy_answer = 43.98356158963631;
+    floatType energy_answer = 43.983561941559444;
 
     floatType energy;
 
@@ -164,9 +164,10 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     BOOST_TEST( energy == energy_answer );
 
-    floatVector cauchyStress_answer = { -293.41192005,   43.43903202,   60.23179078,
-                                          43.43903204, -224.0643919 ,   11.23726669,
-                                          60.23179078,   11.23726668, -135.38556235 };
+    floatVector cauchyStress_answer = {-293.41192246286556,    43.439032908892734,   60.231791812665371,
+                                         43.439032908892699, -224.06439311434585,    11.237268456397821,
+                                         60.23179181266535,    11.237268456397864, -135.38555790789079 };
+
 
     floatVector cauchyStress;
 
