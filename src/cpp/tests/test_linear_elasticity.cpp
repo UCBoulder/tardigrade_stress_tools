@@ -127,18 +127,19 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
 
     floatType lambda = 12.3;
     floatType mu     = 43.4;
+    floatType calc   = lambda + 2 * mu
     floatVector parameters = { lambda, mu };
     floatMatrix C_answer =
         {
-            { 99.1,  0.0,  0.0,  0.0, 12.3,  0.0,  0.0,  0.0, 12.3 },
-            {  0.0,   mu,  0.0,   mu,  0.0,  0.0,  0.0,  0.0,  0.0 },
-            {  0.0,  0.0,   mu,  0.0,  0.0,  0.0,   mu,  0.0,  0.0 },
-            {  0.0,   mu,  0.0,   mu,  0.0,  0.0,  0.0,  0.0,  0.0 },
-            { 12.3,  0.0,  0.0,  0.0, 99.1,  0.0,  0.0,  0.0, 12.3 },
-            {  0.0,  0.0,  0.0,  0.0,  0.0,   mu,  0.0,   mu,  0.0 },
-            {  0.0,  0.0,   mu,  0.0,  0.0,  0.0,   mu,  0.0,  0.0 },
-            {  0.0,  0.0,  0.0,  0.0,  0.0,   mu,  0.0,   mu,  0.0 },
-            { 12.3,  0.0,  0.0,  0.0, 12.3,  0.0,  0.0,  0.0, 99.1 }
+            {   calc,  0.0,  0.0,  0.0, lambda,  0.0,  0.0,  0.0, lambda },
+            {    0.0,   mu,  0.0,   mu,    0.0,  0.0,  0.0,  0.0,    0.0 },
+            {    0.0,  0.0,   mu,  0.0,    0.0,  0.0,   mu,  0.0,    0.0 },
+            {    0.0,   mu,  0.0,   mu,    0.0,  0.0,  0.0,  0.0,    0.0 },
+            { lambda,  0.0,  0.0,  0.0,   calc,  0.0,  0.0,  0.0, lambda },
+            {    0.0,  0.0,  0.0,  0.0,    0.0,   mu,  0.0,   mu,    0.0 },
+            {    0.0,  0.0,   mu,  0.0,    0.0,  0.0,   mu,  0.0,    0.0 },
+            {    0.0,  0.0,  0.0,  0.0,    0.0,   mu,  0.0,   mu,    0.0 },
+            { lambda,  0.0,  0.0,  0.0, lambda,  0.0,  0.0,  0.0,   calc }
         };
     floatMatrix C;
     BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( parameters, C ) );
