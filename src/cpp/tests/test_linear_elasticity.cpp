@@ -224,7 +224,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
         BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em, cauchyStressm ) );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( ( ep - em ) / ( 2 * delta[ i ] ), dEnergydChi_answer[ i ] ) );
+        BOOST_TEST( ( ep - em ) / ( 2 * delta[ i ] ) == dEnergydChi_answer[ i ] );
 
         for ( unsigned int j = 0; j < chi.size( ); j++ ){
 
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
         BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em, cauchyStressm ) );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( ( ep - em ) / ( 2 * delta[ i ] ), dEnergydChi_answer[ i ] ) );
+        BOOST_TEST( ( ep - em ) / ( 2 * delta[ i ] ) == dEnergydChi_answer[ i ] );
 
         for ( unsigned int j = 0; j < chi.size( ); j++ ){
 
@@ -296,7 +296,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
         BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em, cauchyStressm, dedChim, dCauchydChim ) );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( ( ep - em ) / ( 2 * delta[ i ] ), dEnergydChi_answer[ i ] ) );
+        BOOST_TEST( ( ep - em ) / ( 2 * delta[ i ] ) == dEnergydChi_answer[ i ] );
 
         for ( unsigned int j = 0; j < chi.size( ); j++ ){
 
