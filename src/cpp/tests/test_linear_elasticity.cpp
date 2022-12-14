@@ -89,7 +89,8 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
         { C1133,    0.,    0.,    0., C2233,    0.,    0.,    0., C3333 }
     };
     BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( orthotropic_parameters, stiffness_tensor ) );
-    BOOST_TEST( stiffness_tensor == orthotropic_answer );
+    BOOST_TEST( vectorTools::appendVectors( stiffness_tensor ) == vectorTools::appendVectors( orthotropic_answer ),
+                boost::test_tools::per_element() );
 
     // Transversely isotropic/hexagonal: 5 components
     floatVector hexagonal_parameters = { C1111, C1122, C1133, C1313, C3333 };
@@ -106,7 +107,8 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
         { C1133,    0.,    0.,    0., C1133,    0.,    0.,    0., C3333 }
     };
     BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( hexagonal_parameters, stiffness_tensor ) );
-    BOOST_TEST( stiffness_tensor == hexagonal_answer );
+    BOOST_TEST( vectorTools::appendVectors( stiffness_tensor ) == vectorTools::appendVectors( hexagonal_answer ),
+                boost::test_tools::per_element() );
     C1212 = 6;  // Reset to match fully anisotropic index
 
     // Cubic symmetry: 3 components
@@ -123,7 +125,8 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
         { C1122,    0.,    0.,    0., C1122,    0.,    0.,    0., C1111 }
     };
     BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( cubic_parameters, stiffness_tensor ) );
-    BOOST_TEST( stiffness_tensor == cubic_answer );
+    BOOST_TEST( vectorTools::appendVectors( stiffness_tensor ) == vectorTools::appendVectors( cubic_answer ),
+                boost::test_tools::per_element() );
 
     floatType lambda = 12.3;
     floatType mu     = 43.4;
@@ -142,7 +145,8 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
             { lambda,  0.0,  0.0,  0.0, lambda,  0.0,  0.0,  0.0,   calc }
         };
     BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( isotropic_parameters, stiffness_tensor ) );
-    BOOST_TEST( stiffness_tensor == isotropic_answer );
+    BOOST_TEST( vectorTools::appendVectors( stiffness_tensor ) == vectorTools::appendVectors( isotropic_answer ),
+                boost::test_tools::per_element() );
 
 }
 
