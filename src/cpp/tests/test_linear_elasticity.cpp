@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     BOOST_TEST( energy == energy_answer );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( cauchyStress, cauchyStress_answer ) );
+    BOOST_TEST( cauchyStress == cauchyStress_answer );
 
     cauchyStress.clear( );
 
