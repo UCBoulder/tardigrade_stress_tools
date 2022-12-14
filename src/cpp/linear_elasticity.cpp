@@ -131,6 +131,9 @@ namespace linearElasticity{
             C1111 = lambda + 2 * mu;
             C1122 = lambda;
             C1133 = lambda;
+            // Need to verify the factor of two here. MIT source suggests only necesssary when trying to reduce computations with symmetry.
+            // Reference: http://web.mit.edu/16.20/homepage/3_Constitutive/Constitutive_files/module_3_with_solutions.pdf
+            // Gitlab: https://re-git.lanl.gov/aea/material-models/stress_tools/-/issues/7
             C1212 = 2 * mu;
             C1313 = C1212;
             C2222 = C1111;
