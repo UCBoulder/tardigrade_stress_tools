@@ -24,9 +24,7 @@ namespace linearElasticity{
     typedef constitutiveTools::floatVector floatVector; //!< Define a vector of floats
     typedef constitutiveTools::floatMatrix floatMatrix; //!< Define a matrix of floats
 
-    errorOut formReferenceStiffnessTensor( const floatVector &parameters, floatMatrix &C );
-
-    errorOut formReferenceStiffnessTensorEngineeringConstants( const floatVector &parameters, floatMatrix &C );
+    errorOut formReferenceStiffnessTensor( const floatVector &parameters, floatMatrix &stiffnessTensor );
 
     errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy );
 
