@@ -26,8 +26,6 @@ namespace linearElasticity{
 
     errorOut formReferenceStiffnessTensor( const floatVector &parameters, floatMatrix &C );
 
-    errorOut formReferenceStiffnessTensorEngineeringConstants( const floatVector &parameters, floatMatrix &C );
-
     errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy );
 
     errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress );
