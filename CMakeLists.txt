@@ -29,19 +29,13 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_P
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
 set(upstream_required "")
 set(not_conda_test "true")
-set(${PROJECT_NAME}_link_string ${PROJECT_NAME})
 if(cmake_build_type_lower STREQUAL "release")
     set(upstream_required "REQUIRED")
 elseif(cmake_build_type_lower STREQUAL "conda-test")
     set(upstream_required "REQUIRED")
     set(not_conda_test "false")
     # Find the installed project libraries
-    find_file(${PROJECT_NAME}_linked_library
-              "lib${PROJECT_NAME}.so"
-              PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
-              NO_CACHE
-              REQUIRED)
-    set(${PROJECT_NAME}_link_string ${${PROJECT_NAME}_linked_library})
+    find_package(${PROJECT_NAME} ${upstream_required} CONFIG)
     # Find the installed project umat
 endif()
 
