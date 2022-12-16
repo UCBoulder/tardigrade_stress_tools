@@ -1,19 +1,54 @@
 #===================================================================================================== PROJECT SETUP ===
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.18)
 project(stress_tools)
 
 # Set common project paths relative to project root directory
 set(CPP_SRC_PATH "src/cpp")
+set(CPP_TEST_PATH "${CPP_SRC_PATH}/tests")
 set(CMAKE_SRC_PATH "src/cmake")
+set(CMAKE_SRC_PATH "src/cmake")
+set(DOXYGEN_SRC_PATH "docs/doxygen")
+set(SPHINX_SRC_PATH "docs/sphinx")
+# Set the internal support libraries
+set(INTERNAL_SUPPORT_LIBRARIES "linear_elasticity")
+set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
+set(PROJECT_PRIVATE_HEADERS "")
+foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
+    set(PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES} ${package}.cpp ${package}.h)
+    set(PROJECT_PRIVATE_HEADERS ${PROJECT_PRIVATE_HEADERS} ${package}.h)
+endforeach(package)
+set(PROJECT_LINK_LIBRARIES error_tools constitutive_tools)
+
+# Added a flag for whether the python bindings for stress tools get built
+set(STRESS_TOOLS_BUILD_PYTHON_BINDINGS ON CACHE BOOL "Flag for whether the python bindings should be built")
 
 # Add the cmake folder to locate project CMake module(s)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_PATH})
 
+# Set build type checks
+string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
+set(upstream_required "")
+set(not_conda_test "true")
+if(cmake_build_type_lower STREQUAL "release")
+    set(upstream_required "REQUIRED")
+elseif(cmake_build_type_lower STREQUAL "conda-test")
+    set(upstream_required "REQUIRED")
+    set(not_conda_test "false")
+    # Find the installed project libraries
+    find_package(${PROJECT_NAME} ${upstream_required} CONFIG)
+    # Find the installed project umat
+endif()
+
 # Get version number from Git
 set(VERSION_UPDATE_FROM_GIT True)
-# FIXME: Figure out why include() doesn't pick up CMAKE_MODULE_PATH correctly
-include(${CMAKE_SRC_PATH}/GetVersionFromGitTag.cmake)
-project(${PROJECT_NAME} VERSION ${${PROJECT_NAME}_VERSION})
+if(${not_conda_test} STREQUAL "true")
+    find_package(Python COMPONENTS Interpreter REQUIRED)
+    execute_process(COMMAND ${Python_EXECUTABLE} -m setuptools_scm
+                            OUTPUT_VARIABLE ${PROJECT_NAME}_VERSION_STRING_FULL
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    string(REGEX MATCH "[0-9]+\.[0-9]+\.[0-9]+" ${PROJECT_NAME}_VERSION ${${PROJECT_NAME}_VERSION_STRING_FULL})
+    project(${PROJECT_NAME} VERSION ${${PROJECT_NAME}_VERSION})
+endif()
 
 # Add installation directory variables
 include(GNUInstallDirs)
@@ -39,50 +74,24 @@ endif()
 
 # Save the eigen directory for use in the python interface
 set(EIGEN_DIR ${EIGEN3_INCLUDE_DIR} CACHE PATH "The path to the eigen include directory")
-# Set build type checks
-string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
-set(upstream_required "")
-if(cmake_build_type_lower STREQUAL "release")
-    set(upstream_required "REQUIRED")
-endif()
-
-# Set a variable indicating if upstream projects should come from the git repository or a local source
-set(ERROR_TOOLS_PATH "" CACHE PATH "The path to the local version of error_tools")
-set(ERROR_TOOLS_GITTAG "" CACHE PATH "The version to build of error_tools")
-set(VECTOR_TOOLS_PATH "" CACHE PATH "The path to the local version of vector_tools")
-set(VECTOR_TOOLS_GITTAG "" CACHE PATH "The version to build of vector_tools")
-set(CONSTITUTIVE_TOOLS_PATH "" CACHE PATH "The path to the local version of constitutive_tools")
-set(CONSTITUTIVE_TOOLS_GITTAG "" CACHE PATH "The version to build of constitutive_tools")
 
 # Find related, but external, projects in installed environment
 include(FetchContent)
 set(upstream_packages "error_tools" "vector_tools" "constitutive_tools")
 foreach(package ${upstream_packages})
     string(TOUPPER "${package}" package_upper)
+    set(${package_upper}_BUILD_PYTHON_BINDINGS ${STRESS_TOOLS_BUILD_PYTHON_BINDINGS})
     find_package(${package} ${upstream_required} CONFIG)
     if(${package}_FOUND)
         message(STATUS "Found ${package}: ${${package}_DIR}")
     else()
         # Find related, but external, projects using FetchContent and building locally
         message(WARNING "Did not find an installed ${package} package. Attempting local build with FetchContent.")
-        # Pick repository path to build
-        if(${package_upper}_PATH)
-            set(PACKAGE_REPOSITORY ${${package_upper}_PATH})
-        else()
-            set(PACKAGE_REPOSITORY ssh://git@re-git.lanl.gov:10022/aea/material-models/${package}.git)
-        endif()
-        message(STATUS "Building ${package} from ${PACKAGE_REPOSITORY}")
-        # Pick repository Git tag to build
-        if(${package_upper}_GITTAG)
-            set(PACKAGE_GITTAG ${${package_upper}_GITTAG})
-        else()
-            set(PACKAGE_GITTAG origin/dev)
-        endif()
-        message(STATUS "Building ${package} version ${PACKAGE_GITTAG}")
+        # TODO: Decide how to handle main/dev build differences. bash env variables for GIT TAG?
         FetchContent_Declare(
             ${package}
-            GIT_REPOSITORY ${PACKAGE_REPOSITORY}
-            GIT_TAG        ${PACKAGE_GITTAG}
+            GIT_REPOSITORY ssh://git@re-git.lanl.gov:10022/aea/material-models/${package}.git
+            GIT_TAG        origin/dev
         )
         FetchContent_MakeAvailable(${package})
     endif()
@@ -91,36 +100,43 @@ endforeach(package)
 #=============================================================================================== ADD PROJECT TARGETS ===
 # MUST COME AFTER DEPENDENCY LOCATING
 # Add project source directories
-include_directories("${CPP_SRC_PATH}")
-add_subdirectory(${CPP_SRC_PATH})
+if(${not_conda_test} STREQUAL "true")
+    include_directories("${CPP_SRC_PATH}")
+    add_subdirectory(${CPP_SRC_PATH})
+endif()
 
 # Only add tests and documentation for current project builds. Protects downstream project builds.
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # Find Boost. Required for tests
     find_package(Boost 1.53.0 REQUIRED COMPONENTS unit_test_framework)
     # Add tests and docs
-    add_subdirectory("${CPP_SRC_PATH}/tests")
-    add_subdirectory("docs")
+    add_subdirectory(${CPP_TEST_PATH})
+    if(${not_conda_test} STREQUAL "true")
+        add_subdirectory(${DOXYGEN_SRC_PATH})
+        add_subdirectory(${SPHINX_SRC_PATH})
+    endif()
 endif()
 
 #==================================================================================== SETUP INSTALLATION CMAKE FILES ===
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake"
-                                 VERSION ${PROJECT_VERSION}
-                                 COMPATIBILITY SameMajorVersion)
-configure_package_config_file(
-  "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}/Config.cmake.in"
-  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-  INSTALL_DESTINATION
-  ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+if(${not_conda_test} STREQUAL "true")
+    include(CMakePackageConfigHelpers)
+    write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake"
+                                     VERSION ${PROJECT_VERSION}
+                                     COMPATIBILITY SameMajorVersion)
+    configure_package_config_file(
+      "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}/Config.cmake.in"
+      "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+      INSTALL_DESTINATION
+      ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
 
-# CMake won't build the targets for local builds of upstream projects
-if(cmake_build_type_lower STREQUAL release)
-    install(EXPORT ${PROJECT_NAME}_Targets
-            FILE ${PROJECT_NAME}Targets.cmake
+    # CMake won't build the targets for local builds of upstream projects
+    if(cmake_build_type_lower STREQUAL release)
+        install(EXPORT ${PROJECT_NAME}_Targets
+                FILE ${PROJECT_NAME}Targets.cmake
+                DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+    endif()
+
+    install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+                  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
             DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
 endif()
-
-install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-              "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)

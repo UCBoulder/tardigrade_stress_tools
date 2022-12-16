@@ -16,6 +16,7 @@
 #include<vector_tools.h>
 #include<error_tools.h>
 #include<constitutive_tools.h>
+#include<linear_elasticity.h>
 
 namespace stressTools{
 

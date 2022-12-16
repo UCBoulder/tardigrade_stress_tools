@@ -43,27 +43,15 @@ Executables
 Python Modules (for documentation)
 ==================================
 
-For convenience, the minimal Python environment requirements for the
-documentation build are included in ``configuration_files/environment.yaml``.
-This file was created from the [pipreqs](https://github.com/bndr/pipreqs)
-command line tool and Sphinx configuration inspection, e.g. the extension
-packages.
+For convenience, the minimal Python environment requirements for the documentation build are included in
+``environment.txt``. A minimal anaconda environment for building the documentation can be created from an existing
+anaconda installation with the following commands.
 
 .. code-block:: bash
 
-   $ pwd
-   path/to/stress_tools/
-   $ pipreqs --use-local --print --no-pin .
+   $ conda create --name stress_tools-env --file environment.txt --channel file:///projects/aea_compute/aea-conda --channel conda-forge
 
-A minimal anaconda environment for building the documentation can be created
-from an existing anaconda installation with the following commands.
-
-.. code-block:: bash
-
-   $ conda env create --file configuration_files/environment.yaml
-
-You can learn more about Anaconda Python environment creation and management in
-the [Anaconda
+You can learn more about Anaconda Python environment creation and management in the [Anaconda
 Documentation](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
 
 C++ Libraries
@@ -107,12 +95,12 @@ testing.
 sstelmo
 =======
 
-1) Activate a [W-13 Python Environment](https://xcp-confluence.lanl.gov/display/PYT/The+W-13+Python+3+environment)
+1) Activate the shared development environment
 
    .. code-block:: bash
 
-      $ module load python/2020.07-python-3.8
-      $ sv3r
+      $ module use /projects/aea_compute/modulefiles
+      $ module load stress_tools-env
 
 2) Build everything
 
@@ -161,8 +149,8 @@ build minimal working Conda environments from the Python Modules discussion.
 
    .. code-block:: bash
 
-       $ conda env create --file configuration_files/environment.yaml
-       $ conda activate environment
+       $ conda create --name stress_tools-env --file environment.txt --channel file:///projects/aea_compute/aea-conda --channel conda-forge
+       $ conda activate stress_tools-env
 
 2) Define convenience environment variables
 
@@ -281,11 +269,8 @@ Build the entire before performing the installation.
       $ cmake --install . --prefix /home/$USER/.local
 
       # Example install to conda environment
-      $ conda active my_env
+      $ conda activate my_env
       $ cmake --install . --prefix ${CONDA_DEFAULT_ENV}
-
-      # Example install to W-13 CI/CD conda environment performed by CI/CD institutional account
-      $ cmake --install . --prefix /projects/python/release
 
 ***********************
 Contribution Guidelines

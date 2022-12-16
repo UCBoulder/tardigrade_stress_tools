@@ -1,9 +1,8 @@
-add_library (${PROJECT_NAME} "${PROJECT_NAME}.cpp" "${PROJECT_NAME}.h")
+add_library (${PROJECT_NAME} SHARED ${PROJECT_SOURCE_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11
                                                  PUBLIC_HEADER ${PROJECT_NAME}.h)
-target_link_libraries(${PROJECT_NAME} error_tools constitutive_tools)
-target_compile_options(${PROJECT_NAME} PUBLIC
-                       -Wall -ansi -pedantic -O3 -fmax-errors=5 -ggdb)
+target_link_libraries(${PROJECT_NAME} ${PROJECT_LINK_LIBRARIES})
+target_compile_options(${PROJECT_NAME} PUBLIC)
 
 # Local builds of upstream projects require local include paths
 if(NOT cmake_build_type_lower STREQUAL "release")
@@ -18,4 +17,7 @@ install(TARGETS ${PROJECT_NAME}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(FILES ${PROJECT_PRIVATE_HEADERS}
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
