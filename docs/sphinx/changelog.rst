@@ -5,9 +5,8 @@
 Changelog
 #########
 
-
 ******************
-0.2.5 (unreleased)
+0.2.6 (2022-12-16)
 ******************
 
 New Features
@@ -27,3 +26,7 @@ Internal Changes
 - Removing additional errors preventing deploying the framework (:merge:`13`). By `Nathan Miller`_.
 - Remove deprecated engineering constants stiffness tensor function interface (:issue:`9`, :merge:`16`). By `Kyle
   Brindley`_.
+
+******************
+0.2.5 (2022-03-21)
+******************
