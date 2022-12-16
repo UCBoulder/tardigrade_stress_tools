@@ -11,7 +11,7 @@ build:
     - mkdir build-package
     - cd build-package
     - cmake .. -DCMAKE_BUILD_TYPE=Release
-    - cmake --build . --target stress_tools linear_elasticity
+    - cmake --build . --target stress_tools
     - cmake --install . --prefix ${PREFIX}
   ignore_run_exports:
     - python_abi
