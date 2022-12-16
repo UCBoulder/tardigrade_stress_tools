@@ -1,6 +1,7 @@
 add_library (${PROJECT_NAME} SHARED "${PROJECT_NAME}.cpp" "${PROJECT_NAME}.h" linear_elasticity.cpp linear_elasticity.h)
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11
-                                                 PUBLIC_HEADER ${PROJECT_NAME}.h)
+                                                 PUBLIC_HEADER ${PROJECT_NAME}.h
+                                                 PRIVATE_HEADER linear_elasticity.h)
 target_link_libraries(${PROJECT_NAME} error_tools constitutive_tools)
 target_compile_options(${PROJECT_NAME} PUBLIC)
 
@@ -17,4 +18,5 @@ install(TARGETS ${PROJECT_NAME}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
