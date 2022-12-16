@@ -1,7 +1,6 @@
 add_library (${PROJECT_NAME} SHARED ${PROJECT_SOURCE_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11
-                                                 PUBLIC_HEADER ${PROJECT_NAME}.h
-                                                 PRIVATE_HEADER ${PROJECT_PRIVATE_HEADERS})
+                                                 PUBLIC_HEADER ${PROJECT_NAME}.h)
 target_link_libraries(${PROJECT_NAME} ${PROJECT_LINK_LIBRARIES})
 target_compile_options(${PROJECT_NAME} PUBLIC)
 
@@ -20,3 +19,5 @@ install(TARGETS ${PROJECT_NAME}
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(FILES ${PROJECT_PRIVATE_HEADERS}
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
