@@ -4,7 +4,7 @@
   * Tests for the linear elasticity support module
   */
 
-#include<linear_elasticity.h>
+#include<stress_tools.h>
 #include<sstream>
 #include<fstream>
 

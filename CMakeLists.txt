@@ -11,7 +11,13 @@ set(DOXYGEN_SRC_PATH "docs/doxygen")
 set(SPHINX_SRC_PATH "docs/sphinx")
 # Set the internal support libraries
 set(INTERNAL_SUPPORT_LIBRARIES "linear_elasticity")
-set(LINEAR_ELASTICITY_UPSTREAM_LIBRARIES "constitutive_tools")
+set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
+set(PROJECT_PRIVATE_HEADERS "")
+foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
+    set(PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES} ${package}.cpp ${package}.h)
+    set(PROJECT_PRIVATE_HEADERS ${PROJECT_PRIVATE_HEADERS} ${package}.h)
+endforeach(package)
+set(PROJECT_LINK_LIBRARIES error_tools constitutive_tools)
 
 # Added a flag for whether the python bindings for stress tools get built
 set(STRESS_TOOLS_BUILD_PYTHON_BINDINGS ON CACHE BOOL "Flag for whether the python bindings should be built")
@@ -23,23 +29,15 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_P
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
 set(upstream_required "")
 set(not_conda_test "true")
-foreach(package ${PROJECT_NAME} ${INTERNAL_SUPPORT_LIBRARIES})
-    set(${package}_link_string ${package})
-    if(cmake_build_type_lower STREQUAL "release")
-        set(upstream_required "REQUIRED")
-    elseif(cmake_build_type_lower STREQUAL "conda-test")
-        set(upstream_required "REQUIRED")
-        set(not_conda_test "false")
-        # Find the installed project libraries
-        find_file(${package}_linked_library
-                  "lib${package}.so"
-                  PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
-                  NO_CACHE
-                  REQUIRED)
-        set(${package}_link_string ${${package}_linked_library})
-        # Find the installed project umat
-    endif()
-endforeach(package)
+if(cmake_build_type_lower STREQUAL "release")
+    set(upstream_required "REQUIRED")
+elseif(cmake_build_type_lower STREQUAL "conda-test")
+    set(upstream_required "REQUIRED")
+    set(not_conda_test "false")
+    # Find the installed project libraries
+    find_package(${PROJECT_NAME} ${upstream_required} CONFIG)
+    # Find the installed project umat
+endif()
 
 # Get version number from Git
 set(VERSION_UPDATE_FROM_GIT True)
@@ -121,26 +119,24 @@ endif()
 
 #==================================================================================== SETUP INSTALLATION CMAKE FILES ===
 if(${not_conda_test} STREQUAL "true")
-    foreach(package ${PROJECT_NAME})
-        include(CMakePackageConfigHelpers)
-        write_basic_package_version_file("${package}ConfigVersion.cmake"
-                                         VERSION ${PROJECT_VERSION}
-                                         COMPATIBILITY SameMajorVersion)
-        configure_package_config_file(
-          "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}/Config.cmake.in"
-          "${PROJECT_BINARY_DIR}/${package}Config.cmake"
-          INSTALL_DESTINATION
-          ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
+    include(CMakePackageConfigHelpers)
+    write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake"
+                                     VERSION ${PROJECT_VERSION}
+                                     COMPATIBILITY SameMajorVersion)
+    configure_package_config_file(
+      "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}/Config.cmake.in"
+      "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+      INSTALL_DESTINATION
+      ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
 
-        # CMake won't build the targets for local builds of upstream projects
-        if(cmake_build_type_lower STREQUAL release)
-            install(EXPORT ${package}_Targets
-                    FILE ${package}Targets.cmake
-                    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
-        endif()
+    # CMake won't build the targets for local builds of upstream projects
+    if(cmake_build_type_lower STREQUAL release)
+        install(EXPORT ${PROJECT_NAME}_Targets
+                FILE ${PROJECT_NAME}Targets.cmake
+                DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+    endif()
 
-        install(FILES "${PROJECT_BINARY_DIR}/${package}Config.cmake"
-                      "${PROJECT_BINARY_DIR}/${package}ConfigVersion.cmake"
-                DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
-    endforeach(package)
+    install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+                  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+            DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
 endif()

@@ -16,6 +16,11 @@ New Features
 - Add fully anisotropic, orthotropic, transverse isotropic, and cubic linear elasticity (:issue:`6`, :merge:`15`). By
   `Kyle Brindley`_.
 
+Bug Fixes
+=========
+- Build and install a single shared library to help downstream projects find the full namespace (:issue:`10`,
+  :merge:`17`). By `Kyle Brindley`_.
+
 Internal Changes
 ================
 - Updating framework to current cpp_stub standard (:merge:`12`). By `Nathan Miller`_.
