@@ -1,8 +1,8 @@
-add_library (${PROJECT_NAME} SHARED "${PROJECT_NAME}.cpp" "${PROJECT_NAME}.h" linear_elasticity.cpp linear_elasticity.h)
+add_library (${PROJECT_NAME} SHARED ${PROJECT_SOURCE_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11
                                                  PUBLIC_HEADER ${PROJECT_NAME}.h
-                                                 PRIVATE_HEADER linear_elasticity.h)
-target_link_libraries(${PROJECT_NAME} error_tools constitutive_tools)
+                                                 PRIVATE_HEADER ${PROJECT_PRIVATE_HEADERS})
+target_link_libraries(${PROJECT_NAME} ${PROJECT_LINK_LIBRARIES})
 target_compile_options(${PROJECT_NAME} PUBLIC)
 
 # Local builds of upstream projects require local include paths

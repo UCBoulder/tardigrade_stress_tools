@@ -11,7 +11,13 @@ set(DOXYGEN_SRC_PATH "docs/doxygen")
 set(SPHINX_SRC_PATH "docs/sphinx")
 # Set the internal support libraries
 set(INTERNAL_SUPPORT_LIBRARIES "linear_elasticity")
-set(LINEAR_ELASTICITY_UPSTREAM_LIBRARIES "constitutive_tools")
+set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
+set(PROJECT_PRIVATE_HEADERS "")
+foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
+    set(PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES} ${package}.cpp ${package}.h)
+    set(PROJECT_PRIVATE_HEADERS ${PROJECT_PRIVATE_HEADERS} ${package}.h)
+endforeach(package)
+set(PROJECT_LINK_LIBRARIES error_tools constitutive_tools)
 
 # Added a flag for whether the python bindings for stress tools get built
 set(STRESS_TOOLS_BUILD_PYTHON_BINDINGS ON CACHE BOOL "Flag for whether the python bindings should be built")
