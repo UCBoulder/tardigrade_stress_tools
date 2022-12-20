@@ -990,7 +990,7 @@ namespace stressTools{
                                    const floatType &alpha,
                                    floatVector &stress, floatVector &currentStateVariables,
                                    floatMatrix &dstressdstrain, floatVector &dstressdrateModifier,
-                                   floatMatrix &dstressdPreviousStrain, floatMatrix &dStressdPreviousRateModifier
+                                   floatMatrix &dstressdPreviousStrain, floatMatrix &dStressdPreviousRateModifier,
                                    floatMatrix &dstressdPreviousStateVariables,
                                    floatMatrix &dStateVariablesdStrain, floatMatrix &dStateVariablesdRateModifier,
                                    floatMatrix &dStateVariablesdPreviousStrain, floatMatrix &dStateVariablesdPreviousRateModifier,
@@ -1035,7 +1035,7 @@ namespace stressTools{
                                       currentRateModifier, previousRateModifier, previousStateVariables,
                                       materialParameters, alpha,
                                       dStress, stress, currentStateVariables,
-                                      dstressdstrain, dstressdrateModifier, dstressdPreviousStrain, dStressdPreviousRateModifier
+                                      dstressdstrain, dstressdrateModifier, dstressdPreviousStrain, dStressdPreviousRateModifier,
                                       dstressdPreviousStateVariables,
                                       dStateVariablesdStrain, dStateVariablesdRateModifier,
                                       dStateVariablesdPreviousStrain, dStateVariablesdPreviousRateModifier,
@@ -1050,7 +1050,7 @@ namespace stressTools{
                                    const floatType &alpha,
                                    floatVector &dStress, floatVector &stress, floatVector &currentStateVariables,
                                    floatMatrix &dstressdstrain, floatVector &dstressdrateModifier,
-                                   floatMatrix &dstressdPreviousStrain, floatMatrix &dStressdPreviousRateModifier
+                                   floatMatrix &dstressdPreviousStrain, floatMatrix &dStressdPreviousRateModifier,
                                    floatMatrix &dstressdPreviousStateVariables,
                                    floatMatrix &dStateVariablesdStrain, floatMatrix &dStateVariablesdRateModifier,
                                    floatMatrix &dStateVariablesdPreviousStrain, floatMatrix &dStateVariablesdPreviousRateModifier,
