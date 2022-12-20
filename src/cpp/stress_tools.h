@@ -119,6 +119,19 @@ namespace stressTools{
                                    const floatType &currentRateModifier, const floatType &previousRateModifier,
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
                                    const floatType &alpha,
+                                   floatVector &stress, floatVector &currentStateVariables,
+                                   floatMatrix &dstressdstrain, floatVector &dstressdrateModifier,
+                                   floatMatrix &dstressdPreviousStrain, floatMatrix &dStressdPreviousRateModifier
+                                   floatMatrix &dstressdPreviousStateVariables,
+                                   floatMatrix &dStateVariablesdStrain, floatMatrix &dStateVariablesdRateModifier,
+                                   floatMatrix &dStateVariablesdPreviousStrain, floatMatrix &dStateVariablesdPreviousRateModifier,
+                                   floatMatrix &dStateVariablesdPreviousStateVariables);
+
+    errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain,
+                                   const floatType &previousTime, const floatVector &previousStrain,
+                                   const floatType &currentRateModifier, const floatType &previousRateModifier,
+                                   const floatVector &previousStateVariables, const floatVector &materialParameters,
+                                   const floatType &alpha,
                                    floatVector &dStress, floatVector &stress, floatVector &currentStateVariables);
 
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain,
@@ -128,6 +141,19 @@ namespace stressTools{
                                    const floatType &alpha,
                                    floatVector &dStress, floatVector &stress, floatVector &currentStateVariables,
                                    floatMatrix &dstressdstrain, floatVector &dstressdrateModifier);
+
+    errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain,
+                                   const floatType &previousTime, const floatVector &previousStrain,
+                                   const floatType &currentRateModifier, const floatType &previousRateModifier,
+                                   const floatVector &previousStateVariables, const floatVector &materialParameters,
+                                   const floatType &alpha,
+                                   floatVector &dStress, floatVector &stress, floatVector &currentStateVariables,
+                                   floatMatrix &dstressdstrain, floatVector &dstressdrateModifier,
+                                   floatMatrix &dstressdPreviousStrain, floatMatrix &dStressdPreviousRateModifier
+                                   floatMatrix &dstressdPreviousStateVariables,
+                                   floatMatrix &dStateVariablesdStrain, floatMatrix &dStateVariablesdRateModifier,
+                                   floatMatrix &dStateVariablesdPreviousStrain, floatMatrix &dStateVariablesdPreviousRateModifier,
+                                   floatMatrix &dStateVariablesdPreviousStateVariables);
 
     errorOut volumetricNeoHookean(const floatType &jacobian, const floatType &bulkModulus,
                                   floatType &meanStress);

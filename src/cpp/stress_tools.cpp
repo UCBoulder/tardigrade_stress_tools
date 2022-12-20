@@ -983,6 +983,234 @@ namespace stressTools{
 
     }
 
+    errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain,
+                                   const floatType &previousTime, const floatVector &previousStrain,
+                                   const floatType &currentRateModifier, const floatType &previousRateModifier,
+                                   const floatVector &previousStateVariables, const floatVector &materialParameters,
+                                   const floatType &alpha,
+                                   floatVector &stress, floatVector &currentStateVariables,
+                                   floatMatrix &dstressdstrain, floatVector &dstressdrateModifier,
+                                   floatMatrix &dstressdPreviousStrain, floatMatrix &dStressdPreviousRateModifier
+                                   floatMatrix &dstressdPreviousStateVariables,
+                                   floatMatrix &dStateVariablesdStrain, floatMatrix &dStateVariablesdRateModifier,
+                                   floatMatrix &dStateVariablesdPreviousStrain, floatMatrix &dStateVariablesdPreviousRateModifier,
+                                   floatMatrix &dStateVariablesdPreviousStateVariables);
+        /*!
+         * Compute the stress for linear viscoelasticity based on the potential function
+         *
+         * \f$\rho^0 \Psi = 0.5*(E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ}))\f$
+         *
+         * \param &currentTime: The current time
+         * \param &currentStrain: The current Green-Lagrange strain
+         * \param &previousTime: The previous time
+         * \param &previousStrain: The previous value of strain
+         * \param &currentRateModifier: The current value of the rate modifier
+         *     which can be used for temperature effects or (potentially) other non-linear effects.
+         * \param &previousRateModifier: The previous value of the rate modifier
+         *     which can be used for temperature effects or (potentially) other non-linear effects.
+         * \param &previousStateVariables: The previous values of the state variables
+         * \param &materialParameters: The material parameters
+         *     The order of the parameters is [\f$G_{\infty}\f$, \f$\tau\f$ s, \f$G\f$ s] where
+         *         - \f$G_{\infty}\f$: The infinite stiffness modulus
+         *         - \f$\tau\f$ s: The time constants
+         *         - \f$G\f$ s: The stiffness values
+         * \param &alpha: The integration parameter (0 for implicit, 1 for explicit)
+         * \param &stress: The computed stress in the reference configuration (i.e. the same configuration as the strain)
+         * \param &currentStateVariables: The current values of the state variables
+         * \param &dstressdstrain: The derivative of the stress w.r.t. the strain
+         * \param &dstressdrateModifier: The derivative of the stress w.r.t. the rate modifier
+         * \param &dstressdPreviousStrain: The derivative of the stress w.r.t. the previous strain
+         * \param &dstressdPreviousRateModifier: The derivative of the stress w.r.t. the previous rate modifier
+         * \param &dstressdPreviousStateVariables: The derivative of the stress w.r.t. the previous state variables
+         * \param &dStateVariablesdstrain: The derivative of the state variables w.r.t. the strain
+         * \param &dStateVariablesdrateModifier: The derivative of the state variables w.r.t. the rate modifier
+         * \param &dStateVariablesdPreviousStrain: The derivative of the state variables w.r.t. the previous strain
+         * \param &dStateVariablesdPreviousRateModifier: The derivative of the state variables w.r.t. the previous rate modifier
+         * \param &dStateVariablesdPreviousStateVariables: The derivative of the state variables w.r.t. the previous state variables
+         */
+
+        floatVector dStress;
+
+        return linearViscoelasticity( currentTime, currentStrain, previousTime, previousStrain,
+                                      currentRateModifier, previousRateModifier, previousStateVariables,
+                                      materialParameters, alpha,
+                                      dStress, stress, currentStateVariables,
+                                      dstressdstrain, dstressdrateModifier, dstressdPreviousStrain, dStressdPreviousRateModifier
+                                      dstressdPreviousStateVariables,
+                                      dStateVariablesdStrain, dStateVariablesdRateModifier,
+                                      dStateVariablesdPreviousStrain, dStateVariablesdPreviousRateModifier,
+                                      dStateVariablesdPreviousStateVariables );
+
+    }
+
+    errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain,
+                                   const floatType &previousTime, const floatVector &previousStrain,
+                                   const floatType &currentRateModifier, const floatType &previousRateModifier,
+                                   const floatVector &previousStateVariables, const floatVector &materialParameters,
+                                   const floatType &alpha,
+                                   floatVector &dStress, floatVector &stress, floatVector &currentStateVariables,
+                                   floatMatrix &dstressdstrain, floatVector &dstressdrateModifier,
+                                   floatMatrix &dstressdPreviousStrain, floatMatrix &dStressdPreviousRateModifier
+                                   floatMatrix &dstressdPreviousStateVariables,
+                                   floatMatrix &dStateVariablesdStrain, floatMatrix &dStateVariablesdRateModifier,
+                                   floatMatrix &dStateVariablesdPreviousStrain, floatMatrix &dStateVariablesdPreviousRateModifier,
+                                   floatMatrix &dStateVariablesdPreviousStateVariables){
+        /*!
+         * Compute the stress for linear viscoelasticity based on the potential function
+         *
+         * \f$\rho^0 \Psi = 0.5*(E_{IJ} G_{\infty} E_{IJ} + \sum_{n=1}^N (E_{IJ} - \Xi_{IJ}^n) G^n (E_{IJ} - \Xi_{IJ}))\f$
+         *
+         * \param &currentTime: The current time
+         * \param &currentStrain: The current Green-Lagrange strain
+         * \param &previousTime: The previous time
+         * \param &previousStrain: The previous value of strain
+         * \param &currentRateModifier: The current value of the rate modifier
+         *     which can be used for temperature effects or (potentially) other non-linear effects.
+         * \param &previousRateModifier: The previous value of the rate modifier
+         *     which can be used for temperature effects or (potentially) other non-linear effects.
+         * \param &previousStateVariables: The previous values of the state variables
+         * \param &materialParameters: The material parameters
+         *     The order of the parameters is [\f$G_{\infty}\f$, \f$\tau\f$ s, \f$G\f$ s] where
+         *         - \f$G_{\infty}\f$: The infinite stiffness modulus
+         *         - \f$\tau\f$ s: The time constants
+         *         - \f$G\f$ s: The stiffness values
+         * \param &alpha: The integration parameter (0 for implicit, 1 for explicit)
+         * \param &stress: The computed stress in the reference configuration (i.e. the same configuration as the strain)
+         * \param &currentStateVariables: The current values of the state variables
+         * \param &dstressdstrain: The derivative of the stress w.r.t. the strain
+         * \param &dstressdrateModifier: The derivative of the stress w.r.t. the rate modifier
+         * \param &dstressdPreviousStrain: The derivative of the stress w.r.t. the previous strain
+         * \param &dstressdPreviousRateModifier: The derivative of the stress w.r.t. the previous rate modifier
+         * \param &dstressdPreviousStateVariables: The derivative of the stress w.r.t. the previous state variables
+         * \param &dStateVariablesdstrain: The derivative of the state variables w.r.t. the strain
+         * \param &dStateVariablesdrateModifier: The derivative of the state variables w.r.t. the rate modifier
+         * \param &dStateVariablesdPreviousStrain: The derivative of the state variables w.r.t. the previous strain
+         * \param &dStateVariablesdPreviousRateModifier: The derivative of the state variables w.r.t. the previous rate modifier
+         * \param &dStateVariablesdPreviousStateVariables: The derivative of the state variables w.r.t. the previous state variables
+         */
+        floatType dt = currentTime - previousTime;
+
+        //Check the material parameters
+        if (materialParameters.size() == 0){
+            return new errorNode(__func__, "At least one material parameter must be provided.");
+        }
+
+        //Set the number of Prony-Series terms
+        if ( (materialParameters.size() - 1) % 2 != 0 ){
+            return new errorNode(__func__, "An equal number of taus and Gs must be provided.");
+        }
+        unsigned int nTerms = (materialParameters.size() - 1)/2;
+
+        //Set the dimension of the strain
+        unsigned int dim = currentStrain.size();
+        //Check the state variables
+        if (previousStateVariables.size() != nTerms*dim){
+            return new errorNode(__func__, "The number of previous state variables is not consistent with the strain size.");
+        }
+
+        //Compute the infinite stress
+        floatVector dStrain = currentStrain - previousStrain;
+        dStress = materialParameters[0]*dStrain;
+        stress = materialParameters[0]*currentStrain;
+
+        floatMatrix EYE = vectorTools::eye< floatType >( dim * dim );
+
+        dstressdstrain = materialParameters[ 0 ] * EYE;
+        dstressdPreviousStrain = floatMatrix( stress.size( ), floatVector( previousStrain.size( ), 0 ) );
+        dstressdPreviousStateVariables = floatMatrix( stress.size( ), floatVector( previousStateVariables.size( ), 0 ) );
+
+        //Set the initial value of the factor
+        floatType factor;
+        floatType dfactordr;
+        floatType taui;
+        floatType Gi;
+        floatVector Xip(dim, 0), Xic(dim, 0);
+        currentStateVariables.resize(0);
+
+        std::vector< unsigned int > indices(dim, 0);
+
+        floatVector dXi(dim, 0);
+
+        dstressdCurrentRateModifier = floatVector( currentStrain.size( ), 0 );
+        dstressdPreviousRateModifier = floatVector( currentStrain.size( ), 0 );
+
+        floatMatrix dStateVariablesdCurrentRateModifier_matrix( nTerms );
+        floatMatrix dStateVariablesdPreviousRateModifier_matrix( nTerms );
+
+        floatType dstressdstrain_relax = 0;
+        floatType dstressdPreviousStrain_relax = 0;
+
+        for (unsigned int i=1; i<nTerms+1; i++){
+            //Get the parameters
+            taui = materialParameters[i];
+            Gi = materialParameters[i+nTerms];
+
+            //Get the factor
+            factor = dt/(taui + dt*(1 - alpha)*currentRateModifier);
+            dfactordr = ( dt * dt ) * ( 1 - alpha ) / std::pow( ( taui + dt * ( 1 - alpha ) * currentRateModifier ), 2 );
+
+            //Set the indices of the previous values of the state variables
+            for (unsigned int j=dim*(i-1), k=0; j<dim*i; j++, k++){
+                indices[k] = j;
+            }
+
+            //Get the previous values of the state variables
+            vectorTools::getValuesByIndex(previousStateVariables, indices, Xip);
+
+            //Compute the new state-variable values
+            floatVector dxi = factor * ((1 - alpha) * (currentStrain - Xip) * currentRateModifier
+                                           + alpha * (previousStrain - Xip) * previousRateModifier );
+
+            dStateVariablesdCurrentRateModifier_matrix[ i - 1 ] = dfactordr * ((1 - alpha) * (currentStrain - Xip) * currentRateModifier
+                                                                                  + alpha * (previousStrain - Xip) * previousRateModifier )
+                                                                + factor * (1 - alpha) * (currentStrain - Xip);
+
+            dStateVariablesdPreviousRateModifier_matrix[ i - 1 ] = factor * alpha * (previousStrain - Xip);
+
+            floatType dxidcurrentStrain_factor = factor * ( 1 - alpha ) * currentRateModifier;
+
+            floatType dxidpreviousStrain_factor = factor * alpha * previousRateModifier;
+
+            floatType dxidPreviousXi_factor = -factor * ( ( 1 - alpha ) * currentRateModifier
+                                                              + alpha   * previousRateModifier );
+
+            Xic = Xip + dxi;
+
+            //Add the contribution to the stress
+            dStress += Gi*(dStrain - dxi);
+
+            stress += Gi*(currentStrain - Xic);
+
+            dstressdstrain_relax += Gi * ( 1 - dxidcurrentStrain_factor );
+
+            dstressdCurrentRateModifier += -Gi * dStateVariablesdCurrentRateModifier_matrix[ i - 1 ];
+
+            dstressdPreviousStrain_relax += -Gi * dxidpreviousStrain_factor;
+
+            dstressdPreviousRateModifier += -Gi * dStateVariablesdPreviousRateModifier_matrix[ i - 1 ];
+
+            for ( unsigned int j = 0; j < dim * dim; j++ ){
+
+                dstressdPreviousStateVariables[ j ][ dim * dim * i + j ] = -Gi * ( 1 + dxidPreviousXi_factor );
+
+            }
+
+            //Save the new value of the state variable
+            currentStateVariables = vectorTools::appendVectors({currentStateVariables, Xic});
+        }
+
+        dstressdstrain += dstressdstrain_relax * EYE;
+
+        dstressdPreviousStrain += dstressdPreviousStrain_relax * EYE;
+
+        dStateVariablesdCurrentRateModifier = vectorTools::appendVectors( dStateVariablesdCurrentRateModifier_matrix );
+
+        dStateVariablesdPreviousRateModifier = vectorTools::appendVectors( dStateVariablesdPreviousRateModifier_matrix );
+
+        return NULL;
+
+    }
+
     errorOut volumetricNeoHookean(const floatType &jacobian, const floatType &bulkModulus,
                                   floatType &meanStress){
         /*!
