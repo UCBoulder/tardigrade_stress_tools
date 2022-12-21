@@ -637,6 +637,8 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
                                               materialParameters, alpha,
                                               stress, currentStateVariables );
 
+    BOOST_CHECK( !res );
+
     floatVector stressJ, dStressJ, currentStateVariablesJ;
     res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
                                               previousTime, previousStrain,
@@ -646,101 +648,275 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
                                               stressJ, currentStateVariablesJ, jacobian,
                                               dstressdrateModifier );
 
+    BOOST_CHECK( !res );
     BOOST_CHECK( vectorTools::fuzzyEquals( stressJ, stress ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( currentStateVariables, currentStateVariablesJ ) );
 
-    for ( unsigned int i=0; i<currentStrain.size( ); i++ ){
-        floatVector deltaStrain( currentStrain.size( ), 0 );
-        deltaStrain[ i ] = fabs( eps*currentStrain[ i ] );
-
-        res = stressTools::linearViscoelasticity( currentTime,  currentStrain + deltaStrain,
-                                                  previousTime, previousStrain,
-                                                  currentRateModifier, previousRateModifier,
-                                                  previousStateVariables,
-                                                  materialParameters, alpha,
-                                                  deltaStress, currentStateVariablesJ );
-        BOOST_CHECK( ! res );
-
-        //Compare the values in the column to the jacobian's values
-        for ( unsigned int j=0; j<deltaStress.size( ); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( jacobian[ j ][ i ], ( deltaStress[ j ] - stressJ[ j ] )/deltaStrain[ i ] ) );
-        }
-
-    }
+    floatVector stress_2, dStress_2, currentStateVariables_2, dstressdrateModifier_2;
+    floatMatrix jacobian_2;
 
     res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
                                               previousTime, previousStrain,
                                               currentRateModifier, previousRateModifier,
                                               previousStateVariables,
                                               materialParameters, alpha,
-                                              dStressJ, stressJ, currentStateVariablesJ, jacobian,
-                                              dstressdrateModifier );
+                                              dStress_2, stress_2, currentStateVariables_2, jacobian_2,
+                                              dstressdrateModifier_2 );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( stressJ, stress ) );
+    BOOST_CHECK( !res );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dStressJ, dStress ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( stress, stress_2 ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( dStress, dStress_2 ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( currentStateVariables, currentStateVariables_2 ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( jacobian, jacobian_2 ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( dstressdrateModifier, dstressdrateModifier_2 ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( currentStateVariables, currentStateVariablesJ ) );
+    floatVector stress_3, dStress_3, currentStateVariables_3, dstressdrateModifier_3, dstressdPreviousRateModifier,
+                dStateVariablesdRateModifier, dStateVariablesdPreviousRateModifier;
+
+    floatMatrix jacobian_3, dstressdPreviousStrain, dstressdPreviousStateVariables,
+                dStateVariablesdStrain, dStateVariablesdPreviousStrain, dStateVariablesdPreviousStateVariables;
+
+    res = stressTools::linearViscoelasticity( currentTime, currentStrain,
+                                              previousTime, previousStrain,
+                                              currentRateModifier, previousRateModifier,
+                                              previousStateVariables, materialParameters,
+                                              alpha,
+                                              dStress_3, stress_3, currentStateVariables_3,
+                                              jacobian_3, dstressdrateModifier_3,
+                                              dstressdPreviousStrain, dstressdPreviousRateModifier,
+                                              dstressdPreviousStateVariables,
+                                              dStateVariablesdStrain, dStateVariablesdRateModifier,
+                                              dStateVariablesdPreviousStrain, dStateVariablesdPreviousRateModifier,
+                                              dStateVariablesdPreviousStateVariables );
+
+    BOOST_CHECK( !res );
+    BOOST_CHECK( vectorTools::fuzzyEquals( stress_3, stress ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( currentStateVariables_3, currentStateVariables ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( jacobian_3, jacobian ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( dstressdrateModifier_3, dstressdrateModifier ) );
+
+    floatMatrix jacobian_answer( stress.size( ), floatVector( currentStrain.size( ), 0 ) );
+    floatVector dstressdrateModifier_answer( stress.size( ), 0 );
+    floatMatrix dstressdPreviousStrain_answer( stress.size( ), floatVector( currentStrain.size( ), 0 ) );
+    floatVector dstressdPreviousRateModifier_answer( stress.size( ), 0 );
+    floatMatrix dstressdPreviousStateVariables_answer( stress.size( ), floatVector( previousStateVariables.size( ), 0 ) );
+    floatMatrix dStateVariablesdStrain_answer( currentStateVariables.size( ), floatVector( currentStrain.size( ), 0 ) );
+    floatVector dStateVariablesdRateModifier_answer( currentStateVariables.size( ), 0 );
+    floatMatrix dStateVariablesdPreviousStrain_answer( currentStateVariables.size( ), floatVector( previousStrain.size( ), 0 ) );
+    floatVector dStateVariablesdPreviousRateModifier_answer( currentStateVariables.size( ), 0 );
+    floatMatrix dStateVariablesdPreviousStateVariables_answer( currentStateVariables.size( ), floatVector( previousStateVariables.size( ), 0 ) );
 
     for ( unsigned int i=0; i<currentStrain.size( ); i++ ){
-        floatVector deltaStrain( currentStrain.size( ), 0 );
-        deltaStrain[ i ] = fabs( eps*currentStrain[ i ] );
 
-        res = stressTools::linearViscoelasticity( currentTime,  currentStrain + deltaStrain,
+        floatVector delta( currentStrain.size( ), 0 );
+
+        delta[ i ] = eps * fabs( currentStrain[ i ] ) + eps;
+
+        floatVector s_p, s_m, xi_p, xi_m;
+
+        res = stressTools::linearViscoelasticity( currentTime,  currentStrain + delta,
                                                   previousTime, previousStrain,
                                                   currentRateModifier, previousRateModifier,
                                                   previousStateVariables,
                                                   materialParameters, alpha,
-                                                  deltaStress, currentStateVariablesJ );
+                                                  s_p, xi_p );
+
+        BOOST_CHECK( ! res );
+
+        res = stressTools::linearViscoelasticity( currentTime,  currentStrain - delta,
+                                                  previousTime, previousStrain,
+                                                  currentRateModifier, previousRateModifier,
+                                                  previousStateVariables,
+                                                  materialParameters, alpha,
+                                                  s_m, xi_m );
+
         BOOST_CHECK( ! res );
 
         //Compare the values in the column to the jacobian's values
-        for ( unsigned int j=0; j<deltaStress.size( ); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( jacobian[ j ][ i ], ( deltaStress[ j ] - stressJ[ j ] )/deltaStrain[ i ] ) );
+        for ( unsigned int j=0; j<stress.size( ); j++ ){
+
+            jacobian_answer[ j ][ i ] = ( s_p[ j ] - s_m[ j ] ) / ( 2 * delta[ i ] );
+
         }
 
-        res = stressTools::linearViscoelasticity( currentTime,  currentStrain + deltaStrain,
-                                                  previousTime, previousStrain,
-                                                  currentRateModifier, previousRateModifier,
-                                                  previousStateVariables,
-                                                  materialParameters, alpha,
-                                                  deltaDStress, deltaStress, currentStateVariablesJ );
-        BOOST_CHECK( ! res );
+        for ( unsigned int j=0; j<currentStateVariables.size( ); j++ ){
 
-        //Compare the values in the column to the jacobian's values
-        for ( unsigned int j=0; j<deltaStress.size( ); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( jacobian[ j ][ i ], ( deltaDStress[ j ] - dStressJ[ j ] )/deltaStrain[ i ] ) );
+            dStateVariablesdStrain_answer[ j ][ i ] = ( xi_p[ j ] - xi_m[ j ] ) / ( 2 * delta[ i ] );
+
         }
 
     }
 
-    floatVector deltaStrain( currentStrain.size( ), 0 );
+    BOOST_CHECK( vectorTools::fuzzyEquals( jacobian, jacobian_answer ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( dStateVariablesdStrain, dStateVariablesdStrain_answer ) );
 
     //Test the gradient w.r.t. the rate modifier
-    res = stressTools::linearViscoelasticity( currentTime, currentStrain,
-                                              previousTime, previousStrain,
-                                              currentRateModifier + fabs( eps*currentRateModifier ), previousRateModifier,
-                                              previousStateVariables,
-                                              materialParameters, alpha,
-                                              deltaStress, currentStateVariables );
+    for ( unsigned int i = 0; i < 1; i++ ){
 
-    BOOST_CHECK( ! res );
+        floatType delta = eps * std::fabs( currentRateModifier ) + eps;
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( (deltaStress - stress )/fabs( eps*currentRateModifier ), dstressdrateModifier ) );
+        floatVector s_p, s_m;
+        floatVector xi_p, xi_m;
+    
+        res = stressTools::linearViscoelasticity( currentTime, currentStrain,
+                                                  previousTime, previousStrain,
+                                                  currentRateModifier + delta, previousRateModifier,
+                                                  previousStateVariables,
+                                                  materialParameters, alpha,
+                                                  s_p, xi_p );
 
-    res = stressTools::linearViscoelasticity( currentTime, currentStrain,
-                                              previousTime, previousStrain,
-                                              currentRateModifier + fabs( eps*currentRateModifier ), previousRateModifier,
-                                              previousStateVariables,
-                                              materialParameters, alpha,
-                                              deltaDStress, deltaStress, currentStateVariablesJ );
+        BOOST_CHECK( !res );
 
-    BOOST_CHECK( ! res );
+        res = stressTools::linearViscoelasticity( currentTime, currentStrain,
+                                                  previousTime, previousStrain,
+                                                  currentRateModifier - delta, previousRateModifier,
+                                                  previousStateVariables,
+                                                  materialParameters, alpha,
+                                                  s_m, xi_m );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( (deltaStress - stress )/fabs( eps*currentRateModifier ), dstressdrateModifier ) );
+        BOOST_CHECK( !res );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( (deltaDStress - dStress )/fabs( eps*currentRateModifier ), dstressdrateModifier ) );
+        dstressdrateModifier_answer = ( s_p - s_m ) / ( 2 * delta );
+
+        dStateVariablesdRateModifier_answer = ( xi_p - xi_m ) / ( 2 * delta );
+
+    }
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( dstressdrateModifier, dstressdrateModifier_answer ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( dStateVariablesdRateModifier, dStateVariablesdRateModifier_answer ) );
+
+    for ( unsigned int i=0; i<previousStrain.size( ); i++ ){
+
+        floatVector delta( previousStrain.size( ), 0 );
+
+        delta[ i ] = eps * fabs( previousStrain[ i ] ) + eps;
+
+        floatVector s_p, s_m, xi_p, xi_m;
+
+        res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+                                                  previousTime, previousStrain + delta,
+                                                  currentRateModifier, previousRateModifier,
+                                                  previousStateVariables,
+                                                  materialParameters, alpha,
+                                                  s_p, xi_p );
+
+        BOOST_CHECK( ! res );
+
+        res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+                                                  previousTime, previousStrain - delta,
+                                                  currentRateModifier, previousRateModifier,
+                                                  previousStateVariables,
+                                                  materialParameters, alpha,
+                                                  s_m, xi_m );
+
+        BOOST_CHECK( ! res );
+
+        //Compare the values in the column to the jacobian's values
+        for ( unsigned int j=0; j<stress.size( ); j++ ){
+
+            dstressdPreviousStrain_answer[ j ][ i ] = ( s_p[ j ] - s_m[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        for ( unsigned int j=0; j<currentStateVariables.size( ); j++ ){
+
+            dStateVariablesdPreviousStrain_answer[ j ][ i ] = ( xi_p[ j ] - xi_m[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( dstressdPreviousStrain, dstressdPreviousStrain_answer ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( dStateVariablesdPreviousStrain, dStateVariablesdPreviousStrain_answer ) );
+
+    //Test the gradient w.r.t. the previous rate modifier
+    for ( unsigned int i = 0; i < 1; i++ ){
+
+        floatType delta = eps * std::fabs( previousRateModifier ) + eps;
+
+        floatVector s_p, s_m;
+        floatVector xi_p, xi_m;
+    
+        res = stressTools::linearViscoelasticity( currentTime, currentStrain,
+                                                  previousTime, previousStrain,
+                                                  currentRateModifier, previousRateModifier + delta,
+                                                  previousStateVariables,
+                                                  materialParameters, alpha,
+                                                  s_p, xi_p );
+
+        BOOST_CHECK( !res );
+
+        res = stressTools::linearViscoelasticity( currentTime, currentStrain,
+                                                  previousTime, previousStrain,
+                                                  currentRateModifier, previousRateModifier - delta,
+                                                  previousStateVariables,
+                                                  materialParameters, alpha,
+                                                  s_m, xi_m );
+
+        BOOST_CHECK( !res );
+
+        dstressdPreviousRateModifier_answer = ( s_p - s_m ) / ( 2 * delta );
+
+        dStateVariablesdPreviousRateModifier_answer = ( xi_p - xi_m ) / ( 2 * delta );
+
+    }
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( dstressdPreviousRateModifier, dstressdPreviousRateModifier_answer ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( dStateVariablesdPreviousRateModifier, dStateVariablesdPreviousRateModifier_answer ) );
+
+    for ( unsigned int i=0; i<previousStateVariables.size( ); i++ ){
+
+        floatVector delta( previousStateVariables.size( ), 0 );
+
+        delta[ i ] = eps * fabs( previousStateVariables[ i ] ) + eps;
+
+        floatVector s_p, s_m, xi_p, xi_m;
+
+        res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+                                                  previousTime, previousStrain,
+                                                  currentRateModifier, previousRateModifier,
+                                                  previousStateVariables + delta,
+                                                  materialParameters, alpha,
+                                                  s_p, xi_p );
+
+        BOOST_CHECK( ! res );
+
+        res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+                                                  previousTime, previousStrain,
+                                                  currentRateModifier, previousRateModifier,
+                                                  previousStateVariables - delta,
+                                                  materialParameters, alpha,
+                                                  s_m, xi_m );
+
+        BOOST_CHECK( ! res );
+
+        //Compare the values in the column to the jacobian's values
+        for ( unsigned int j=0; j<stress.size( ); j++ ){
+
+            dstressdPreviousStateVariables_answer[ j ][ i ] = ( s_p[ j ] - s_m[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        for ( unsigned int j=0; j<currentStateVariables.size( ); j++ ){
+
+            dStateVariablesdPreviousStateVariables_answer[ j ][ i ] = ( xi_p[ j ] - xi_m[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( dstressdPreviousStateVariables, dstressdPreviousStateVariables_answer ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( dStateVariablesdPreviousStateVariables, dStateVariablesdPreviousStateVariables_answer ) );
 
     //Test to make sure odd numbers of prony series terms can be passed in
     floatVector materialParametersOdd = { materialParameters[ 1 ], 1, 10, 100, 400, 300, 200 };
