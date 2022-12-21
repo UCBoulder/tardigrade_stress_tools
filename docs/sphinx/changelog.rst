@@ -6,6 +6,15 @@ Changelog
 #########
 
 ******************
+0.2.5 (2022-12-21)
+******************
+
+New Features
+============
+- Added the computation of the gradients with respect to the previous parameter values for linear elasticity
+  (:merge:`20`). By `Nathan Miller`_.
+
+******************
 0.2.6 (2022-12-16)
 ******************
 

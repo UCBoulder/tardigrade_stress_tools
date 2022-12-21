@@ -121,10 +121,10 @@ namespace stressTools{
                                    const floatType &alpha,
                                    floatVector &stress, floatVector &currentStateVariables,
                                    floatMatrix &dstressdstrain, floatVector &dstressdrateModifier,
-                                   floatMatrix &dstressdPreviousStrain, floatMatrix &dStressdPreviousRateModifier,
+                                   floatMatrix &dstressdPreviousStrain, floatVector &dstressdPreviousRateModifier,
                                    floatMatrix &dstressdPreviousStateVariables,
-                                   floatMatrix &dStateVariablesdStrain, floatMatrix &dStateVariablesdRateModifier,
-                                   floatMatrix &dStateVariablesdPreviousStrain, floatMatrix &dStateVariablesdPreviousRateModifier,
+                                   floatMatrix &dStateVariablesdStrain, floatVector &dStateVariablesdRateModifier,
+                                   floatMatrix &dStateVariablesdPreviousStrain, floatVector &dStateVariablesdPreviousRateModifier,
                                    floatMatrix &dStateVariablesdPreviousStateVariables);
 
     errorOut linearViscoelasticity(const floatType &currentTime, const floatVector &currentStrain,
@@ -149,10 +149,10 @@ namespace stressTools{
                                    const floatType &alpha,
                                    floatVector &dStress, floatVector &stress, floatVector &currentStateVariables,
                                    floatMatrix &dstressdstrain, floatVector &dstressdrateModifier,
-                                   floatMatrix &dstressdPreviousStrain, floatMatrix &dStressdPreviousRateModifier,
+                                   floatMatrix &dstressdPreviousStrain, floatVector &dstressdPreviousRateModifier,
                                    floatMatrix &dstressdPreviousStateVariables,
-                                   floatMatrix &dStateVariablesdStrain, floatMatrix &dStateVariablesdRateModifier,
-                                   floatMatrix &dStateVariablesdPreviousStrain, floatMatrix &dStateVariablesdPreviousRateModifier,
+                                   floatMatrix &dStateVariablesdStrain, floatVector &dStateVariablesdRateModifier,
+                                   floatMatrix &dStateVariablesdPreviousStrain, floatVector &dStateVariablesdPreviousRateModifier,
                                    floatMatrix &dStateVariablesdPreviousStateVariables);
 
     errorOut volumetricNeoHookean(const floatType &jacobian, const floatType &bulkModulus,
