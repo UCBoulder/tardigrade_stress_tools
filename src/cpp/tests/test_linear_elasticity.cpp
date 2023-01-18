@@ -57,6 +57,29 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
     // Store the resulting stiffness tensor
     floatMatrix stiffness_tensor;
 
+    // Full 9x9 as a row-major vector
+    floatVector eightyone_parameters = {  1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9.,
+                                         10., 11., 12., 13., 14., 15., 16., 17., 18.,
+                                         19., 20., 21., 22., 23., 24., 25., 26., 27.,
+                                         28., 29., 30., 31., 32., 33., 34., 35., 36.,
+                                         37., 38., 39., 40., 41., 42., 43., 44., 45.,
+                                         46., 47., 48., 49., 50., 51., 52., 53., 54.,
+                                         55., 56., 57., 58., 59., 60., 61., 62., 63.,
+                                         64., 65., 66., 67., 68., 69., 70., 71., 72.,
+                                         73., 74., 75., 76., 77., 78., 79., 80., 81. }
+    floatMatrix eightone_answer = { {  1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9. },
+                                    { 10., 11., 12., 13., 14., 15., 16., 17., 18. },
+                                    { 19., 20., 21., 22., 23., 24., 25., 26., 27. },
+                                    { 28., 29., 30., 31., 32., 33., 34., 35., 36. },
+                                    { 37., 38., 39., 40., 41., 42., 43., 44., 45. },
+                                    { 46., 47., 48., 49., 50., 51., 52., 53., 54. },
+                                    { 55., 56., 57., 58., 59., 60., 61., 62., 63. },
+                                    { 64., 65., 66., 67., 68., 69., 70., 71., 72. },
+                                    { 73., 74., 75., 76., 77., 78., 79., 80., 81. } }
+    BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( eightyone_parameters, stiffness_tensor ) );
+    BOOST_TEST( vectorTools::appendVectors( stiffness_tensor ) == vectorTools::appendVectors( eightyone_answer ),
+                boost::test_tools::per_element() );
+
     // Fully anisotropic: 21 components
     floatVector anisotropic_parameters = { C1111, C1112, C1113, C1122, C1123, C1133, C1212, C1213, C1222, C1223, C1233,
                                            C1313, C1322, C1323, C1333, C2222, C2223, C2233, C2323, C2333, C3333 };
