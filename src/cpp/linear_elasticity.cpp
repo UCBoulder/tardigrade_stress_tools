@@ -60,9 +60,14 @@ namespace linearElasticity{
         floatType C2333 = 0.;
         floatType C3333 = 0.;
 
-        if (parameters.size( ) == 81 ){
+        if ( parameters.size( ) == 81 ){
 
-            stiffnessTensor = vectorTools::appendVectors( parameters );
+            stiffnessTensor.resize( 9, floatVector( 9 ) );
+            for ( unsigned int i = 0; i < 9; i++ ){
+                for ( unsigned int j = 0; j < 9; j++ ){
+                    stiffnessTensor[ i ][ j ] = parameters[ i * 9 + j ];
+                }
+            }
             return NULL;
 
         }
