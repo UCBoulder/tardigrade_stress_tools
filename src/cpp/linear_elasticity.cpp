@@ -25,6 +25,7 @@ namespace linearElasticity{
          *
          * \param &parameters: The tensor components of the 9x9 stiffness tensor. Vector length determines the symmetry.
          *
+         * - 81: A row-major vector representing the full 9x9 stiffness tensor directly.
          * - 21: fully anistropic \f$C_{1111}\f$, \f$C_{1112}\f$, \f$C_{1113}\f$, \f$C_{1122}\f$, \f$C_{1123}\f$,
          *   \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1213}\f$, \f$C_{1222}\f$, \f$C_{1223}\f$, \f$C_{1233}\f$,
          *   \f$C_{1313}\f$, \f$C_{1322}\f$, \f$C_{1323}\f$, \f$C_{1333}\f$, \f$C_{2222}\f$, \f$C_{2223}\f$,
@@ -59,7 +60,13 @@ namespace linearElasticity{
         floatType C2333 = 0.;
         floatType C3333 = 0.;
 
-        if ( parameters.size( ) == 21 ){
+        if (parameters.size( ) == 81 ){
+
+            stiffnessTensor = vectorTools::appendVectors( parameters );
+            return NULL;
+
+        }
+        else if ( parameters.size( ) == 21 ){
 
             C1111 = parameters[  0 ];
             C1112 = parameters[  1 ];
