@@ -62,10 +62,11 @@ namespace linearElasticity{
 
         if ( parameters.size( ) == 81 ){
 
-            stiffnessTensor.resize( 9, floatVector( 9 ) );
-            for ( unsigned int i = 0; i < 9; i++ ){
-                for ( unsigned int j = 0; j < 9; j++ ){
-                    stiffnessTensor[ i ][ j ] = parameters[ i * 9 + j ];
+            unsigned int length = 9;
+            stiffnessTensor.resize( length, floatVector( length ) );
+            for ( unsigned int i = 0; i < length; i++ ){
+                for ( unsigned int j = 0; j < length; j++ ){
+                    stiffnessTensor[ i ][ j ] = parameters[ i * length + j ];
                 }
             }
             return NULL;
