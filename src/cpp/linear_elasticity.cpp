@@ -63,12 +63,7 @@ namespace linearElasticity{
         if ( parameters.size( ) == 81 ){
 
             unsigned int length = 9;
-            stiffnessTensor.resize( length, floatVector( length ) );
-            for ( unsigned int i = 0; i < length; i++ ){
-                for ( unsigned int j = 0; j < length; j++ ){
-                    stiffnessTensor[ i ][ j ] = parameters[ i * length + j ];
-                }
-            }
+            stiffnessTensor = vectorTools::inflate( parameters, length, length );
             return NULL;
 
         }
