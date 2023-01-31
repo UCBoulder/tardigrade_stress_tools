@@ -14,6 +14,10 @@ New Features
 - Add an option to construct the stiffness tensor from the full 81 components (:issue:`11`, :merge:`23`). By `Kyle
   Brindley`_.
 
+Internal Changes
+================
+- Update minimum version requirements for ``vector_tools`` dependency (:merge:`25`). By `Kyle Brindley`_.
+
 ******************
 0.2.7 (2022-12-21)
 ******************
