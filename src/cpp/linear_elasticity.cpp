@@ -174,14 +174,14 @@ namespace linearElasticity{
         /*!
          * Rotate the full 81 component stiffness tensor as
          *
-         * \f$ C_{ijkl} = R_{im} R_{jn} R_{ko} R_{lp} C_{mnop}
+         * \f$ C'_{ijkl} = R_{im} R_{jn} R_{ko} R_{lp} C_{mnop}
          *
-         * where \f$C_{ijkl}\f$ is the rotated stiffness tensor, \f$R_{ij}\f$ is the rotation matrix, and
+         * where \f$C'_{ijkl}\f$ is the rotated stiffness tensor, \f$R_{ij}\f$ is the rotation matrix, and
          * \f$C_{mnop}\f$ is the original stiffness tensor.
          *
-         * \param &directionCosines: The rotation matrix
-         * \param &stiffnessTensor: The stiffness tensor to rotate
-         * \param &rotatedStiffnessTensor: The rotated stiffness tensor
+         * \param &directionCosines: The rotation matrix, \f$R_{ij}\f$
+         * \param &stiffnessTensor: The stiffness tensor to rotate, \f$C_{mnop}\f$
+         * \param &rotatedStiffnessTensor: The rotated stiffness tensor, \f$C'_{ijkl}\f$
          */
 
         floatMatrix rotatedStiffnessTensor = floatMatrix( spatialDimensions * spatialDimensions, floatVector( spatialDimensions * spatialDimensions, 0 ) );
