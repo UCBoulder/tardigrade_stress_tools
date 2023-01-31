@@ -16,7 +16,7 @@ New Features
 
 Internal Changes
 ================
-- Update minimum version requirements for ``vector_tools`` dependency (:merge:`24`). By `Kyle Brindley`_.
+- Update minimum version requirements for ``vector_tools`` dependency (:merge:`25`). By `Kyle Brindley`_.
 
 ******************
 0.2.7 (2022-12-21)
