@@ -169,7 +169,8 @@ namespace linearElasticity{
 
     }
 
-    errorOut rotateStiffnessTensor( const floatMatrix &directionCosines, floatMatrix &stiffnessTensor ){
+    errorOut rotateStiffnessTensor( const floatMatrix &directionCosines, const floatMatrix &stiffnessTensor,
+                                    floatMatrix &rotatedStiffnessTensor ){
         /*!
          * Rotate the full 81 component stiffness tensor as
          *
@@ -180,8 +181,10 @@ namespace linearElasticity{
          *
          * \param &directionCosines: The rotation matrix
          * \param &stiffnessTensor: The stiffness tensor to rotate
-         *
+         * \param &rotatedStiffnessTensor: The rotated stiffness tensor
          */
+
+        floatMatrix rotatedStiffnessTensor = floatMatrix( spatialDimensions * spatialDimensions, floatVector( spatialDimensions * spatialDimensions, 0 ) );
 
         for ( unsigned int i=0; i<spatialDimensions; i++ ){
             for ( unsigned int j=0; j<spatialDimensions; j++ ){
@@ -192,8 +195,8 @@ namespace linearElasticity{
                                 for ( unsigned int o=0; o<spatialDimensions; o++ ){
                                      for ( unsigned int p=0; p<spatialDimensions; p++ ){
 
-            stiffnessTensor[ ( spatialDimensions * i ) + j ][ ( spatialDimensions * k ) + l ] =
-                directionCosines[ i ][ m ] * directionCosines[ j ][ n ] * directionCosines[ k ][ o] * directionCosines[ l ][ p ]
+            rotatedStiffnessTensor[ ( spatialDimensions * i ) + j ][ ( spatialDimensions * k ) + l ] +=
+                directionCosines[ i ][ m ] * directionCosines[ j ][ n ] * directionCosines[ k ][ o ] * directionCosines[ l ][ p ]
                 * stiffnessTensor[ ( spatialDimensions * m ) + n ][ ( spatialDimensions * o ) + p ];
 
                                      }
