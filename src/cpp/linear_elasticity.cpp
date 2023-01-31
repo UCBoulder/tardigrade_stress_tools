@@ -169,6 +169,40 @@ namespace linearElasticity{
 
     }
 
+    errorOut rotateStiffnessTensor( const floatMatrix &directionCosines, floatMatrix &stiffnessTensor ){
+        /*!
+         * Rotate the full 81 component stiffness tensor as
+         *
+         * \f$ C_{ijkl} = R_{im} R_{jn} R_{ko} R_{lp} C_{mnop}
+         *
+         * where \f$C_{ijkl}\f$ is the rotated stiffness tensor, \f$R_{ij}\f$ is the rotation matrix, and
+         * \f$C_{mnop}\f$ is the original stiffness tensor.
+         *
+         * \param &directionCosines: The rotation matrix
+         * \param &stiffnessTensor: The stiffness tensor to rotate
+         *
+         */
+
+        for (unsigned int i=0; i<spatialDimensions; i++){
+            for (unsigned int j=0; j<spatialDimensions; j++){
+                for (unsigned int k=0; k<spatialDimensions; k++){
+                    for (unsigned int l=0; l<spatialDimensions; l++){
+                        for (unsigned int m=0; m<spatialDimensions; m++){
+                            for (unsigned int n=0; n<spatialDimensions; n++){
+                                for (unsigned int o=0; o<spatialDimensions; o++){
+                                     for (unsigned int p=0; p<spatialDimensions; p++){
+                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return NULL;
+    }
+
     errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy ){
         /*!
          * Compute the value of the linear elastic energy which we define via
