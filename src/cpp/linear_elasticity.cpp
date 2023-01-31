@@ -184,7 +184,7 @@ namespace linearElasticity{
          * \param &rotatedStiffnessTensor: The rotated stiffness tensor, \f$C'_{ijkl}\f$
          */
 
-        floatMatrix rotatedStiffnessTensor = floatMatrix( spatialDimensions * spatialDimensions, floatVector( spatialDimensions * spatialDimensions, 0 ) );
+        rotatedStiffnessTensor = floatMatrix( spatialDimensions * spatialDimensions, floatVector( spatialDimensions * spatialDimensions, 0 ) );
 
         for ( unsigned int i=0; i<spatialDimensions; i++ ){
             for ( unsigned int j=0; j<spatialDimensions; j++ ){
