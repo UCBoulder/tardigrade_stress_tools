@@ -231,6 +231,48 @@ namespace linearElasticity{
         return NULL;
     }
 
+    errorOut formReferenceStiffnessTensor( const floatVector &bungeEulerAngles, const floatVector &parameters,
+                                           floatMatrix &stiffnessTensor ){
+        /*!
+         * Rotate the full 81 component stiffness tensor as
+         *
+         * \f$ C'_{ijkl} = R_{im} R_{jn} R_{ko} R_{lp} C_{mnop}
+         *
+         * where \f$C'_{ijkl}\f$ is the rotated stiffness tensor, \f$R_{ij}\f$ is the rotation matrix, and
+         * \f$C_{mnop}\f$ is the original stiffness tensor.
+         *
+         * \param &bungeEulerAngles: Vector containing three Bunge-Euler angles in radians to form the rotation matrix,
+         *     \f$R_{ij}\f$, using ``vectorTools::rotationMatrix``
+         * \param &parameters: The tensor components of the 9x9 stiffness tensor, \f$C_{mnop}\f$. Vector length determines the symmetry.
+         *
+         * - 81: A row-major vector representing the full 9x9 stiffness tensor directly.
+         * - 21: fully anistropic \f$C_{1111}\f$, \f$C_{1112}\f$, \f$C_{1113}\f$, \f$C_{1122}\f$, \f$C_{1123}\f$,
+         *   \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1213}\f$, \f$C_{1222}\f$, \f$C_{1223}\f$, \f$C_{1233}\f$,
+         *   \f$C_{1313}\f$, \f$C_{1322}\f$, \f$C_{1323}\f$, \f$C_{1333}\f$, \f$C_{2222}\f$, \f$C_{2223}\f$,
+         *   \f$C_{2233}\f$, \f$C_{2323}\f$, \f$C_{2333}\f$, \f$C_{3333}\f$
+         * - 9: orthotropic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1313}\f$,
+         *   \f$C_{2222}\f$, \f$C_{2323}\f$, \f$C_{3333}\f$
+         * - 5: transversly isotropic or hexagonal \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1313}\f$, \f$C_{3333}\f$
+         * - 3: cubic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1212}\f$
+         * - 2: isotropic: lambda (\f$C_{1122}\f$), mu (\f$C_{1212}\f$)
+         *
+         * \param &stiffnessTensor: The rotated stiffness tensor, \f$C'_{ijkl}\f$
+         */
+
+        floatMatrix directionCosines;
+
+        vectorTools::rotationMatrix( bungeEulerAngles, directionCosines );
+
+        errorOut error = formReferenceStiffnessTensor( directionCosines, parameters, stiffnessTensor );
+        if ( error ){
+            errorOut result = new errorNode( __func__, "Error in computation of the rotated reference stiffness tensor" );
+            result->addNext( error );
+            return result;
+        }
+
+        return NULL;
+    }
+
     errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy ){
         /*!
          * Compute the value of the linear elastic energy which we define via
