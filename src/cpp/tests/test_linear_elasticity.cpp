@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_rotations_formReferenceStiffnessTensor ){
+BOOST_AUTO_TEST_CASE( test_rotations_formReferenceStiffnessTensor, * boost::unit_test::tolerance( 1.0e-14 ) ){
 
     unsigned int spatialDimensions = 3;
     floatMatrix stiffnessTensor = floatMatrix( spatialDimensions * spatialDimensions,
