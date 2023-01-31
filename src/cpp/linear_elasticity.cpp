@@ -183,14 +183,19 @@ namespace linearElasticity{
          *
          */
 
-        for (unsigned int i=0; i<spatialDimensions; i++){
-            for (unsigned int j=0; j<spatialDimensions; j++){
-                for (unsigned int k=0; k<spatialDimensions; k++){
-                    for (unsigned int l=0; l<spatialDimensions; l++){
-                        for (unsigned int m=0; m<spatialDimensions; m++){
-                            for (unsigned int n=0; n<spatialDimensions; n++){
-                                for (unsigned int o=0; o<spatialDimensions; o++){
-                                     for (unsigned int p=0; p<spatialDimensions; p++){
+        for ( unsigned int i=0; i<spatialDimensions; i++ ){
+            for ( unsigned int j=0; j<spatialDimensions; j++ ){
+                for ( unsigned int k=0; k<spatialDimensions; k++ ){
+                    for ( unsigned int l=0; l<spatialDimensions; l++ ){
+                        for ( unsigned int m=0; m<spatialDimensions; m++ ){
+                            for ( unsigned int n=0; n<spatialDimensions; n++ ){
+                                for ( unsigned int o=0; o<spatialDimensions; o++ ){
+                                     for ( unsigned int p=0; p<spatialDimensions; p++ ){
+
+            stiffnessTensor[ ( spatialDimensions * i ) + j ][ ( spatialDimensions * k ) + l ] =
+                directionCosines[ i ][ m ] * directionCosines[ j ][ n ] * directionCosines[ k ][ o] * directionCosines[ l ][ p ]
+                * stiffnessTensor[ ( spatialDimensions * m ) + n ][ ( spatialDimensions * o ) + p ];
+
                                      }
                                 }
                             }
