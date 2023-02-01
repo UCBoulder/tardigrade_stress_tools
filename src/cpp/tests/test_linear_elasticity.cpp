@@ -190,13 +190,15 @@ BOOST_AUTO_TEST_CASE( test_rotations_formReferenceStiffnessTensor, * boost::unit
                                64., 65., 66., 67., 68., 69., 70., 71., 72.,
                                73., 74., 75., 76., 77., 78., 79., 80., 81. };
 
+    //Build test case sets
     floatMatrix bungeEulerAngles = {
-        {   0.,     0.,   0. },
-        { M_PI,     0.,   0. },
-        {   0.,     0., M_PI },
-        {   0.,   M_PI,   0. },
-        { M_PI, M_PI_2,   0. },
-        {   0., M_PI_2, M_PI }
+        {     0.,     0.,   0. },
+        {   M_PI,     0.,   0. },
+        {     0.,     0., M_PI },
+        {     0.,   M_PI,   0. },
+        {   M_PI, M_PI_2,   0. },
+        {     0., M_PI_2, M_PI },
+        { M_PI_4, M_PI_4,   0. }
     };
     floatMatrix parameters;
     parameters.push_back( ordered_parameters );
@@ -205,6 +207,7 @@ BOOST_AUTO_TEST_CASE( test_rotations_formReferenceStiffnessTensor, * boost::unit
     parameters.push_back( ordered_parameters );
     parameters.push_back( ordered_parameters );
     parameters.push_back( ordered_parameters );
+    parameters.push_back( floatVector( numComponents, 1 ) );
     std::vector< std::vector< std::vector< double > > > expected_stiffnessTensor = {
         { {  1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9. },
           { 10., 11., 12., 13., 14., 15., 16., 17., 18. },
@@ -260,6 +263,15 @@ BOOST_AUTO_TEST_CASE( test_rotations_formReferenceStiffnessTensor, * boost::unit
           { 28., 30., 29., 34., 36., 35., 31., 33., 32. },
           { 46., 48., 47., 52., 54., 53., 49., 51., 50. },
           { 37., 39., 38., 43., 45., 44., 40., 42., 41. } },
+        { {0.25, 0.25, 0.5,  0.25, 0.25, 0.5,  0.5,  0.5,  1. },
+          {0.25, 0.25, 0.5,  0.25, 0.25, 0.5,  0.5,  0.5,  1. },
+          {0.5,  0.5,  1.,   0.5,  0.5,  1.,   1.,   1.,   2. },
+          {0.25, 0.25, 0.5,  0.25, 0.25, 0.5,  0.5,  0.5,  1. },
+          {0.25, 0.25, 0.5,  0.25, 0.25, 0.5,  0.5,  0.5,  1. },
+          {0.5,  0.5,  1.,   0.5,  0.5,  1.,   1.,   1.,   2. },
+          {0.5,  0.5,  1.,   0.5,  0.5,  1.,   1.,   1.,   2. },
+          {0.5,  0.5,  1.,   0.5,  0.5,  1.,   1.,   1.,   2. },
+          {1.,   1.,   2.,   1.,   1.,   2.,   2.,   2.,   4. } }
     };
 
     for ( unsigned int i=0; i<bungeEulerAngles.size( ); i++ ){
@@ -286,48 +298,7 @@ BOOST_AUTO_TEST_CASE( test_rotations_formReferenceStiffnessTensor, * boost::unit
                     boost::test_tools::per_element() );
     }
 
-    //Test a rotation that doesn't just rearrange the stiffness tensor components
-    floatVector ones_parameters = floatVector( numComponents, 1 );
-    bungeEulerAngles = {
-        { M_PI_4, M_PI_4,   0. }
-    };
-    expected_stiffnessTensor = {
-        { {0.25, 0.25, 0.5,  0.25, 0.25, 0.5,  0.5,  0.5,  1. },
-          {0.25, 0.25, 0.5,  0.25, 0.25, 0.5,  0.5,  0.5,  1. },
-          {0.5,  0.5,  1.,   0.5,  0.5,  1.,   1.,   1.,   2. },
-          {0.25, 0.25, 0.5,  0.25, 0.25, 0.5,  0.5,  0.5,  1. },
-          {0.25, 0.25, 0.5,  0.25, 0.25, 0.5,  0.5,  0.5,  1. },
-          {0.5,  0.5,  1.,   0.5,  0.5,  1.,   1.,   1.,   2. },
-          {0.5,  0.5,  1.,   0.5,  0.5,  1.,   1.,   1.,   2. },
-          {0.5,  0.5,  1.,   0.5,  0.5,  1.,   1.,   1.,   2. },
-          {1.,   1.,   2.,   1.,   1.,   2.,   2.,   2.,   4. } }
-    };
-    for ( unsigned int i=0; i<bungeEulerAngles.size( ); i++ ){
-
-        directionCosines = floatMatrix( spatialDimensions, floatVector( spatialDimensions, 0 ) );
-        vectorTools::rotationMatrix( bungeEulerAngles[ i ], directionCosines );
-
-        //Test directionCosines interface
-        stiffnessTensor = floatMatrix( spatialDimensions * spatialDimensions,
-                                       floatVector( spatialDimensions * spatialDimensions, 0 ) );
-        BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( directionCosines, ones_parameters,
-                                                                                   stiffnessTensor ) );
-        BOOST_TEST( vectorTools::appendVectors( stiffnessTensor ) ==
-                        vectorTools::appendVectors( expected_stiffnessTensor[ i ] ),
-                    boost::test_tools::per_element() );
-
-        //Test bungeEulerAngles interface
-        stiffnessTensor = floatMatrix( spatialDimensions * spatialDimensions,
-                                       floatVector( spatialDimensions * spatialDimensions, 0 ) );
-        BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( bungeEulerAngles[ i ], ones_parameters,
-                                                                                   stiffnessTensor ) );
-        BOOST_TEST( vectorTools::appendVectors( stiffnessTensor ) ==
-                        vectorTools::appendVectors( expected_stiffnessTensor[ i ] ),
-                    boost::test_tools::per_element() );
-    }
-
 }
-
 
 BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
