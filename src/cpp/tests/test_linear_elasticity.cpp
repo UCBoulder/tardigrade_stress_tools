@@ -181,15 +181,31 @@ BOOST_AUTO_TEST_CASE( test_rotations_formReferenceStiffnessTensor, * boost::unit
     unsigned int numStiffnessComponents = stiffnessEdgeLength * stiffnessEdgeLength;
     floatMatrix stiffnessTensor;
     floatMatrix directionCosines;
-    floatVector ordered_parameters = {  1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9.,
-                                       10., 11., 12., 13., 14., 15., 16., 17., 18.,
-                                       19., 20., 21., 22., 23., 24., 25., 26., 27.,
-                                       28., 29., 30., 31., 32., 33., 34., 35., 36.,
-                                       37., 38., 39., 40., 41., 42., 43., 44., 45.,
-                                       46., 47., 48., 49., 50., 51., 52., 53., 54.,
-                                       55., 56., 57., 58., 59., 60., 61., 62., 63.,
-                                       64., 65., 66., 67., 68., 69., 70., 71., 72.,
-                                       73., 74., 75., 76., 77., 78., 79., 80., 81. };
+    floatVector ordered_parameters = {
+         1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9.,
+        10., 11., 12., 13., 14., 15., 16., 17., 18.,
+        19., 20., 21., 22., 23., 24., 25., 26., 27.,
+        28., 29., 30., 31., 32., 33., 34., 35., 36.,
+        37., 38., 39., 40., 41., 42., 43., 44., 45.,
+        46., 47., 48., 49., 50., 51., 52., 53., 54.,
+        55., 56., 57., 58., 59., 60., 61., 62., 63.,
+        64., 65., 66., 67., 68., 69., 70., 71., 72.,
+        73., 74., 75., 76., 77., 78., 79., 80., 81.
+    };
+    floatType lambda = 12.3;
+    floatType mu     = 43.4;
+    floatType calc   = lambda + 2 * mu;
+    floatVector isotropic_parameters = {
+          calc,  0.0,  0.0,  0.0, lambda,  0.0,  0.0,  0.0, lambda,
+           0.0,   mu,  0.0,   mu,    0.0,  0.0,  0.0,  0.0,    0.0,
+           0.0,  0.0,   mu,  0.0,    0.0,  0.0,   mu,  0.0,    0.0,
+           0.0,   mu,  0.0,   mu,    0.0,  0.0,  0.0,  0.0,    0.0,
+        lambda,  0.0,  0.0,  0.0,   calc,  0.0,  0.0,  0.0, lambda,
+           0.0,  0.0,  0.0,  0.0,    0.0,   mu,  0.0,   mu,    0.0,
+           0.0,  0.0,   mu,  0.0,    0.0,  0.0,   mu,  0.0,    0.0,
+           0.0,  0.0,  0.0,  0.0,    0.0,   mu,  0.0,   mu,    0.0,
+        lambda,  0.0,  0.0,  0.0, lambda,  0.0,  0.0,  0.0,   calc
+    };
 
     //Build test case sets
     floatMatrix bungeEulerAngles = {
@@ -199,6 +215,7 @@ BOOST_AUTO_TEST_CASE( test_rotations_formReferenceStiffnessTensor, * boost::unit
         {     0.,   M_PI,   0. },
         {   M_PI, M_PI_2,   0. },
         {     0., M_PI_2, M_PI },
+        { M_PI_4, M_PI_4,   0. },
         { M_PI_4, M_PI_4,   0. }
     };
     floatMatrix parameters;
@@ -209,6 +226,7 @@ BOOST_AUTO_TEST_CASE( test_rotations_formReferenceStiffnessTensor, * boost::unit
     parameters.push_back( ordered_parameters );
     parameters.push_back( ordered_parameters );
     parameters.push_back( floatVector( numStiffnessComponents, 1 ) );
+    parameters.push_back( isotropic_parameters );
     std::vector< std::vector< std::vector< double > > > expected_stiffnessTensor = {
         { {  1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9. },
           { 10., 11., 12., 13., 14., 15., 16., 17., 18. },
@@ -272,7 +290,16 @@ BOOST_AUTO_TEST_CASE( test_rotations_formReferenceStiffnessTensor, * boost::unit
           {0.5,  0.5,  1.,   0.5,  0.5,  1.,   1.,   1.,   2. },
           {0.5,  0.5,  1.,   0.5,  0.5,  1.,   1.,   1.,   2. },
           {0.5,  0.5,  1.,   0.5,  0.5,  1.,   1.,   1.,   2. },
-          {1.,   1.,   2.,   1.,   1.,   2.,   2.,   2.,   4. } }
+          {1.,   1.,   2.,   1.,   1.,   2.,   2.,   2.,   4. } },
+        { {   calc,  0.0,  0.0,  0.0, lambda,  0.0,  0.0,  0.0, lambda },
+          {    0.0,   mu,  0.0,   mu,    0.0,  0.0,  0.0,  0.0,    0.0 },
+          {    0.0,  0.0,   mu,  0.0,    0.0,  0.0,   mu,  0.0,    0.0 },
+          {    0.0,   mu,  0.0,   mu,    0.0,  0.0,  0.0,  0.0,    0.0 },
+          { lambda,  0.0,  0.0,  0.0,   calc,  0.0,  0.0,  0.0, lambda },
+          {    0.0,  0.0,  0.0,  0.0,    0.0,   mu,  0.0,   mu,    0.0 },
+          {    0.0,  0.0,   mu,  0.0,    0.0,  0.0,   mu,  0.0,    0.0 },
+          {    0.0,  0.0,  0.0,  0.0,    0.0,   mu,  0.0,   mu,    0.0 },
+          { lambda,  0.0,  0.0,  0.0, lambda,  0.0,  0.0,  0.0,   calc } }
     };
 
     for ( unsigned int i=0; i<bungeEulerAngles.size( ); i++ ){
