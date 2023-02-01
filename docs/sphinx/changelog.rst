@@ -13,6 +13,7 @@ New Features
 ============
 - Add an option to construct the stiffness tensor from the full 81 components (:issue:`11`, :merge:`23`). By `Kyle
   Brindley`_.
+- Add an option to construct and rotate the stiffness tensor (:issue:`12`, :merge:`24`). By `Kyle Brindley`_.
 
 Internal Changes
 ================
