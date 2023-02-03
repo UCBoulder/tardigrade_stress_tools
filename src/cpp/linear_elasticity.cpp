@@ -831,8 +831,9 @@ namespace linearElasticity{
             result->addNext( error );
             return result;
         }
+        floatVector flatStiffnessTensor = vectorTools::appendVectors( stiffnessTensor );
 
-        error = evaluateEnergy( chi, stiffnessTensor, energy, cauchyStress,
+        error = evaluateEnergy( chi, flatStiffnessTensor, energy, cauchyStress,
                                 dEnergydChi, dCauchyStressdChi,
                                 d2EnergydChi2, d2CauchyStressdChi2 );
         if ( error ){
