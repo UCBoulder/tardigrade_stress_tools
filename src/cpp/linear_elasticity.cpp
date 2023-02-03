@@ -786,5 +786,65 @@ namespace linearElasticity{
 
     }
 
+    errorOut evaluateEnergy( const floatVector &bungeEulerAngles,
+                             const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress,
+                             floatVector &dEnergydChi, floatMatrix &dCauchyStressdChi,
+                             floatVector &d2EnergydChi2, floatMatrix &d2CauchyStressdChi2 ){
+        /*!
+         * Compute the value of the linear elastic energy which we define via
+         *
+         * \f$\rho \psi = \frac{1}{J} \left[ \frac{\lambda}{2} \left( E_{II} \right)^2 + \mu E_{IJ} E_{JI} \right] \f$
+         *
+         * and the value of the Cauchy stress which is defined via
+         *
+         * \f$\sigma_{ij} = \frac{1}{J} \frac{ \partial \left( \rho \psi \right ) }{\partial F_{iI}} F_{jI} \f$
+         *
+         * \param &bungeEulerAngles: Vector containing three Bunge-Euler angles in radians to form the rotation matrix,
+         *     \f$R_{ij}\f$, using ``vectorTools::rotationMatrix``
+         * \param &chi: The micro-deformation
+         * \param &parameters: The tensor components of the 9x9 stiffness tensor. Vector length determines the symmetry.
+         *
+         * - 81: A row-major vector representing the full 9x9 stiffness tensor directly.
+         * - 21: fully anistropic \f$C_{1111}\f$, \f$C_{1112}\f$, \f$C_{1113}\f$, \f$C_{1122}\f$, \f$C_{1123}\f$,
+         *   \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1213}\f$, \f$C_{1222}\f$, \f$C_{1223}\f$, \f$C_{1233}\f$,
+         *   \f$C_{1313}\f$, \f$C_{1322}\f$, \f$C_{1323}\f$, \f$C_{1333}\f$, \f$C_{2222}\f$, \f$C_{2223}\f$,
+         *   \f$C_{2233}\f$, \f$C_{2323}\f$, \f$C_{2333}\f$, \f$C_{3333}\f$
+         * - 9: orthotropic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1313}\f$,
+         *   \f$C_{2222}\f$, \f$C_{2323}\f$, \f$C_{3333}\f$
+         * - 5: transversly isotropic or hexagonal \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1313}\f$, \f$C_{3333}\f$
+         * - 3: cubic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1212}\f$
+         * - 2: isotropic: lambda (\f$C_{1122}\f$), mu (\f$C_{1212}\f$)
+         *
+         * \param &energy: The resulting free energy in the current configuration
+         * \param &cauchyStress; The expected cauchy stress
+         * \param &dEnergydChi: The gradient of the energy w.r.t. the micro deformation
+         * \param &dCauchyStressdChi: The gradient of the Cauchy stress w.r.t. the micro deformation
+         * \param &d2EnergydChi2: The second gradient of the energy w.r.t. the micro deformation
+         * \param &d2CauchyStressdChi2: The second gradient of the Cauchy stress w.r.t. the micro deformation
+         *
+         */
+
+        floatMatrix stiffnessTensor;
+        errorOut error = formReferenceStiffnessTensor( bungeEulerAngles, parameters, stiffnessTensor );
+        if ( error ){
+            errorOut result = new errorNode( __func__, "Error in computation of the rotated reference stiffness tensor" );
+            result->addNext( error );
+            return result;
+        }
+        floatVector flatStiffnessTensor = vectorTools::appendVectors( stiffnessTensor );
+
+        error = evaluateEnergy( chi, flatStiffnessTensor, energy, cauchyStress,
+                                dEnergydChi, dCauchyStressdChi,
+                                d2EnergydChi2, d2CauchyStressdChi2 );
+        if ( error ){
+            errorOut result = new errorNode( __func__, "Error in computation of the linear elastic free energy" );
+            result->addNext( error );
+            return result;
+        }
+
+        return NULL;
+
+    }
+
 }  // linearElasticity
 }  // stressTools

@@ -43,6 +43,11 @@ namespace linearElasticity{
                              floatVector &dEnergydChi, floatMatrix &dCauchyStressdChi,
                              floatVector &d2EnergydChi2, floatMatrix &d2CauchyStressdChi2 );
 
+    errorOut evaluateEnergy( const floatVector &bungeEulerAngles,
+                             const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress,
+                             floatVector &dEnergydChi, floatMatrix &dCauchyStressdChi,
+                             floatVector &d2EnergydChi2, floatMatrix &d2CauchyStressdChi2 );
+
 }  // linearElasticity
 }  // stressTools
 
