@@ -509,4 +509,20 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     BOOST_CHECK( vectorTools::fuzzyEquals( d2CauchyStressdChi2, d2CauchyStressdChi2_answer ) );
 
+    //Test Euler angles interface with zero rotation. Should have the same answers as above.
+    dEnergydChi = floatVector( chi.size( ), 0 );
+    dCauchyStressdChi = floatMatrix( chi.size( ), floatVector( chi.size( ), 0 ) );
+    d2EnergydChi2 = floatVector( chi.size( ) * chi.size( ), 0 );
+    d2CauchyStressdChi2 = floatMatrix( chi.size( ), floatVector( chi.size( ) * chi.size( ), 0 ) );
+
+    floatVector bungeEulerAngles = { 0., 0., 0. };
+
+    BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( bungeEulerAngles, chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi, d2EnergydChi2, d2CauchyStressdChi2 ) );
+    BOOST_TEST( energy == energy_answer );
+    BOOST_TEST( cauchyStress == cauchyStress_answer, boost::test_tools::per_element() );
+    BOOST_CHECK( vectorTools::fuzzyEquals( dEnergydChi, dEnergydChi_answer ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( dCauchyStressdChi, dCauchyStressdChi_answer ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( d2EnergydChi2, d2EnergydChi2_answer ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( d2CauchyStressdChi2, d2CauchyStressdChi2_answer ) );
+
 }
