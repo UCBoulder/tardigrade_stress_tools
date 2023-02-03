@@ -510,6 +510,8 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
     BOOST_CHECK( vectorTools::fuzzyEquals( d2CauchyStressdChi2, d2CauchyStressdChi2_answer ) );
 
     //Test Euler angles interface with zero rotation. Should have the same answers as above.
+    energy = 0;
+    cauchyStress.clear( );
     dEnergydChi = floatVector( chi.size( ), 0 );
     dCauchyStressdChi = floatMatrix( chi.size( ), floatVector( chi.size( ), 0 ) );
     d2EnergydChi2 = floatVector( chi.size( ) * chi.size( ), 0 );
