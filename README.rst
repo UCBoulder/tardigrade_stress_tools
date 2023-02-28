@@ -87,11 +87,6 @@ This project is built with [CMake](https://cmake.org/cmake/help/v3.14/) and uses
    **API Health Note**: The sphinx API docs are a work-in-progress. The doxygen
    API is much more useful
 
-A build script has been created for convenience, ``new_build.sh``. It will build
-everything including the library binary, the test binary, and the documentation.
-This is the same build script used by ``jenkins_build.sh`` for CI builds and
-testing.
-
 sstelmo
 =======
 
@@ -108,12 +103,10 @@ sstelmo
 
       $ pwd
       /path/to/stress_tools/
-
-      # Just perform the build. Usage arguments are "cmake_build_type"
-      ./new_build.sh None
-
-      # Build and perform tests
-      ./jenkins_build.sh
+      $ mkdir build
+      $ cd build
+      $ cmake ..
+      $ cmake --build . --target all
 
 3) View test results
 

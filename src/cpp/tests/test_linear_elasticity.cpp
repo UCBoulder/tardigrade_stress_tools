@@ -7,6 +7,7 @@
 #include<stress_tools.h>
 #include<sstream>
 #include<fstream>
+#include<math.h>
 
 #define BOOST_TEST_MODULE test_linear_elasticity
 #include <boost/test/included/unit_test.hpp>
@@ -56,6 +57,29 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
 
     // Store the resulting stiffness tensor
     floatMatrix stiffness_tensor;
+
+    // Full 9x9 as a row-major vector
+    floatVector eightyone_parameters = {  1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9.,
+                                         10., 11., 12., 13., 14., 15., 16., 17., 18.,
+                                         19., 20., 21., 22., 23., 24., 25., 26., 27.,
+                                         28., 29., 30., 31., 32., 33., 34., 35., 36.,
+                                         37., 38., 39., 40., 41., 42., 43., 44., 45.,
+                                         46., 47., 48., 49., 50., 51., 52., 53., 54.,
+                                         55., 56., 57., 58., 59., 60., 61., 62., 63.,
+                                         64., 65., 66., 67., 68., 69., 70., 71., 72.,
+                                         73., 74., 75., 76., 77., 78., 79., 80., 81. };
+    floatMatrix eightyone_answer = { {  1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9. },
+                                     { 10., 11., 12., 13., 14., 15., 16., 17., 18. },
+                                     { 19., 20., 21., 22., 23., 24., 25., 26., 27. },
+                                     { 28., 29., 30., 31., 32., 33., 34., 35., 36. },
+                                     { 37., 38., 39., 40., 41., 42., 43., 44., 45. },
+                                     { 46., 47., 48., 49., 50., 51., 52., 53., 54. },
+                                     { 55., 56., 57., 58., 59., 60., 61., 62., 63. },
+                                     { 64., 65., 66., 67., 68., 69., 70., 71., 72. },
+                                     { 73., 74., 75., 76., 77., 78., 79., 80., 81. } };
+    BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( eightyone_parameters, stiffness_tensor ) );
+    BOOST_TEST( vectorTools::appendVectors( stiffness_tensor ) == vectorTools::appendVectors( eightyone_answer ),
+                boost::test_tools::per_element() );
 
     // Fully anisotropic: 21 components
     floatVector anisotropic_parameters = { C1111, C1112, C1113, C1122, C1123, C1133, C1212, C1213, C1222, C1223, C1233,
@@ -147,6 +171,158 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
     BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( isotropic_parameters, stiffness_tensor ) );
     BOOST_TEST( vectorTools::appendVectors( stiffness_tensor ) == vectorTools::appendVectors( isotropic_answer ),
                 boost::test_tools::per_element() );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_rotations_formReferenceStiffnessTensor, * boost::unit_test::tolerance( 1.0e-13 ) ){
+
+    unsigned int spatialDimensions = 3;
+    unsigned int stiffnessEdgeLength = spatialDimensions * spatialDimensions;
+    unsigned int numStiffnessComponents = stiffnessEdgeLength * stiffnessEdgeLength;
+    floatMatrix stiffnessTensor;
+    floatMatrix directionCosines;
+    floatVector ordered_parameters = {
+         1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9.,
+        10., 11., 12., 13., 14., 15., 16., 17., 18.,
+        19., 20., 21., 22., 23., 24., 25., 26., 27.,
+        28., 29., 30., 31., 32., 33., 34., 35., 36.,
+        37., 38., 39., 40., 41., 42., 43., 44., 45.,
+        46., 47., 48., 49., 50., 51., 52., 53., 54.,
+        55., 56., 57., 58., 59., 60., 61., 62., 63.,
+        64., 65., 66., 67., 68., 69., 70., 71., 72.,
+        73., 74., 75., 76., 77., 78., 79., 80., 81.
+    };
+    floatType lambda = 12.3;
+    floatType mu     = 43.4;
+    floatType calc   = lambda + 2 * mu;
+    floatVector isotropic_parameters = {
+          calc,  0.0,  0.0,  0.0, lambda,  0.0,  0.0,  0.0, lambda,
+           0.0,   mu,  0.0,   mu,    0.0,  0.0,  0.0,  0.0,    0.0,
+           0.0,  0.0,   mu,  0.0,    0.0,  0.0,   mu,  0.0,    0.0,
+           0.0,   mu,  0.0,   mu,    0.0,  0.0,  0.0,  0.0,    0.0,
+        lambda,  0.0,  0.0,  0.0,   calc,  0.0,  0.0,  0.0, lambda,
+           0.0,  0.0,  0.0,  0.0,    0.0,   mu,  0.0,   mu,    0.0,
+           0.0,  0.0,   mu,  0.0,    0.0,  0.0,   mu,  0.0,    0.0,
+           0.0,  0.0,  0.0,  0.0,    0.0,   mu,  0.0,   mu,    0.0,
+        lambda,  0.0,  0.0,  0.0, lambda,  0.0,  0.0,  0.0,   calc
+    };
+
+    //Build test case sets
+    floatMatrix bungeEulerAngles = {
+        {     0.,     0.,   0. },
+        {   M_PI,     0.,   0. },
+        {     0.,     0., M_PI },
+        {     0.,   M_PI,   0. },
+        {   M_PI, M_PI_2,   0. },
+        {     0., M_PI_2, M_PI },
+        { M_PI_4, M_PI_4,   0. },
+        { M_PI_4, M_PI_4,   0. }
+    };
+    floatMatrix parameters;
+    parameters.push_back( ordered_parameters );
+    parameters.push_back( ordered_parameters );
+    parameters.push_back( ordered_parameters );
+    parameters.push_back( ordered_parameters );
+    parameters.push_back( ordered_parameters );
+    parameters.push_back( ordered_parameters );
+    parameters.push_back( floatVector( numStiffnessComponents, 1 ) );
+    parameters.push_back( isotropic_parameters );
+    std::vector< std::vector< std::vector< double > > > expected_stiffnessTensor = {
+        { {  1.,  2.,  3.,  4.,  5.,  6.,  7.,  8.,  9. },
+          { 10., 11., 12., 13., 14., 15., 16., 17., 18. },
+          { 19., 20., 21., 22., 23., 24., 25., 26., 27. },
+          { 28., 29., 30., 31., 32., 33., 34., 35., 36. },
+          { 37., 38., 39., 40., 41., 42., 43., 44., 45. },
+          { 46., 47., 48., 49., 50., 51., 52., 53., 54. },
+          { 55., 56., 57., 58., 59., 60., 61., 62., 63. },
+          { 64., 65., 66., 67., 68., 69., 70., 71., 72. },
+          { 73., 74., 75., 76., 77., 78., 79., 80., 81. } },
+        { {   1.,   2.,  -3.,   4.,   5.,  -6.,  -7.,  -8.,   9. },
+          {  10.,  11., -12.,  13.,  14., -15., -16., -17.,  18. },
+          { -19., -20.,  21., -22., -23.,  24.,  25.,  26., -27. },
+          {  28.,  29., -30.,  31.,  32., -33., -34., -35.,  36. },
+          {  37.,  38., -39.,  40.,  41., -42., -43., -44.,  45. },
+          { -46., -47.,  48., -49., -50.,  51.,  52.,  53., -54. },
+          { -55., -56.,  57., -58., -59.,  60.,  61.,  62., -63. },
+          { -64., -65.,  66., -67., -68.,  69.,  70.,  71., -72. },
+          {  73.,  74., -75.,  76.,  77., -78., -79., -80.,  81. } },
+        { {   1.,   2.,  -3.,   4.,   5.,  -6.,  -7.,  -8.,   9. },
+          {  10.,  11., -12.,  13.,  14., -15., -16., -17.,  18. },
+          { -19., -20.,  21., -22., -23.,  24.,  25.,  26., -27. },
+          {  28.,  29., -30.,  31.,  32., -33., -34., -35.,  36. },
+          {  37.,  38., -39.,  40.,  41., -42., -43., -44.,  45. },
+          { -46., -47.,  48., -49., -50.,  51.,  52.,  53., -54. },
+          { -55., -56.,  57., -58., -59.,  60.,  61.,  62., -63. },
+          { -64., -65.,  66., -67., -68.,  69.,  70.,  71., -72. },
+          {  73.,  74., -75.,  76.,  77., -78., -79., -80.,  81. } },
+        { {   1.,  -2.,  -3.,  -4.,   5.,   6.,  -7.,   8.,   9. },
+          { -10.,  11.,  12.,  13., -14., -15.,  16., -17., -18. },
+          { -19.,  20.,  21.,  22., -23., -24.,  25., -26., -27. },
+          { -28.,  29.,  30.,  31., -32., -33.,  34., -35., -36. },
+          {  37., -38., -39., -40.,  41.,  42., -43.,  44.,  45. },
+          {  46., -47., -48., -49.,  50.,  51., -52.,  53.,  54. },
+          { -55.,  56.,  57.,  58., -59., -60.,  61., -62., -63. },
+          {  64., -65., -66., -67.,  68.,  69., -70.,  71.,  72. },
+          {  73., -74., -75., -76.,  77.,  78., -79.,  80.,  81. } },
+        { {   1.,  -3.,  -2.,  -7.,   9.,   8.,  -4.,   6.,   5. },
+          { -19.,  21.,  20.,  25., -27., -26.,  22., -24., -23. },
+          { -10.,  12.,  11.,  16., -18., -17.,  13., -15., -14. },
+          { -55.,  57.,  56.,  61., -63., -62.,  58., -60., -59. },
+          {  73., -75., -74., -79.,  81.,  80., -76.,  78.,  77. },
+          {  64., -66., -65., -70.,  72.,  71., -67.,  69.,  68. },
+          { -28.,  30.,  29.,  34., -36., -35.,  31., -33., -32. },
+          {  46., -48., -47., -52.,  54.,  53., -49.,  51.,  50. },
+          {  37., -39., -38., -43.,  45.,  44., -40.,  42.,  41. } },
+        { {  1.,  3.,  2.,  7.,  9.,  8.,  4.,  6.,  5. },
+          { 19., 21., 20., 25., 27., 26., 22., 24., 23. },
+          { 10., 12., 11., 16., 18., 17., 13., 15., 14. },
+          { 55., 57., 56., 61., 63., 62., 58., 60., 59. },
+          { 73., 75., 74., 79., 81., 80., 76., 78., 77. },
+          { 64., 66., 65., 70., 72., 71., 67., 69., 68. },
+          { 28., 30., 29., 34., 36., 35., 31., 33., 32. },
+          { 46., 48., 47., 52., 54., 53., 49., 51., 50. },
+          { 37., 39., 38., 43., 45., 44., 40., 42., 41. } },
+        { {0.25, 0.25, 0.5,  0.25, 0.25, 0.5,  0.5,  0.5,  1. },
+          {0.25, 0.25, 0.5,  0.25, 0.25, 0.5,  0.5,  0.5,  1. },
+          {0.5,  0.5,  1.,   0.5,  0.5,  1.,   1.,   1.,   2. },
+          {0.25, 0.25, 0.5,  0.25, 0.25, 0.5,  0.5,  0.5,  1. },
+          {0.25, 0.25, 0.5,  0.25, 0.25, 0.5,  0.5,  0.5,  1. },
+          {0.5,  0.5,  1.,   0.5,  0.5,  1.,   1.,   1.,   2. },
+          {0.5,  0.5,  1.,   0.5,  0.5,  1.,   1.,   1.,   2. },
+          {0.5,  0.5,  1.,   0.5,  0.5,  1.,   1.,   1.,   2. },
+          {1.,   1.,   2.,   1.,   1.,   2.,   2.,   2.,   4. } },
+        { {   calc,  0.0,  0.0,  0.0, lambda,  0.0,  0.0,  0.0, lambda },
+          {    0.0,   mu,  0.0,   mu,    0.0,  0.0,  0.0,  0.0,    0.0 },
+          {    0.0,  0.0,   mu,  0.0,    0.0,  0.0,   mu,  0.0,    0.0 },
+          {    0.0,   mu,  0.0,   mu,    0.0,  0.0,  0.0,  0.0,    0.0 },
+          { lambda,  0.0,  0.0,  0.0,   calc,  0.0,  0.0,  0.0, lambda },
+          {    0.0,  0.0,  0.0,  0.0,    0.0,   mu,  0.0,   mu,    0.0 },
+          {    0.0,  0.0,   mu,  0.0,    0.0,  0.0,   mu,  0.0,    0.0 },
+          {    0.0,  0.0,  0.0,  0.0,    0.0,   mu,  0.0,   mu,    0.0 },
+          { lambda,  0.0,  0.0,  0.0, lambda,  0.0,  0.0,  0.0,   calc } }
+    };
+
+    for ( unsigned int i=0; i<bungeEulerAngles.size( ); i++ ){
+
+        directionCosines = floatMatrix( spatialDimensions, floatVector( spatialDimensions, 0 ) );
+        vectorTools::rotationMatrix( bungeEulerAngles[ i ], directionCosines );
+
+        //Test directionCosines interface
+        stiffnessTensor = floatMatrix( stiffnessEdgeLength, floatVector( stiffnessEdgeLength, 0 ) );
+        BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( directionCosines, parameters[ i ],
+                                                                                   stiffnessTensor ) );
+        BOOST_TEST( vectorTools::appendVectors( stiffnessTensor ) ==
+                        vectorTools::appendVectors( expected_stiffnessTensor[ i ] ),
+                    boost::test_tools::per_element() );
+
+        //Test bungeEulerAngles interface
+        stiffnessTensor = floatMatrix( stiffnessEdgeLength, floatVector( stiffnessEdgeLength, 0 ) );
+        BOOST_CHECK( !stressTools::linearElasticity::formReferenceStiffnessTensor( bungeEulerAngles[ i ], parameters[ i ],
+                                                                                   stiffnessTensor ) );
+        BOOST_TEST( vectorTools::appendVectors( stiffnessTensor ) ==
+                        vectorTools::appendVectors( expected_stiffnessTensor[ i ] ),
+                    boost::test_tools::per_element() );
+    }
 
 }
 
@@ -332,5 +508,33 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
     BOOST_CHECK( vectorTools::fuzzyEquals( d2EnergydChi2, d2EnergydChi2_answer ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( d2CauchyStressdChi2, d2CauchyStressdChi2_answer ) );
+
+    //Test Euler angles interface. First with zero rotation, which should have the same answers as above.
+    floatVector bungeEulerAngles;
+
+    energy = 0;
+    cauchyStress.clear( );
+    dEnergydChi = floatVector( chi.size( ), 0 );
+    dCauchyStressdChi = floatMatrix( chi.size( ), floatVector( chi.size( ), 0 ) );
+    d2EnergydChi2 = floatVector( chi.size( ) * chi.size( ), 0 );
+    d2CauchyStressdChi2 = floatMatrix( chi.size( ), floatVector( chi.size( ) * chi.size( ), 0 ) );
+    bungeEulerAngles = { 0., 0., 0. };
+
+    BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( bungeEulerAngles, chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi, d2EnergydChi2, d2CauchyStressdChi2 ) );
+    BOOST_TEST( energy == energy_answer );
+    BOOST_TEST( cauchyStress == cauchyStress_answer, boost::test_tools::per_element() );
+    BOOST_CHECK( vectorTools::fuzzyEquals( dEnergydChi, dEnergydChi_answer ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( dCauchyStressdChi, dCauchyStressdChi_answer ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( d2EnergydChi2, d2EnergydChi2_answer ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( d2CauchyStressdChi2, d2CauchyStressdChi2_answer ) );
+
+    bungeEulerAngles = { M_PI_4, M_PI_4, 0. };
+    energy = 0;
+    cauchyStress.clear( );
+    dEnergydChi = floatVector( chi.size( ), 0 );
+    dCauchyStressdChi = floatMatrix( chi.size( ), floatVector( chi.size( ), 0 ) );
+    d2EnergydChi2 = floatVector( chi.size( ) * chi.size( ), 0 );
+    d2CauchyStressdChi2 = floatMatrix( chi.size( ), floatVector( chi.size( ) * chi.size( ), 0 ) );
+    BOOST_CHECK( !stressTools::linearElasticity::evaluateEnergy( bungeEulerAngles, chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi, d2EnergydChi2, d2CauchyStressdChi2 ) );
 
 }

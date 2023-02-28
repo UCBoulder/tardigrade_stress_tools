@@ -25,6 +25,7 @@ namespace linearElasticity{
          *
          * \param &parameters: The tensor components of the 9x9 stiffness tensor. Vector length determines the symmetry.
          *
+         * - 81: A row-major vector representing the full 9x9 stiffness tensor directly.
          * - 21: fully anistropic \f$C_{1111}\f$, \f$C_{1112}\f$, \f$C_{1113}\f$, \f$C_{1122}\f$, \f$C_{1123}\f$,
          *   \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1213}\f$, \f$C_{1222}\f$, \f$C_{1223}\f$, \f$C_{1233}\f$,
          *   \f$C_{1313}\f$, \f$C_{1322}\f$, \f$C_{1323}\f$, \f$C_{1333}\f$, \f$C_{2222}\f$, \f$C_{2223}\f$,
@@ -59,7 +60,14 @@ namespace linearElasticity{
         floatType C2333 = 0.;
         floatType C3333 = 0.;
 
-        if ( parameters.size( ) == 21 ){
+        if ( parameters.size( ) == 81 ){
+
+            unsigned int length = 9;
+            stiffnessTensor = vectorTools::inflate( parameters, length, length );
+            return NULL;
+
+        }
+        else if ( parameters.size( ) == 21 ){
 
             C1111 = parameters[  0 ];
             C1112 = parameters[  1 ];
@@ -141,7 +149,7 @@ namespace linearElasticity{
         }
         else{
 
-            return new errorNode( __func__, "Requires 21 or 3 parameters. Parameters only defines " + std::to_string( parameters.size( ) ) );
+            return new errorNode( __func__, "Requires 81, 21, 9, 5, 3, or 2 parameters. Parameters length is " + std::to_string( parameters.size( ) ) );
 
         }
 
@@ -161,6 +169,110 @@ namespace linearElasticity{
 
     }
 
+    errorOut formReferenceStiffnessTensor( const floatMatrix &directionCosines, const floatVector &parameters,
+                                           floatMatrix &stiffnessTensor ){
+        /*!
+         * Rotate the full 81 component stiffness tensor as
+         *
+         * \f$ C'_{ijkl} = R_{im} R_{jn} R_{ko} R_{lp} C_{mnop}
+         *
+         * where \f$C'_{ijkl}\f$ is the rotated stiffness tensor, \f$R_{ij}\f$ is the rotation matrix, and
+         * \f$C_{mnop}\f$ is the original stiffness tensor.
+         *
+         * \param &directionCosines: The rotation matrix, \f$R_{ij}\f$
+         * \param &parameters: The tensor components of the 9x9 stiffness tensor, \f$C_{mnop}\f$. Vector length determines the symmetry.
+         *
+         * - 81: A row-major vector representing the full 9x9 stiffness tensor directly.
+         * - 21: fully anistropic \f$C_{1111}\f$, \f$C_{1112}\f$, \f$C_{1113}\f$, \f$C_{1122}\f$, \f$C_{1123}\f$,
+         *   \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1213}\f$, \f$C_{1222}\f$, \f$C_{1223}\f$, \f$C_{1233}\f$,
+         *   \f$C_{1313}\f$, \f$C_{1322}\f$, \f$C_{1323}\f$, \f$C_{1333}\f$, \f$C_{2222}\f$, \f$C_{2223}\f$,
+         *   \f$C_{2233}\f$, \f$C_{2323}\f$, \f$C_{2333}\f$, \f$C_{3333}\f$
+         * - 9: orthotropic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1313}\f$,
+         *   \f$C_{2222}\f$, \f$C_{2323}\f$, \f$C_{3333}\f$
+         * - 5: transversly isotropic or hexagonal \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1313}\f$, \f$C_{3333}\f$
+         * - 3: cubic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1212}\f$
+         * - 2: isotropic: lambda (\f$C_{1122}\f$), mu (\f$C_{1212}\f$)
+         *
+         * \param &stiffnessTensor: The rotated stiffness tensor, \f$C'_{ijkl}\f$
+         */
+
+        floatMatrix unrotatedStiffnessTensor;
+        errorOut error = formReferenceStiffnessTensor( parameters, unrotatedStiffnessTensor );
+        if ( error ){
+            errorOut result = new errorNode( __func__, "Error in computation of the unrotated reference stiffness tensor" );
+            result->addNext( error );
+            return result;
+        }
+
+        stiffnessTensor = floatMatrix( spatialDimensions * spatialDimensions, floatVector( spatialDimensions * spatialDimensions, 0 ) );
+
+        for ( unsigned int i=0; i<spatialDimensions; i++ ){
+            for ( unsigned int j=0; j<spatialDimensions; j++ ){
+                for ( unsigned int k=0; k<spatialDimensions; k++ ){
+                    for ( unsigned int l=0; l<spatialDimensions; l++ ){
+                        for ( unsigned int m=0; m<spatialDimensions; m++ ){
+                            for ( unsigned int n=0; n<spatialDimensions; n++ ){
+                                for ( unsigned int o=0; o<spatialDimensions; o++ ){
+                                    for ( unsigned int p=0; p<spatialDimensions; p++ ){
+
+            stiffnessTensor[ ( spatialDimensions * i ) + j ][ ( spatialDimensions * k ) + l ] +=
+                directionCosines[ i ][ m ] * directionCosines[ j ][ n ] * directionCosines[ k ][ o ] * directionCosines[ l ][ p ]
+                * unrotatedStiffnessTensor[ ( spatialDimensions * m ) + n ][ ( spatialDimensions * o ) + p ];
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return NULL;
+    }
+
+    errorOut formReferenceStiffnessTensor( const floatVector &bungeEulerAngles, const floatVector &parameters,
+                                           floatMatrix &stiffnessTensor ){
+        /*!
+         * Rotate the full 81 component stiffness tensor as
+         *
+         * \f$ C'_{ijkl} = R_{im} R_{jn} R_{ko} R_{lp} C_{mnop}
+         *
+         * where \f$C'_{ijkl}\f$ is the rotated stiffness tensor, \f$R_{ij}\f$ is the rotation matrix, and
+         * \f$C_{mnop}\f$ is the original stiffness tensor.
+         *
+         * \param &bungeEulerAngles: Vector containing three Bunge-Euler angles in radians to form the rotation matrix,
+         *     \f$R_{ij}\f$, using ``vectorTools::rotationMatrix``
+         * \param &parameters: The tensor components of the 9x9 stiffness tensor, \f$C_{mnop}\f$. Vector length determines the symmetry.
+         *
+         * - 81: A row-major vector representing the full 9x9 stiffness tensor directly.
+         * - 21: fully anistropic \f$C_{1111}\f$, \f$C_{1112}\f$, \f$C_{1113}\f$, \f$C_{1122}\f$, \f$C_{1123}\f$,
+         *   \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1213}\f$, \f$C_{1222}\f$, \f$C_{1223}\f$, \f$C_{1233}\f$,
+         *   \f$C_{1313}\f$, \f$C_{1322}\f$, \f$C_{1323}\f$, \f$C_{1333}\f$, \f$C_{2222}\f$, \f$C_{2223}\f$,
+         *   \f$C_{2233}\f$, \f$C_{2323}\f$, \f$C_{2333}\f$, \f$C_{3333}\f$
+         * - 9: orthotropic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1313}\f$,
+         *   \f$C_{2222}\f$, \f$C_{2323}\f$, \f$C_{3333}\f$
+         * - 5: transversly isotropic or hexagonal \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1313}\f$, \f$C_{3333}\f$
+         * - 3: cubic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1212}\f$
+         * - 2: isotropic: lambda (\f$C_{1122}\f$), mu (\f$C_{1212}\f$)
+         *
+         * \param &stiffnessTensor: The rotated stiffness tensor, \f$C'_{ijkl}\f$
+         */
+
+        floatMatrix directionCosines;
+
+        vectorTools::rotationMatrix( bungeEulerAngles, directionCosines );
+
+        errorOut error = formReferenceStiffnessTensor( directionCosines, parameters, stiffnessTensor );
+        if ( error ){
+            errorOut result = new errorNode( __func__, "Error in computation of the rotated reference stiffness tensor" );
+            result->addNext( error );
+            return result;
+        }
+
+        return NULL;
+    }
+
     errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy ){
         /*!
          * Compute the value of the linear elastic energy which we define via
@@ -168,7 +280,19 @@ namespace linearElasticity{
          * \f$\rho \psi = \frac{1}{J} \left[ \frac{\lambda}{2} \left( E_{II} \right)^2 + \mu E_{IJ} E_{JI} \right] \f$
          *
          * \param &chi: The micro-deformation
-         * \param &parameters: The parameters used in the calculation. The two Lame parameters are expected lambda and mu.
+         * \param &parameters: The tensor components of the 9x9 stiffness tensor. Vector length determines the symmetry.
+         *
+         * - 81: A row-major vector representing the full 9x9 stiffness tensor directly.
+         * - 21: fully anistropic \f$C_{1111}\f$, \f$C_{1112}\f$, \f$C_{1113}\f$, \f$C_{1122}\f$, \f$C_{1123}\f$,
+         *   \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1213}\f$, \f$C_{1222}\f$, \f$C_{1223}\f$, \f$C_{1233}\f$,
+         *   \f$C_{1313}\f$, \f$C_{1322}\f$, \f$C_{1323}\f$, \f$C_{1333}\f$, \f$C_{2222}\f$, \f$C_{2223}\f$,
+         *   \f$C_{2233}\f$, \f$C_{2323}\f$, \f$C_{2333}\f$, \f$C_{3333}\f$
+         * - 9: orthotropic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1313}\f$,
+         *   \f$C_{2222}\f$, \f$C_{2323}\f$, \f$C_{3333}\f$
+         * - 5: transversly isotropic or hexagonal \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1313}\f$, \f$C_{3333}\f$
+         * - 3: cubic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1212}\f$
+         * - 2: isotropic: lambda (\f$C_{1122}\f$), mu (\f$C_{1212}\f$)
+         *
          * \param &energy: The resulting free energy in the current configuration
          */
 
@@ -230,7 +354,19 @@ namespace linearElasticity{
          * \f$\sigma_{ij} = \frac{1}{J} \frac{ \partial \left( \rho \psi \right ) }{\partial F_{iI}} F_{jI} \f$
          *
          * \param &chi: The micro-deformation
-         * \param &parameters: The parameters used in the calculation. The two Lame parameters are expected lambda and mu.
+         * \param &parameters: The tensor components of the 9x9 stiffness tensor. Vector length determines the symmetry.
+         *
+         * - 81: A row-major vector representing the full 9x9 stiffness tensor directly.
+         * - 21: fully anistropic \f$C_{1111}\f$, \f$C_{1112}\f$, \f$C_{1113}\f$, \f$C_{1122}\f$, \f$C_{1123}\f$,
+         *   \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1213}\f$, \f$C_{1222}\f$, \f$C_{1223}\f$, \f$C_{1233}\f$,
+         *   \f$C_{1313}\f$, \f$C_{1322}\f$, \f$C_{1323}\f$, \f$C_{1333}\f$, \f$C_{2222}\f$, \f$C_{2223}\f$,
+         *   \f$C_{2233}\f$, \f$C_{2323}\f$, \f$C_{2333}\f$, \f$C_{3333}\f$
+         * - 9: orthotropic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1313}\f$,
+         *   \f$C_{2222}\f$, \f$C_{2323}\f$, \f$C_{3333}\f$
+         * - 5: transversly isotropic or hexagonal \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1313}\f$, \f$C_{3333}\f$
+         * - 3: cubic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1212}\f$
+         * - 2: isotropic: lambda (\f$C_{1122}\f$), mu (\f$C_{1212}\f$)
+         *
          * \param &energy: The resulting free energy in the current configuration
          * \param &cauchyStress; The expected cauchy stress
          */
@@ -315,7 +451,19 @@ namespace linearElasticity{
          * \f$\sigma_{ij} = \frac{1}{J} \frac{ \partial \left( \rho \psi \right ) }{\partial F_{iI}} F_{jI} \f$
          *
          * \param &chi: The micro-deformation
-         * \param &parameters: The parameters used in the calculation. The two Lame parameters are expected lambda and mu.
+         * \param &parameters: The tensor components of the 9x9 stiffness tensor. Vector length determines the symmetry.
+         *
+         * - 81: A row-major vector representing the full 9x9 stiffness tensor directly.
+         * - 21: fully anistropic \f$C_{1111}\f$, \f$C_{1112}\f$, \f$C_{1113}\f$, \f$C_{1122}\f$, \f$C_{1123}\f$,
+         *   \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1213}\f$, \f$C_{1222}\f$, \f$C_{1223}\f$, \f$C_{1233}\f$,
+         *   \f$C_{1313}\f$, \f$C_{1322}\f$, \f$C_{1323}\f$, \f$C_{1333}\f$, \f$C_{2222}\f$, \f$C_{2223}\f$,
+         *   \f$C_{2233}\f$, \f$C_{2323}\f$, \f$C_{2333}\f$, \f$C_{3333}\f$
+         * - 9: orthotropic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1313}\f$,
+         *   \f$C_{2222}\f$, \f$C_{2323}\f$, \f$C_{3333}\f$
+         * - 5: transversly isotropic or hexagonal \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1313}\f$, \f$C_{3333}\f$
+         * - 3: cubic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1212}\f$
+         * - 2: isotropic: lambda (\f$C_{1122}\f$), mu (\f$C_{1212}\f$)
+         *
          * \param &energy: The resulting free energy in the current configuration
          * \param &cauchyStress; The expected cauchy stress
          * \param &dEnergydChi: The gradient of the energy w.r.t. the micro deformation
@@ -447,7 +595,19 @@ namespace linearElasticity{
          * \f$\sigma_{ij} = \frac{1}{J} \frac{ \partial \left( \rho \psi \right ) }{\partial F_{iI}} F_{jI} \f$
          *
          * \param &chi: The micro-deformation
-         * \param &parameters: The parameters used in the calculation. The two Lame parameters are expected lambda and mu.
+         * \param &parameters: The tensor components of the 9x9 stiffness tensor. Vector length determines the symmetry.
+         *
+         * - 81: A row-major vector representing the full 9x9 stiffness tensor directly.
+         * - 21: fully anistropic \f$C_{1111}\f$, \f$C_{1112}\f$, \f$C_{1113}\f$, \f$C_{1122}\f$, \f$C_{1123}\f$,
+         *   \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1213}\f$, \f$C_{1222}\f$, \f$C_{1223}\f$, \f$C_{1233}\f$,
+         *   \f$C_{1313}\f$, \f$C_{1322}\f$, \f$C_{1323}\f$, \f$C_{1333}\f$, \f$C_{2222}\f$, \f$C_{2223}\f$,
+         *   \f$C_{2233}\f$, \f$C_{2323}\f$, \f$C_{2333}\f$, \f$C_{3333}\f$
+         * - 9: orthotropic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1313}\f$,
+         *   \f$C_{2222}\f$, \f$C_{2323}\f$, \f$C_{3333}\f$
+         * - 5: transversly isotropic or hexagonal \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1313}\f$, \f$C_{3333}\f$
+         * - 3: cubic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1212}\f$
+         * - 2: isotropic: lambda (\f$C_{1122}\f$), mu (\f$C_{1212}\f$)
+         *
          * \param &energy: The resulting free energy in the current configuration
          * \param &cauchyStress; The expected cauchy stress
          * \param &dEnergydChi: The gradient of the energy w.r.t. the micro deformation
@@ -620,6 +780,66 @@ namespace linearElasticity{
 
             }
 
+        }
+
+        return NULL;
+
+    }
+
+    errorOut evaluateEnergy( const floatVector &bungeEulerAngles,
+                             const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress,
+                             floatVector &dEnergydChi, floatMatrix &dCauchyStressdChi,
+                             floatVector &d2EnergydChi2, floatMatrix &d2CauchyStressdChi2 ){
+        /*!
+         * Compute the value of the linear elastic energy which we define via
+         *
+         * \f$\rho \psi = \frac{1}{J} \left[ \frac{\lambda}{2} \left( E_{II} \right)^2 + \mu E_{IJ} E_{JI} \right] \f$
+         *
+         * and the value of the Cauchy stress which is defined via
+         *
+         * \f$\sigma_{ij} = \frac{1}{J} \frac{ \partial \left( \rho \psi \right ) }{\partial F_{iI}} F_{jI} \f$
+         *
+         * \param &bungeEulerAngles: Vector containing three Bunge-Euler angles in radians to form the rotation matrix,
+         *     \f$R_{ij}\f$, using ``vectorTools::rotationMatrix``
+         * \param &chi: The micro-deformation
+         * \param &parameters: The tensor components of the 9x9 stiffness tensor. Vector length determines the symmetry.
+         *
+         * - 81: A row-major vector representing the full 9x9 stiffness tensor directly.
+         * - 21: fully anistropic \f$C_{1111}\f$, \f$C_{1112}\f$, \f$C_{1113}\f$, \f$C_{1122}\f$, \f$C_{1123}\f$,
+         *   \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1213}\f$, \f$C_{1222}\f$, \f$C_{1223}\f$, \f$C_{1233}\f$,
+         *   \f$C_{1313}\f$, \f$C_{1322}\f$, \f$C_{1323}\f$, \f$C_{1333}\f$, \f$C_{2222}\f$, \f$C_{2223}\f$,
+         *   \f$C_{2233}\f$, \f$C_{2323}\f$, \f$C_{2333}\f$, \f$C_{3333}\f$
+         * - 9: orthotropic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1212}\f$, \f$C_{1313}\f$,
+         *   \f$C_{2222}\f$, \f$C_{2323}\f$, \f$C_{3333}\f$
+         * - 5: transversly isotropic or hexagonal \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1133}\f$, \f$C_{1313}\f$, \f$C_{3333}\f$
+         * - 3: cubic \f$C_{1111}\f$, \f$C_{1122}\f$, \f$C_{1212}\f$
+         * - 2: isotropic: lambda (\f$C_{1122}\f$), mu (\f$C_{1212}\f$)
+         *
+         * \param &energy: The resulting free energy in the current configuration
+         * \param &cauchyStress; The expected cauchy stress
+         * \param &dEnergydChi: The gradient of the energy w.r.t. the micro deformation
+         * \param &dCauchyStressdChi: The gradient of the Cauchy stress w.r.t. the micro deformation
+         * \param &d2EnergydChi2: The second gradient of the energy w.r.t. the micro deformation
+         * \param &d2CauchyStressdChi2: The second gradient of the Cauchy stress w.r.t. the micro deformation
+         *
+         */
+
+        floatMatrix stiffnessTensor;
+        errorOut error = formReferenceStiffnessTensor( bungeEulerAngles, parameters, stiffnessTensor );
+        if ( error ){
+            errorOut result = new errorNode( __func__, "Error in computation of the rotated reference stiffness tensor" );
+            result->addNext( error );
+            return result;
+        }
+        floatVector flatStiffnessTensor = vectorTools::appendVectors( stiffnessTensor );
+
+        error = evaluateEnergy( chi, flatStiffnessTensor, energy, cauchyStress,
+                                dEnergydChi, dCauchyStressdChi,
+                                d2EnergydChi2, d2CauchyStressdChi2 );
+        if ( error ){
+            errorOut result = new errorNode( __func__, "Error in computation of the linear elastic free energy" );
+            result->addNext( error );
+            return result;
         }
 
         return NULL;
