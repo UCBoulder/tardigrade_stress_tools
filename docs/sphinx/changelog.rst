@@ -28,6 +28,7 @@ Internal Changes
   By `Kyle Brindley`_.
 - Remove depreciated shell build script and documentation references in preference to direct cmake commands
   (:issue:`15`, :merge:`28`). By `Kyle Brindley`_.
+- Update minimum ``vector_tools`` version requirement. By `Kyle Brindley`_.
 
 ******************
 0.2.7 (2022-12-21)
