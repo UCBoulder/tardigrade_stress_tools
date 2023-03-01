@@ -76,7 +76,7 @@ environment:
     # place the common modulefiles in an accessible location
     - cp ${PWD}/modulefiles/* ${aea_modulefiles}
   tags:
-    - sstelmo-shell-aea
+    - shell-aea
 
 microbump:
   stage: version
@@ -112,7 +112,7 @@ microbump:
     - git tag -a ${developer_version} -m "developer pre-release ${developer_version}" ${last_merge_hash} || true
     - git push oauth2-origin --tags
   tags:
-    - sstelmo-shell-aea
+    - shell-aea
 
 fast-test:
   stage: test
@@ -138,7 +138,7 @@ fast-test:
     paths:
       - build/results.txt
   tags:
-    - sstelmo-shell-aea
+    - shell-aea
 
 conda-build:
   stage: build
@@ -151,6 +151,10 @@ conda-build:
     - if: $CI_COMMIT_BRANCH == "main"
     - if: $CI_COMMIT_BRANCH == "dev"
   script:
+    # Only build one compiler variant during merge request testing
+    - cxx_compiler_version="12"
+    - variants=""
+    - if [[ $CI_PIPELINE_SOURCE == "merge_request_event" ]]; then variants="--variants {'cxx_compiler_version':['${cxx_compiler_version}']}"; fi
     # Set the LANL internal proxies
     - export ALL_PROXY="proxyout.lanl.gov:8080"
     - export HTTP_PROXY="http://$ALL_PROXY"
@@ -158,13 +162,13 @@ conda-build:
     # Override default permissions. Set group to rx with no write permissions.
     - umask 0022
     - mkdir ${conda_artifact_directory}
-    - VERSION=$(python -m setuptools_scm) conda build recipe --channel file://${aea_conda_channel} --channel conda-forge --no-anaconda-upload --croot /scratch/${USER}/conda-build --output-folder ${conda_artifact_directory}
+    - VERSION=$(python -m setuptools_scm) conda build recipe --channel file://${aea_conda_channel} --channel conda-forge --no-anaconda-upload --croot /scratch/${USER}/conda-build --output-folder ${conda_artifact_directory} ${variants}
   artifacts:
     expire_in: '2 hrs'
     paths:
       - conda-build-artifacts/linux-64/stress_tools-*-*.tar.bz2
   tags:
-    - sstelmo-shell-aea
+    - shell-aea
 
 deploy:
   stage: deploy
@@ -189,7 +193,7 @@ deploy:
     - conda index ${aea_conda_channel}
     - conda search --channel file://${aea_conda_channel}/ --override-channels stress_tools
   tags:
-    - sstelmo-shell-aea
+    - shell-aea
 
 # It MUST be called pages
 pages:
@@ -216,4 +220,4 @@ pages:
       # It MUST be called public
       - public
   tags:
-    - sstelmo-shell-aea
+    - shell-aea
