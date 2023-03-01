@@ -12,6 +12,7 @@ Changelog
 Internal Changes
 ================
 - Add a GCC 11 conda package variant (:issue:`16`, :merge:`33`). By `Kyle Brindley`_.
+- Add the Sphinx target (:issue:`17`, :merge:`34`). By `Kyle Brindley`_.
 
 ******************
 0.2.8 (2023-02-28)
