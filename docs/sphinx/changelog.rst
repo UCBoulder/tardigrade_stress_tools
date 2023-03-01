@@ -9,6 +9,10 @@ Changelog
 0.2.9 (unreleased)
 ******************
 
+Internal Changes
+================
+- Add a GCC 11 conda package variant (:issue:`16`, :merge:`33`). By `Kyle Brindley`_.
+
 ******************
 0.2.8 (2023-02-28)
 ******************
