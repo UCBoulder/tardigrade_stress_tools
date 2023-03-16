@@ -13,6 +13,9 @@ Internal Changes
 ================
 - Add a GCC 11 conda package variant (:issue:`16`, :merge:`33`). By `Kyle Brindley`_.
 - Add the Sphinx target (:issue:`17`, :merge:`34`). By `Kyle Brindley`_.
+- Force CI environment to build consistently from conda-forge (:merge: `35`). By `Nathan Miller`_.
+- Prefer project-wide compiler options and remove ``-ansi`` to get consistent application of
+  c++17 (:merge: `36`). By `Nathan Miller`_.
 
 ******************
 0.2.8 (2023-02-28)
