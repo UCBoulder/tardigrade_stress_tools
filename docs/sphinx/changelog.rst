@@ -16,6 +16,7 @@ Internal Changes
 - Force CI environment to build consistently from conda-forge (:merge: `35`). By `Nathan Miller`_.
 - Prefer project-wide compiler options and remove ``-ansi`` to get consistent application of
   c++17 (:merge: `36`). By `Nathan Miller`_.
+- Add a GCC 10 conda package variant (:issue:`18`, :merge:`37`). By `Sergio Cordova`_.
 
 ******************
 0.2.8 (2023-02-28)
