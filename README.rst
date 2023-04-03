@@ -1,3 +1,6 @@
+.. targets-start-do-not-remove
+.. targets-end-do-not-remove
+
 #############
 stress\_tools
 #############
@@ -6,9 +9,13 @@ stress\_tools
 Project Description
 *******************
 
+.. project-brief-start-do-not-remove
+
 Tools for computing stress-strain behaviors. The stress functions should be
 able to return the stress and the jacobian w.r.t. the strain metric of
 interest.
+
+.. project-brief-end-do-not-remove
 
 Information
 ===========
@@ -25,6 +32,8 @@ Developers
 ************
 Dependencies
 ************
+
+.. dependencies-start-do-not-remove
 
 Compilers
 =========
@@ -73,9 +82,13 @@ If not found on the current system or active Conda environment, all of the
 ``*_tools`` libraries are pulled from their git repos by branch name and built
 with their respective cmake files as part of the cmake build for this project.
 
+.. dependencies-end-do-not-remove
+
 **************
 Build and Test
 **************
+
+.. build-start-do-not-remove
 
 This project is built with [CMake](https://cmake.org/cmake/help/v3.14/) and uses
 [Sphinx](https://www.sphinx-doc.org/en/master/) to build the documentation with
@@ -236,6 +249,8 @@ To build just the documentation pick up the steps here:
       /path/to/stress_tools/build/
       $ firefox docs/doxygen/html/index.html &
 
+.. build-end-do-not-remove
+
 *******************
 Install the library
 *******************
@@ -268,6 +283,8 @@ Build the entire before performing the installation.
 ***********************
 Contribution Guidelines
 ***********************
+
+.. contribution-start-do-not-remove
 
 Git Commit Message
 ==================
@@ -350,3 +367,5 @@ run.
   .. code-block:: bash
 
      sed -i 's/\([)}\]]\)\([)}\]]\)/\1 \2/g' <list of files to update>
+
+.. contribution-end-do-not-remove
