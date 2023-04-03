@@ -232,7 +232,7 @@ namespace stressTools{
          */
 
         floatVector deviatoric = calculateDeviatoricStress( stress );
-        vonMises = std::sqrt( 3./2.*vectorTools::inner( deviatoric, deviatoric ));
+        vonMises = std::sqrt( 3./2.*vectorTools::inner( deviatoric, deviatoric ) );
 
         return NULL;
     }
@@ -575,7 +575,7 @@ namespace stressTools{
 
         floatVector deviatoric = calculateDeviatoricStress( stress );
 
-        djacobiandstress = ( 3/( 2*vonMises ))*( EYE - vectorTools::dyadic( eye, meanStressJacobian )
+        djacobiandstress = ( 3/( 2*vonMises ) )*( EYE - vectorTools::dyadic( eye, meanStressJacobian )
                                                  - vectorTools::dyadic( deviatoric, vonMisesJacobian )/vonMises );
 
         return NULL;
@@ -724,7 +724,7 @@ namespace stressTools{
         /*!
          * Compute the stress for linear viscoelasticity based on the potential function
          *
-         * \f$\rho^0 \Psi = 0.5*( E_{ IJ } G_{ \infty } E_{ IJ } + \sum_{ n=1 }^N ( E_{ IJ } - \Xi_{ IJ }^n ) G^n ( E_{ IJ } - \Xi_{ IJ }) )\f$
+         * \f$\rho^0 \Psi = 0.5*( E_{ IJ } G_{ \infty } E_{ IJ } + \sum_{ n=1 }^N ( E_{ IJ } - \Xi_{ IJ }^n ) G^n ( E_{ IJ } - \Xi_{ IJ } ) )\f$
          *
          * \param &currentTime: The current time
          * \param &currentStrain: The current Green-Lagrange strain
@@ -809,7 +809,7 @@ namespace stressTools{
             stress += Gi*( currentStrain - Xic );
 
             //Save the new value of the state variable
-            currentStateVariables = vectorTools::appendVectors( { currentStateVariables, Xic });
+            currentStateVariables = vectorTools::appendVectors( { currentStateVariables, Xic } );
         }
 
         return NULL;
@@ -824,7 +824,7 @@ namespace stressTools{
         /*!
          * Compute the stress for linear viscoelasticity based on the potential function
          *
-         * \f$\rho^0 \Psi = 0.5*( E_{ IJ } G_{ \infty } E_{ IJ } + \sum_{ n=1 }^N ( E_{ IJ } - \Xi_{ IJ }^n ) G^n ( E_{ IJ } - \Xi_{ IJ }) )\f$
+         * \f$\rho^0 \Psi = 0.5*( E_{ IJ } G_{ \infty } E_{ IJ } + \sum_{ n=1 }^N ( E_{ IJ } - \Xi_{ IJ }^n ) G^n ( E_{ IJ } - \Xi_{ IJ } ) )\f$
          *
          * \param &currentTime: The current time
          * \param &currentStrain: The current Green-Lagrange strain
@@ -863,7 +863,7 @@ namespace stressTools{
         /*!
          * Compute the stress for linear viscoelasticity based on the potential function
          *
-         * \f$\rho^0 \Psi = 0.5*( E_{ IJ } G_{ \infty } E_{ IJ } + \sum_{ n=1 }^N ( E_{ IJ } - \Xi_{ IJ }^n ) G^n ( E_{ IJ } - \Xi_{ IJ }) )\f$
+         * \f$\rho^0 \Psi = 0.5*( E_{ IJ } G_{ \infty } E_{ IJ } + \sum_{ n=1 }^N ( E_{ IJ } - \Xi_{ IJ }^n ) G^n ( E_{ IJ } - \Xi_{ IJ } ) )\f$
          *
          * \param &currentTime: The current time
          * \param &currentStrain: The current Green-Lagrange strain
@@ -932,7 +932,7 @@ namespace stressTools{
             scalarTerm += Gi*( 1 - factor*( 1 - alpha )*dt*currentRateModifier );
 
             //Add terms to the gradient w.r.t. the rate modifier
-            dstressdrateModifier -= Gi*( dt*( 1-alpha )/( taui + dt*( 1-alpha )*currentRateModifier ))*( currentStrain - Xic );
+            dstressdrateModifier -= Gi*( dt*( 1-alpha )/( taui + dt*( 1-alpha )*currentRateModifier ) )*( currentStrain - Xic );
         }
 
         //Assemble the full gradient
@@ -951,7 +951,7 @@ namespace stressTools{
         /*!
          * Compute the stress for linear viscoelasticity based on the potential function
          *
-         * \f$\rho^0 \Psi = 0.5*( E_{ IJ } G_{ \infty } E_{ IJ } + \sum_{ n=1 }^N ( E_{ IJ } - \Xi_{ IJ }^n ) G^n ( E_{ IJ } - \Xi_{ IJ }) )\f$
+         * \f$\rho^0 \Psi = 0.5*( E_{ IJ } G_{ \infty } E_{ IJ } + \sum_{ n=1 }^N ( E_{ IJ } - \Xi_{ IJ }^n ) G^n ( E_{ IJ } - \Xi_{ IJ } ) )\f$
          *
          * \param &currentTime: The current time
          * \param &currentStrain: The current Green-Lagrange strain
@@ -998,7 +998,7 @@ namespace stressTools{
         /*!
          * Compute the stress for linear viscoelasticity based on the potential function
          *
-         * \f$\rho^0 \Psi = 0.5*( E_{ IJ } G_{ \infty } E_{ IJ } + \sum_{ n=1 }^N ( E_{ IJ } - \Xi_{ IJ }^n ) G^n ( E_{ IJ } - \Xi_{ IJ }) )\f$
+         * \f$\rho^0 \Psi = 0.5*( E_{ IJ } G_{ \infty } E_{ IJ } + \sum_{ n=1 }^N ( E_{ IJ } - \Xi_{ IJ }^n ) G^n ( E_{ IJ } - \Xi_{ IJ } ) )\f$
          *
          * \param &currentTime: The current time
          * \param &currentStrain: The current Green-Lagrange strain
@@ -1058,7 +1058,7 @@ namespace stressTools{
         /*!
          * Compute the stress for linear viscoelasticity based on the potential function
          *
-         * \f$\rho^0 \Psi = 0.5*( E_{ IJ } G_{ \infty } E_{ IJ } + \sum_{ n=1 }^N ( E_{ IJ } - \Xi_{ IJ }^n ) G^n ( E_{ IJ } - \Xi_{ IJ }) )\f$
+         * \f$\rho^0 \Psi = 0.5*( E_{ IJ } G_{ \infty } E_{ IJ } + \sum_{ n=1 }^N ( E_{ IJ } - \Xi_{ IJ }^n ) G^n ( E_{ IJ } - \Xi_{ IJ } ) )\f$
          *
          * \param &currentTime: The current time
          * \param &currentStrain: The current Green-Lagrange strain
@@ -1233,7 +1233,7 @@ namespace stressTools{
         /*!
          * Compute the volumetric part of a Neo-Hookean material model response of the form
          *
-         * \f$U( J ) = 0.5*bulkModulus*( 0.5*( J**2 - 1 ) - ln( J ))\f$
+         * \f$U( J ) = 0.5*bulkModulus*( 0.5*( J**2 - 1 ) - ln( J ) )\f$
          *
          * where \f$J\f$ is the determinant of the deformation gradient.
          *
@@ -1261,7 +1261,7 @@ namespace stressTools{
         /*!
          * Compute the volumetric part of a Neo-Hookean material model response of the form
          *
-         * \f$U( J ) = 0.5*bulkModulus*( 0.5*( J**2 - 1 ) - ln( J ))\f$
+         * \f$U( J ) = 0.5*bulkModulus*( 0.5*( J**2 - 1 ) - ln( J ) )\f$
          *
          * where \f$J\f$ is the determinant of the deformation gradient.
          *
@@ -1283,7 +1283,7 @@ namespace stressTools{
         meanStress = 0.5*bulkModulus*( jacobian - 1/jacobian );
 
         //Compute the derivative of the meanStress w.r.t. jacobian
-        dmeanStressdJ = 0.5*bulkModulus*( 1 + 1/( jacobian*jacobian ));
+        dmeanStressdJ = 0.5*bulkModulus*( 1 + 1/( jacobian*jacobian ) );
 
         return NULL;
     }
@@ -1294,7 +1294,7 @@ namespace stressTools{
         /*!
          * Compute the volumetric part of a Neo-Hookean material model response of the form
          *
-         * \f$U( J ) = 0.5*bulkModulus*( 0.5*( J**2 - 1 ) - ln( J ))\f$
+         * \f$U( J ) = 0.5*bulkModulus*( 0.5*( J**2 - 1 ) - ln( J ) )\f$
          *
          * where \f$J\f$ is the determinant of the deformation gradient.
          *
@@ -1324,7 +1324,7 @@ namespace stressTools{
         /*!
          * Compute the volumetric part of a Neo-Hookean material model response of the form
          *
-         * \f$U( J ) = 0.5*bulkModulus*( 0.5*( J**2 - 1 ) - ln( J ))\f$
+         * \f$U( J ) = 0.5*bulkModulus*( 0.5*( J**2 - 1 ) - ln( J ) )\f$
          *
          * where \f$J\f$ is the determinant of the deformation gradient.
          *
@@ -1365,7 +1365,7 @@ namespace stressTools{
          * \param &p: The value of the model.
          */
 
-        if ( vectorTools::fuzzyEquals( q, 0. )){
+        if ( vectorTools::fuzzyEquals( q, 0. ) ){
             return new errorNode( "peryznaModel", "The denominator term is zero" );
         }
 
@@ -1417,7 +1417,7 @@ namespace stressTools{
          * \param &dpdA: The derivative of the value w.r.t. A.
          */
 
-        if ( vectorTools::fuzzyEquals( q, 0. )){
+        if ( vectorTools::fuzzyEquals( q, 0. ) ){
             return new errorNode( "peryznaModel ( jacobian )", "The denominator term is zero" );
         }
 
