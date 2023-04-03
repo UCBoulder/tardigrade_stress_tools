@@ -316,7 +316,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
          *
-         * \f$f = \sigma^{ vonMises } + dpParam[ 0]*\sigma^{ mean } - dpParam[ 1]\f$
+         * \f$f = \sigma^{ vonMises } + dpParam[ 0 ]*\sigma^{ mean } - dpParam[ 1 ]\f$
          *
          * \param &vonMises: The von Mises stress
          * \param &meanStress: The mean Stress
@@ -329,7 +329,7 @@ namespace stressTools{
             return new errorNode( "druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface." );
         }
 
-        druckerPragerSurface( vonMises, meanStress, dpParam[ 0], dpParam[ 1], dpYield );
+        druckerPragerSurface( vonMises, meanStress, dpParam[ 0 ], dpParam[ 1 ], dpYield );
 
         return NULL;
     }
@@ -362,7 +362,7 @@ namespace stressTools{
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
          *
-         * \f$f = \sigma^{ vonMises } + dpParam[ 0]*\sigma^{ mean } - dpParam[ 1]\f$
+         * \f$f = \sigma^{ vonMises } + dpParam[ 0 ]*\sigma^{ mean } - dpParam[ 1 ]\f$
          *
          * \param &vonMises: The von Mises stress
          * \param &meanStress: The mean Stress
@@ -420,7 +420,7 @@ namespace stressTools{
         }
 
         //Calculate DP yield criterion
-        druckerPragerSurface( stress, dpParam[ 0], dpParam[ 1], dpYield );
+        druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield );
 
         return NULL;
     }
@@ -526,7 +526,7 @@ namespace stressTools{
             return new errorNode( "druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface." );
         }
 
-        druckerPragerSurface( stress, dpParam[ 0], dpParam[ 1], dpYield, jacobian );
+        druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield, jacobian );
 
         return NULL;
     }
@@ -602,7 +602,7 @@ namespace stressTools{
             return new errorNode( "druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface." );
         }
 
-        druckerPragerSurface( stress, dpParam[ 0], dpParam[ 1], dpYield, jacobian, djacobiandstress );
+        druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield, jacobian, djacobiandstress );
 
         return NULL;
     }
@@ -650,7 +650,7 @@ namespace stressTools{
         druckerPragerSurface( stress, dpParam, dpYield, jacobian );
 
         //Calculate the Drucker-Prager unit normal flow direction as the normalized jacobian
-        unitDirection = jacobian / std::sqrt( 3./2. + pow( dpParam[ 0], 2. )/3. );
+        unitDirection = jacobian / std::sqrt( 3./2. + pow( dpParam[ 0 ], 2. )/3. );
 
         return NULL;
     }
@@ -736,7 +736,7 @@ namespace stressTools{
          * \param &previousStrain: The previous value of strain
          * \param &previousStateVariables: The previous values of the state variables
          * \param &materialParameters: The material parameters
-         *     The order of the parameters is [ \f$G_{ \infty }\f$, \f$\tau\f$ s, \f$G\f$ s] where
+         *     The order of the parameters is [ \f$G_{ \infty }\f$, \f$\tau\f$ s, \f$G\f$ s ] where
          *         - \f$G_{ \infty }\f$: The infinite stiffness modulus
          *         - \f$\tau\f$ s: The time constants
          *         - \f$G\f$ s: The stiffness values
@@ -768,8 +768,8 @@ namespace stressTools{
 
         //Compute the infinite stress
         floatVector dStrain = currentStrain - previousStrain;
-        dStress = materialParameters[ 0]*dStrain;
-        stress = materialParameters[ 0]*currentStrain;
+        dStress = materialParameters[ 0 ]*dStrain;
+        stress = materialParameters[ 0 ]*currentStrain;
 
         //Set the initial value of the factor
         floatType factor;
@@ -784,15 +784,15 @@ namespace stressTools{
 
         for ( unsigned int i=1; i<nTerms+1; i++ ){
             //Get the parameters
-            taui = materialParameters[ i];
-            Gi = materialParameters[ i+nTerms];
+            taui = materialParameters[ i ];
+            Gi = materialParameters[ i+nTerms ];
 
             //Get the factor
             factor = dt/( taui + dt*( 1 - alpha )*currentRateModifier );
 
             //Set the indices of the previous values of the state variables
             for ( unsigned int j=dim*( i-1 ), k=0; j<dim*i; j++, k++ ){
-                indices[ k] = j;
+                indices[ k ] = j;
             }
 
             //Get the previous values of the state variables
@@ -836,7 +836,7 @@ namespace stressTools{
          * \param &previousStrain: The previous value of strain
          * \param &previousStateVariables: The previous values of the state variables
          * \param &materialParameters: The material parameters
-         *     The order of the parameters is [ \f$G_{ \infty }\f$, \f$\tau\f$ s, \f$G\f$ s] where
+         *     The order of the parameters is [ \f$G_{ \infty }\f$, \f$\tau\f$ s, \f$G\f$ s ] where
          *         - \f$G_{ \infty }\f$: The infinite stiffness modulus
          *         - \f$\tau\f$ s: The time constants
          *         - \f$G\f$ s: The stiffness values
@@ -875,7 +875,7 @@ namespace stressTools{
          *     which can be used for temperature effects or ( potentially ) other non-linear effects.
          * \param &previousStateVariables: The previous values of the state variables
          * \param &materialParameters: The material parameters
-         *     The order of the parameters is [ \f$G_{ \infty }\f$, \f$\tau\f$ s, \f$G\f$ s] where
+         *     The order of the parameters is [ \f$G_{ \infty }\f$, \f$\tau\f$ s, \f$G\f$ s ] where
          *         - \f$G_{ \infty }\f$: The infinite stiffness modulus
          *         - \f$\tau\f$ s: The time constants
          *         - \f$G\f$ s: The stiffness values
@@ -906,7 +906,7 @@ namespace stressTools{
         dstressdrateModifier = floatVector( currentStrain.size( ), 0 );
 
         //Compute the "infinite" term
-        floatType scalarTerm = materialParameters[ 0];
+        floatType scalarTerm = materialParameters[ 0 ];
         floatType taui, Gi, factor;
         std::vector< unsigned int > indices( currentStrain.size( ), 0 );
         floatVector Xic;
@@ -915,12 +915,12 @@ namespace stressTools{
 
         //Add the contributions from the other terms
         for ( unsigned int i=1; i<nTerms+1; i++ ){
-            taui = materialParameters[ i];
-            Gi = materialParameters[ i+nTerms];
+            taui = materialParameters[ i ];
+            Gi = materialParameters[ i+nTerms ];
 
             //Set the indices of the current values of the state variables
             for ( unsigned int j=dim*( i-1 ), k=0; j<dim*i; j++, k++ ){
-                indices[ k] = j;
+                indices[ k ] = j;
             }
 
             //Get the previous values of the state variables
@@ -963,7 +963,7 @@ namespace stressTools{
          *     which can be used for temperature effects or ( potentially ) other non-linear effects.
          * \param &previousStateVariables: The previous values of the state variables
          * \param &materialParameters: The material parameters
-         *     The order of the parameters is [ \f$G_{ \infty }\f$, \f$\tau\f$ s, \f$G\f$ s] where
+         *     The order of the parameters is [ \f$G_{ \infty }\f$, \f$\tau\f$ s, \f$G\f$ s ] where
          *         - \f$G_{ \infty }\f$: The infinite stiffness modulus
          *         - \f$\tau\f$ s: The time constants
          *         - \f$G\f$ s: The stiffness values
@@ -1010,7 +1010,7 @@ namespace stressTools{
          *     which can be used for temperature effects or ( potentially ) other non-linear effects.
          * \param &previousStateVariables: The previous values of the state variables
          * \param &materialParameters: The material parameters
-         *     The order of the parameters is [ \f$G_{ \infty }\f$, \f$\tau\f$ s, \f$G\f$ s] where
+         *     The order of the parameters is [ \f$G_{ \infty }\f$, \f$\tau\f$ s, \f$G\f$ s ] where
          *         - \f$G_{ \infty }\f$: The infinite stiffness modulus
          *         - \f$\tau\f$ s: The time constants
          *         - \f$G\f$ s: The stiffness values
@@ -1070,7 +1070,7 @@ namespace stressTools{
          *     which can be used for temperature effects or ( potentially ) other non-linear effects.
          * \param &previousStateVariables: The previous values of the state variables
          * \param &materialParameters: The material parameters
-         *     The order of the parameters is [ \f$G_{ \infty }\f$, \f$\tau\f$ s, \f$G\f$ s] where
+         *     The order of the parameters is [ \f$G_{ \infty }\f$, \f$\tau\f$ s, \f$G\f$ s ] where
          *         - \f$G_{ \infty }\f$: The infinite stiffness modulus
          *         - \f$\tau\f$ s: The time constants
          *         - \f$G\f$ s: The stiffness values
@@ -1394,7 +1394,7 @@ namespace stressTools{
         if ( parameters.size( ) != 1 ){
             return new errorNode( "peryznaModel", "The parameters vector is one value long" );
         }
-        return peryznaModel( f, q, A, parameters[ 0], p );
+        return peryznaModel( f, q, A, parameters[ 0 ], p );
     }
 
     errorOut peryznaModel( const floatType f, const floatType q, const floatType A, const floatType n, floatType &p,
@@ -1459,7 +1459,7 @@ namespace stressTools{
         if ( parameters.size( ) != 1 ){
             return new errorNode( "peryznaModel", "The parameters vector is one value long" );
         }
-        return peryznaModel( f, q, A, parameters[ 0], p, dpdf, dpdq, dpdA );
+        return peryznaModel( f, q, A, parameters[ 0 ], p, dpdf, dpdq, dpdA );
     }
 
     errorOut linearHardening( const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift,
