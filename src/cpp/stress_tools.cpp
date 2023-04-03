@@ -146,8 +146,8 @@ namespace stressTools{
          *
          * Also return the jacobian
          *
-         * \f$\frac{ \partial \sigma_{ ij }^{ deviatoric }}{ \partial \sigma_{ kl }} = \delta_{ ik }\delta{ jl } - \frac{ \partial
-         * \bar{ \sigma }}{ \partial \sigma_{ kl }} \delta_{ ij }\f$
+         * \f$\frac{ \partial \sigma_{ ij }^{ deviatoric } }{ \partial \sigma_{ kl } } = \delta_{ ik }\delta{ jl } - \frac{ \partial
+         * \bar{ \sigma } }{ \partial \sigma_{ kl } } \delta_{ ij }\f$
          *
          * \param &stress: The stress tensor in row major format
          * \param &deviatoric: The deviatoric stress tensor in row major format
@@ -201,8 +201,8 @@ namespace stressTools{
          *
          * Also return the jacobian
          *
-         * \f$\frac{ \partial \sigma_{ ij }^{ deviatoric }}{ \partial \sigma_{ kl }} = \delta_{ ik }\delta{ jl } - \frac{ \partial
-         * \bar{ \sigma }}{ \partial \sigma_{ kl }} \delta_{ ij }\f$
+         * \f$\frac{ \partial \sigma_{ ij }^{ deviatoric } }{ \partial \sigma_{ kl } } = \delta_{ ik }\delta{ jl } - \frac{ \partial
+         * \bar{ \sigma } }{ \partial \sigma_{ kl } } \delta_{ ij }\f$
          *
          * \param &stress: The stress tensor in row major format
          * \param &jacobian: The jacobian of the deviatoric stress tensor w.r.t. the stress.
@@ -223,7 +223,7 @@ namespace stressTools{
         /*!
          * Compute the von Mises stress from a 2nd rank stress tensor stored in row major format
          *
-         * \f$\sigma^{ vonMises } = \sqrt{ \frac{ 3 }{ 2 }*\sigma^{ deviatoric }\sigma^{ deviatoric }}\f$
+         * \f$\sigma^{ vonMises } = \sqrt{ \frac{ 3 }{ 2 }*\sigma^{ deviatoric }\sigma^{ deviatoric } }\f$
          *
          * \f$\sigma^{ deviatoric } = \sigma - \sigma^{ mean }I\f$
          *
@@ -241,7 +241,7 @@ namespace stressTools{
         /*!
          * Compute the von Mises stress from a 2nd rank stress tensor stored in row major format
          *
-         * \f$\sigma^{ vonMises } = \sqrt{ \frac{ 3 }{ 2 }*\sigma^{ deviatoric }\sigma^{ deviatoric }}\f$
+         * \f$\sigma^{ vonMises } = \sqrt{ \frac{ 3 }{ 2 }*\sigma^{ deviatoric }\sigma^{ deviatoric } }\f$
          *
          * \f$\sigma^{ deviatoric } = \sigma - \sigma^{ mean }I\f$
          *
@@ -263,7 +263,7 @@ namespace stressTools{
         /*!
          * Compute the von Mises stress from a 2nd rank stress tensor stored in row major format
          *
-         * \f$\sigma^{ vonMises } = \sqrt{ \frac{ 3 }{ 2 }*\sigma^{ deviatoric }\sigma^{ deviatoric }}\f$
+         * \f$\sigma^{ vonMises } = \sqrt{ \frac{ 3 }{ 2 }*\sigma^{ deviatoric }\sigma^{ deviatoric } }\f$
          *
          * \f$\sigma^{ deviatoric } = \sigma - \sigma^{ mean }I\f$
          *
@@ -1536,7 +1536,7 @@ namespace stressTools{
          * 
          * It can be shown that
          * 
-         * \f$\mathbb{ C }_{ ijkl } = \left( \delta_{ mn } \sigma_{ ij } + \frac{ D \sigma_{ ij }}{ D F_{ mK }} F_{ nK }\right )\mathbb{ P }_{ mnkl }^{ symm }\f$
+         * \f$\mathbb{ C }_{ ijkl } = \left( \delta_{ mn } \sigma_{ ij } + \frac{ D \sigma_{ ij } }{ D F_{ mK } } F_{ nK }\right )\mathbb{ P }_{ mnkl }^{ symm }\f$
          * 
          * Where
          * 
