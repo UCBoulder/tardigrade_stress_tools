@@ -6,8 +6,26 @@ Changelog
 #########
 
 ******************
-0.2.9 (unreleased)
+0.3.2 (unreleased)
 ******************
+
+******************
+0.3.1 (2023-04-03)
+******************
+
+Breaking Changes
+================
+- Require c++17 packages (:issue:`19`, :merge:`40`). By `Kyle Brindley`_.
+
+Internal Changes
+================
+- Add a GCC 11 conda package variant (:issue:`16`, :merge:`33`). By `Kyle Brindley`_.
+- Add the Sphinx target (:issue:`17`, :merge:`34`). By `Kyle Brindley`_.
+- Force CI environment to build consistently from conda-forge (:merge: `35`). By `Nathan Miller`_.
+- Prefer project-wide compiler options and remove ``-ansi`` to get consistent application of
+  c++17 (:merge: `36`). By `Nathan Miller`_.
+- Add a GCC 10 conda package variant (:issue:`18`, :merge:`37`). By `Sergio Cordova`_.
+- Updates for parentheses/braces/brackets to match style guide (:merge:`38`). By `Kyle Brindley`_.
 
 ******************
 0.2.8 (2023-02-28)
