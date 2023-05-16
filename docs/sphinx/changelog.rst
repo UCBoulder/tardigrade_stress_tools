@@ -26,6 +26,7 @@ Internal Changes
   c++17 (:merge: `36`). By `Nathan Miller`_.
 - Add a GCC 10 conda package variant (:issue:`18`, :merge:`37`). By `Sergio Cordova`_.
 - Updates for parentheses/braces/brackets to match style guide (:merge:`38`). By `Kyle Brindley`_.
+- Updated interface to the gradient of the determinant of a matrix w.r.t. the matrix (:merge:`43`). By `Nathan Miller`_.
 
 ******************
 0.2.8 (2023-02-28)

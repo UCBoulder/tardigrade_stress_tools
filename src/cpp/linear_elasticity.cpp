@@ -494,7 +494,7 @@ namespace linearElasticity{
         try{
 
             detChi = vectorTools::determinant( chi, spatialDimensions, spatialDimensions );
-            dDetChidChi = vectorTools::computeDDetAdJ( chi, spatialDimensions, spatialDimensions );
+            dDetChidChi = vectorTools::computeDDetADA( chi, spatialDimensions, spatialDimensions );
 
             invChi = vectorTools::inverse( chi, spatialDimensions, spatialDimensions );
 
@@ -640,7 +640,7 @@ namespace linearElasticity{
         try{
 
             detChi = vectorTools::determinant( chi, spatialDimensions, spatialDimensions );
-            dDetChidChi = vectorTools::computeDDetAdJ( chi, spatialDimensions, spatialDimensions );
+            dDetChidChi = vectorTools::computeDDetADA( chi, spatialDimensions, spatialDimensions );
 
             invChi = vectorTools::inverse( chi, spatialDimensions, spatialDimensions );
 
