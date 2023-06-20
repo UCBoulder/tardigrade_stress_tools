@@ -20,9 +20,9 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - eigen >=3.3.7
-    - constitutive_tools >=0.4.1
-    - error_tools >=0.4.1
-    - vector_tools >=0.5.4
+    - constitutive_tools >=0.6
+    - error_tools >=0.6
+    - vector_tools >=0.6
     - boost >=1.59  # TODO: Separate the package/test configuration to make BOOST an optional build dependency
     - setuptools_scm >=6.2
     - libcxx <16  # [osx]
@@ -36,9 +36,9 @@ requirements:
   run:
     - {{ compiler('cxx') }}
     - eigen >=3.3.7
-    - constitutive_tools >=0.4.1
-    - error_tools >=0.4.1
-    - vector_tools >=0.5.4
+    - constitutive_tools >=0.6
+    - error_tools >=0.6
+    - vector_tools >=0.6
 
 test:
   requires:
