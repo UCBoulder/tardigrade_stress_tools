@@ -6,8 +6,17 @@ Changelog
 #########
 
 ******************
-0.3.2 (unreleased)
+0.4.2 (unreleased)
 ******************
+
+******************
+0.4.1 (2023-06-20)
+******************
+
+Breaking changes
+================
+- Deploy to the Conda environment preferred ``lib`` directory instead of the CMake linux default ``lib64`` (:issue:`21`,
+  :merge:`44`). By `Kyle Brindley`_.
 
 ******************
 0.3.1 (2023-04-03)
@@ -26,6 +35,7 @@ Internal Changes
   c++17 (:merge: `36`). By `Nathan Miller`_.
 - Add a GCC 10 conda package variant (:issue:`18`, :merge:`37`). By `Sergio Cordova`_.
 - Updates for parentheses/braces/brackets to match style guide (:merge:`38`). By `Kyle Brindley`_.
+- Updated interface to the gradient of the determinant of a matrix w.r.t. the matrix (:merge:`43`). By `Nathan Miller`_.
 
 ******************
 0.2.8 (2023-02-28)

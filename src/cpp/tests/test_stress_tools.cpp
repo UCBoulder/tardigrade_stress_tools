@@ -996,7 +996,7 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
         dmeanStressdF[ i ] = ( ms - meanStress )/delta[ i ];
     }
 
-    floatVector dJdF = vectorTools::computeDDetAdJ( deformationGradient, 3, 3 );
+    floatVector dJdF = vectorTools::computeDDetADA( deformationGradient, 3, 3 );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( dmeanStressdJ*dJdF, dmeanStressdF ) );
 
