@@ -12,6 +12,7 @@ Changelog
 Internal Changes
 ================
 - Clean up conda-build recipe (:issue:`22`, :merge:`46`). By `Kyle Brindley`_.
+- Help CMake find the correct Python executable for conda-build on osx-arm64 (:merge:`47`). By `Kyle Brindley`_.
 
 ******************
 0.4.1 (2023-06-20)
