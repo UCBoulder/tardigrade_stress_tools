@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * \file stress_tools.cpp
+  * \file tardigrade_stress_tools.cpp
   ******************************************************************************
   *  A collection of tools which implement and solve stress-strain relationships
   *  in such a way to enable more rapid development of constitutive models which
@@ -9,9 +9,9 @@
   ******************************************************************************
   */
 
-#include<stress_tools.h>
+#include<tardigrade_stress_tools.h>
 
-namespace stressTools{
+namespace tardigradeStressTools{
 
     errorOut calculateMeanStress( const floatVector &stress, floatType &meanStress ){
         /*!
@@ -24,7 +24,7 @@ namespace stressTools{
          */
 
         floatType trace;
-        vectorTools::trace( stress, trace );
+        tardigradeVectorTools::trace( stress, trace );
         meanStress = 1./3.*trace;
 
         return NULL;
@@ -57,7 +57,7 @@ namespace stressTools{
          */
 
         floatType trace;
-        vectorTools::trace( stress, trace );
+        tardigradeVectorTools::trace( stress, trace );
         meanStress = 1./3.*trace;
 
         return NULL;
@@ -103,7 +103,7 @@ namespace stressTools{
 
         //Initialize the identity matrix
         floatVector I( length, 0. );
-        vectorTools::eye<floatType>( I );
+        tardigradeVectorTools::eye<floatType>( I );
 
         //Calculate the jacobian
         jacobian = 1./3.*I;
@@ -129,7 +129,7 @@ namespace stressTools{
 
         //Initialize the identity matrix
         floatVector I( length, 0. );
-        vectorTools::eye<floatType>( I );
+        tardigradeVectorTools::eye<floatType>( I );
 
         //Calculate deviatoric stress tensor
         floatType meanStress = calculateMeanStress( stress );
@@ -166,9 +166,9 @@ namespace stressTools{
 
         //Compute the jacobian
         floatVector eye( stress.size( ), 0 );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
-        jacobian = vectorTools::eye<floatType>( stress.size( ) ) - 1./3 * vectorTools::dyadic( eye, eye );
+        jacobian = tardigradeVectorTools::eye<floatType>( stress.size( ) ) - 1./3 * tardigradeVectorTools::dyadic( eye, eye );
 
         return NULL;
     }
@@ -232,7 +232,7 @@ namespace stressTools{
          */
 
         floatVector deviatoric = calculateDeviatoricStress( stress );
-        vonMises = std::sqrt( 3./2.*vectorTools::inner( deviatoric, deviatoric ) );
+        vonMises = std::sqrt( 3./2.*tardigradeVectorTools::inner( deviatoric, deviatoric ) );
 
         return NULL;
     }
@@ -570,13 +570,13 @@ namespace stressTools{
 
         //Compute the gradient of the jacobian w.r.t. the stress
         floatVector eye( stress.size( ), 0 );
-        vectorTools::eye<floatType>( eye );
-        floatMatrix EYE = vectorTools::eye<floatType>( stress.size( ) );
+        tardigradeVectorTools::eye<floatType>( eye );
+        floatMatrix EYE = tardigradeVectorTools::eye<floatType>( stress.size( ) );
 
         floatVector deviatoric = calculateDeviatoricStress( stress );
 
-        djacobiandstress = ( 3/( 2*vonMises ) )*( EYE - vectorTools::dyadic( eye, meanStressJacobian )
-                                                 - vectorTools::dyadic( deviatoric, vonMisesJacobian )/vonMises );
+        djacobiandstress = ( 3/( 2*vonMises ) )*( EYE - tardigradeVectorTools::dyadic( eye, meanStressJacobian )
+                                                 - tardigradeVectorTools::dyadic( deviatoric, vonMisesJacobian )/vonMises );
 
         return NULL;
     }
@@ -680,9 +680,9 @@ namespace stressTools{
         //Compute the unit normal flow direction and the jacobian of the unit normal flow direction
         //w.r.t. stress
         floatMatrix duDdjacobian;
-        constitutiveTools::computeUnitNormal( jacobian, unitDirection, duDdjacobian );
+        tardigradeConstitutiveTools::computeUnitNormal( jacobian, unitDirection, duDdjacobian );
 
-        unitDirectionJacobian = vectorTools::dot( duDdjacobian, djacobiandstress );
+        unitDirectionJacobian = tardigradeVectorTools::dot( duDdjacobian, djacobiandstress );
 
         return NULL;
     }
@@ -708,9 +708,9 @@ namespace stressTools{
         //Compute the unit normal flow direction and the jacobian of the unit normal flow direction
         //w.r.t. stress
         floatMatrix duDdjacobian;
-        constitutiveTools::computeUnitNormal( jacobian, unitDirection, duDdjacobian );
+        tardigradeConstitutiveTools::computeUnitNormal( jacobian, unitDirection, duDdjacobian );
 
-        unitDirectionJacobian = vectorTools::dot( duDdjacobian, djacobiandstress );
+        unitDirectionJacobian = tardigradeVectorTools::dot( duDdjacobian, djacobiandstress );
 
         return NULL;
     }
@@ -796,7 +796,7 @@ namespace stressTools{
             }
 
             //Get the previous values of the state variables
-            vectorTools::getValuesByIndex( previousStateVariables, indices, Xip );
+            tardigradeVectorTools::getValuesByIndex( previousStateVariables, indices, Xip );
 
             //Compute the new state-variable values
             floatVector dxi = factor * ( ( 1 - alpha ) * ( currentStrain - Xip ) * currentRateModifier
@@ -809,7 +809,7 @@ namespace stressTools{
             stress += Gi*( currentStrain - Xic );
 
             //Save the new value of the state variable
-            currentStateVariables = vectorTools::appendVectors( { currentStateVariables, Xic } );
+            currentStateVariables = tardigradeVectorTools::appendVectors( { currentStateVariables, Xic } );
         }
 
         return NULL;
@@ -924,7 +924,7 @@ namespace stressTools{
             }
 
             //Get the previous values of the state variables
-            vectorTools::getValuesByIndex( currentStateVariables, indices, Xic );
+            tardigradeVectorTools::getValuesByIndex( currentStateVariables, indices, Xic );
 
             factor = 1./( taui + dt*( 1 - alpha )*currentRateModifier );
 
@@ -936,7 +936,7 @@ namespace stressTools{
         }
 
         //Assemble the full gradient
-        dstressdstrain = scalarTerm*vectorTools::eye<floatType>( currentStrain.size( ) );
+        dstressdstrain = scalarTerm*tardigradeVectorTools::eye<floatType>( currentStrain.size( ) );
 
         return NULL;
     }
@@ -1117,7 +1117,7 @@ namespace stressTools{
         dStress = materialParameters[ 0 ]*dStrain;
         stress = materialParameters[ 0 ]*currentStrain;
 
-        floatMatrix EYE = vectorTools::eye< floatType >( dim );
+        floatMatrix EYE = tardigradeVectorTools::eye< floatType >( dim );
 
         dstressdstrain = materialParameters[ 0 ] * EYE;
         dstressdPreviousStrain = floatMatrix( stress.size( ), floatVector( previousStrain.size( ), 0 ) );
@@ -1165,7 +1165,7 @@ namespace stressTools{
             }
 
             //Get the previous values of the state variables
-            vectorTools::getValuesByIndex( previousStateVariables, indices, Xip );
+            tardigradeVectorTools::getValuesByIndex( previousStateVariables, indices, Xip );
 
             //Compute the new state-variable values
             floatVector dxi = factor * ( ( 1 - alpha ) * ( currentStrain - Xip ) * currentRateModifier
@@ -1213,16 +1213,16 @@ namespace stressTools{
             }
 
             //Save the new value of the state variable
-            currentStateVariables = vectorTools::appendVectors( { currentStateVariables, Xic } );
+            currentStateVariables = tardigradeVectorTools::appendVectors( { currentStateVariables, Xic } );
         }
 
         dstressdstrain += dstressdstrain_relax * EYE;
 
         dstressdPreviousStrain += dstressdPreviousStrain_relax * EYE;
 
-        dStateVariablesdRateModifier = vectorTools::appendVectors( dStateVariablesdCurrentRateModifier_matrix );
+        dStateVariablesdRateModifier = tardigradeVectorTools::appendVectors( dStateVariablesdCurrentRateModifier_matrix );
 
-        dStateVariablesdPreviousRateModifier = vectorTools::appendVectors( dStateVariablesdPreviousRateModifier_matrix );
+        dStateVariablesdPreviousRateModifier = tardigradeVectorTools::appendVectors( dStateVariablesdPreviousRateModifier_matrix );
 
         return NULL;
 
@@ -1313,7 +1313,7 @@ namespace stressTools{
 
         //Compute the determinant of the deformation gradient
         floatType J;
-        J = vectorTools::determinant( deformationGradient, 3, 3 );
+        J = tardigradeVectorTools::determinant( deformationGradient, 3, 3 );
 
         return volumetricNeoHookean( J, bulkModulus, meanStress );
 
@@ -1344,7 +1344,7 @@ namespace stressTools{
 
         //Compute the determinant of the deformation gradient
         floatType J;
-        J = vectorTools::determinant( deformationGradient, 3, 3 );
+        J = tardigradeVectorTools::determinant( deformationGradient, 3, 3 );
 
         return volumetricNeoHookean( J, bulkModulus, meanStress, dmeanStressdJ );
 
@@ -1365,7 +1365,7 @@ namespace stressTools{
          * \param &p: The value of the model.
          */
 
-        if ( vectorTools::fuzzyEquals( q, 0. ) ){
+        if ( tardigradeVectorTools::fuzzyEquals( q, 0. ) ){
             return new errorNode( "peryznaModel", "The denominator term is zero" );
         }
 
@@ -1373,7 +1373,7 @@ namespace stressTools{
             return new errorNode( "peryznaModel ( jacobian )", "n must be >= 1" );
         }
 
-        p = A*pow( constitutiveTools::mac( f/q ), n );
+        p = A*pow( tardigradeConstitutiveTools::mac( f/q ), n );
         return NULL;
     }
 
@@ -1417,7 +1417,7 @@ namespace stressTools{
          * \param &dpdA: The derivative of the value w.r.t. A.
          */
 
-        if ( vectorTools::fuzzyEquals( q, 0. ) ){
+        if ( tardigradeVectorTools::fuzzyEquals( q, 0. ) ){
             return new errorNode( "peryznaModel ( jacobian )", "The denominator term is zero" );
         }
 
@@ -1427,13 +1427,13 @@ namespace stressTools{
 
         //Compute the value
         floatType mac, dmacdx;
-        mac = constitutiveTools::mac( f/q, dmacdx );
+        mac = tardigradeConstitutiveTools::mac( f/q, dmacdx );
 
-        p = A*pow( constitutiveTools::mac( f/q ), n );
+        p = A*pow( tardigradeConstitutiveTools::mac( f/q ), n );
 
         dpdf = A*n*pow( mac, n-1 )*dmacdx/q;
         dpdq = -A*n*pow( mac, n-1 )*dmacdx*f/( q*q );
-        dpdA = pow( constitutiveTools::mac( f/q ), n );
+        dpdA = pow( tardigradeConstitutiveTools::mac( f/q ), n );
 
         return NULL;
     }
@@ -1479,7 +1479,7 @@ namespace stressTools{
             return new errorNode( "linearHardening", "The state variables and the moduli must have the same size" );
         }
 
-        value = vectorTools::dot( stateVariables, linearModuli ) + scalarShift;
+        value = tardigradeVectorTools::dot( stateVariables, linearModuli ) + scalarShift;
         return NULL;
     }
 
@@ -1590,10 +1590,10 @@ namespace stressTools{
 
         // Build the second order identity tensor
         floatVector eye( cauchyStress.size( ), 0 );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
         // Set the dimension of the problem
-        unsigned int dim = vectorTools::trace( eye );
+        unsigned int dim = tardigradeVectorTools::trace( eye );
 
         // Construct the symmetric projection tensor
         floatMatrix Psymm( cauchyStress.size( ), floatVector( cauchyStress.size( ), 0 ) );
@@ -1618,7 +1618,7 @@ namespace stressTools{
         }
 
         // Initialize the stiffness tensor by including cauchyStress dyad eye
-        C = vectorTools::dyadic( cauchyStress, eye );
+        C = tardigradeVectorTools::dyadic( cauchyStress, eye );
 
         // Add the dCauchydF term
 
@@ -1646,7 +1646,7 @@ namespace stressTools{
         }
 
         // Get the symmetric part
-        C = vectorTools::dot( C, Psymm );
+        C = tardigradeVectorTools::dot( C, Psymm );
 
         return NULL;
 
