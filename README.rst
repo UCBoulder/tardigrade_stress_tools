@@ -20,8 +20,8 @@ interest.
 Information
 ===========
 
-* Documentation: https://aea.re-pages.lanl.gov/material-models/stress_tools
-* Wiki: https://re-git.lanl.gov/aea/material-models/stress_tools/-/wikis/home
+* Documentation: https://aea.re-pages.lanl.gov/material-models/tardigrade_stress_tools
+* Wiki: https://re-git.lanl.gov/aea/material-models/tardigrade_stress_tools/-/wikis/home
 
 Developers
 ==========
@@ -58,7 +58,7 @@ anaconda installation with the following commands.
 
 .. code-block:: bash
 
-   $ conda create --name stress_tools-env --file environment.txt --channel file:///projects/aea_compute/aea-conda --channel conda-forge
+   $ conda create --name tardigrade_stress_tools-env --file environment.txt --channel file:///projects/aea_compute/aea-conda --channel conda-forge
 
 You can learn more about Anaconda Python environment creation and management in the [Anaconda
 Documentation](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
@@ -74,9 +74,9 @@ C++ Libraries
 
 * [Eigen](https://eigen.tuxfamily.org/dox/) >= 3.3.7
 * [BOOST](https://www.boost.org/doc/libs/1_53_0/) >= 1.53.0
-* error\_tools: https://re-git.lanl.gov/aea/material-models/error_tools
-* vector\_tools: https://re-git.lanl.gov/aea/material-models/vector_tools
-* constitutive\_tools: https://re-git.lanl.gov/aea/material-models/constitutive_tools
+* error\_tools: https://re-git.lanl.gov/aea/material-models/tardigrade_error_tools
+* vector\_tools: https://re-git.lanl.gov/aea/material-models/tardigrade_vector_tools
+* constitutive\_tools: https://re-git.lanl.gov/aea/material-models/tardigrade_constitutive_tools
 
 If not found on the current system or active Conda environment, all of the
 ``*_tools`` libraries are pulled from their git repos by branch name and built
@@ -108,14 +108,14 @@ sstelmo
    .. code-block:: bash
 
       $ module use /projects/aea_compute/modulefiles
-      $ module load stress_tools-env
+      $ module load tardigrade_stress_tools-env
 
 2) Build everything
 
    .. code-block:: bash
 
       $ pwd
-      /path/to/stress_tools/
+      /path/to/tardigrade_stress_tools/
       $ mkdir build
       $ cd build
       $ cmake ..
@@ -155,17 +155,17 @@ build minimal working Conda environments from the Python Modules discussion.
 
    .. code-block:: bash
 
-       $ conda create --name stress_tools-env --file environment.txt --channel file:///projects/aea_compute/aea-conda --channel conda-forge
-       $ conda activate stress_tools-env
+       $ conda create --name tardigrade_stress_tools-env --file environment.txt --channel file:///projects/aea_compute/aea-conda --channel conda-forge
+       $ conda activate tardigrade_stress_tools-env
 
 2) Define convenience environment variables
 
    .. code-block:: bash
 
-       $ error_tools=/path/to/my/error_tools
-       $ error_tools_version=origin/dev
-       $ vector_tools=/path/to/my/vector_tools
-       $ vector_tools_version=origin/dev
+       $ tardigrade_error_tools=/path/to/my/tardigrade_error_tools
+       $ tardigrade_error_tools_version=origin/dev
+       $ tardigrade_vector_tools=/path/to/my/tardigrade_vector_tools
+       $ tardigrade_vector_tools_version=origin/dev
 
 3) Perform the initial configuration. Note that the environment variables are mutually independent. Each variable can be
    used alone or in arbitrary combinations. The default values are found in the root ``CMakeLists.txt`` file. The ``PATH``
@@ -178,24 +178,24 @@ build minimal working Conda environments from the Python Modules discussion.
 
       # View the defaults
       $ grep _TOOLS_ CMakeLists.txt
-      set(ERROR_TOOLS_PATH "" CACHE PATH "The path to the local version of error_tools")
-      set(ERROR_TOOLS_GITTAG "" CACHE PATH "The path to the local version of error_tools")
-      set(VECTOR_TOOLS_PATH "" CACHE PATH "The path to the local version of vector_tools")
-      set(VECTOR_TOOLS_GITTAG "" CACHE PATH "The path to the local version of vector_tools")
+      set(TARDIGRADE_ERROR_TOOLS_PATH "" CACHE PATH "The path to the local version of tardigrade_error_tools")
+      set(TARDIGRADE_ERROR_TOOLS_GITTAG "" CACHE PATH "The path to the local version of tardigrade_error_tools")
+      set(TARDIGRADE_VECTOR_TOOLS_PATH "" CACHE PATH "The path to the local version of tardigrade_vector_tools")
+      set(TARDIGRADE_VECTOR_TOOLS_GITTAG "" CACHE PATH "The path to the local version of tardigrade_vector_tools")
 
       $ Build against local directory paths and possible custom branch
       $ pwd
-      /path/to/stress_tools
+      /path/to/tardigrade_stress_tools
       $ mkdir build
       $ cd build
-      $ cmake .. -DFETCH_SOURCE=LOCAL -DERROR_TOOLS_PATH=${error_tools} -DVECTOR_TOOLS_PATH=${vector_tools}
+      $ cmake .. -DFETCH_SOURCE=LOCAL -DTARDIGRADE_ERROR_TOOLS_PATH=${tardigrade_error_tools} -DTARDIGRADE_VECTOR_TOOLS_PATH=${tardigrade_vector_tools}
 
 4) Building the library
 
    .. code-block:: bash
 
       $ pwd
-      /path/to/stress_tools/build
+      /path/to/tardigrade_stress_tools/build
       $ make
 
 
@@ -209,7 +209,7 @@ To build just the documentation pick up the steps here:
    .. code-block:: bash
 
       $ pwd
-      /path/to/stress_tools/
+      /path/to/tardigrade_stress_tools/
       $ mkdir build/
       $ cd build/
 
@@ -218,7 +218,7 @@ To build just the documentation pick up the steps here:
    .. code-block:: bash
 
       $ pwd
-      /path/to/stress_tools/build/
+      /path/to/tardigrade_stress_tools/build/
       $ cmake3 ..
 
 4) Build the docs
@@ -231,14 +231,14 @@ To build just the documentation pick up the steps here:
 
    .. code-block:: bash
 
-      stress_tools/build/docs/sphinx/index.html
+      tardigrade_stress_tools/build/docs/sphinx/index.html
 
 6) Display docs
 
    .. code-block:: bash
 
       $ pwd
-      /path/to/stress_tools/build/
+      /path/to/tardigrade_stress_tools/build/
       $ firefox docs/sphinx/index.html &
 
 7) While the Sphinx API is still a WIP, try the doxygen API
@@ -246,7 +246,7 @@ To build just the documentation pick up the steps here:
    .. code-block:: bash
 
       $ pwd
-      /path/to/stress_tools/build/
+      /path/to/tardigrade_stress_tools/build/
       $ firefox docs/doxygen/html/index.html &
 
 .. build-end-do-not-remove
@@ -262,7 +262,7 @@ Build the entire before performing the installation.
    .. code-block:: bash
 
       $ pwd
-      /path/to/stress_tools/build
+      /path/to/tardigrade_stress_tools/build
       $ cmake3 --build .
 
 5) Install the library
@@ -270,7 +270,7 @@ Build the entire before performing the installation.
    .. code-block:: bash
 
       $ pwd
-      /path/to/stress_tools/build
+      /path/to/tardigrade_stress_tools/build
       $ cmake --install . --prefix path/to/root/install
 
       # Example local user (non-admin) Linux install
