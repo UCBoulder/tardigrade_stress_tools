@@ -5,14 +5,14 @@
 .. toctree::
     :maxdepth: 2
 
-**********************
-stress_tools.cpp
-**********************
+***************************
+tardigrade_stress_tools.cpp
+***************************
 
-.. doxygenfile:: stress_tools.cpp
+.. doxygenfile:: tardigrade_stress_tools.cpp
 
-********************
-stress_tools.h
-********************
+*************************
+tardigrade_stress_tools.h
+*************************
 
-.. doxygenfile:: stress_tools.h
+.. doxygenfile:: tardigrade_stress_tools.h

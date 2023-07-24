@@ -1,21 +1,21 @@
 /**
-  * \file test_stress_tools.cpp
+  * \file test_tardigrade_stress_tools.cpp
   *
-  * Tests for stress_tools
+  * Tests for tardigrade_stress_tools
   */
 
-#include<stress_tools.h>
+#include<tardigrade_stress_tools.h>
 #include<sstream>
 #include<fstream>
 #include<iostream>
 
-#define BOOST_TEST_MODULE test_stress_tools
+#define BOOST_TEST_MODULE test_tardigrade_stress_tools
 #include <boost/test/included/unit_test.hpp>
 
-typedef constitutiveTools::errorOut errorOut;
-typedef constitutiveTools::floatType floatType;
-typedef constitutiveTools::floatVector floatVector;
-typedef constitutiveTools::floatMatrix floatMatrix;
+typedef tardigradeConstitutiveTools::errorOut errorOut;
+typedef tardigradeConstitutiveTools::floatType floatType;
+typedef tardigradeConstitutiveTools::floatVector floatVector;
+typedef tardigradeConstitutiveTools::floatMatrix floatMatrix;
 
 struct cout_redirect{
     cout_redirect( std::streambuf * new_buffer )
@@ -66,32 +66,32 @@ BOOST_AUTO_TEST_CASE( testCalculateMeanStress ){
 
     //Test for correct mean stress calculation from stressVector with pointer output
     meanStress = 0.;
-    errorOut result = stressTools::calculateMeanStress( stressVector, meanStress );
+    errorOut result = tardigradeStressTools::calculateMeanStress( stressVector, meanStress );
     BOOST_CHECK( ! result );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( meanStress, meanStressExpected ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( meanStress, meanStressExpected ) );
 
     //Test for correct mean stress calculation from stressVector without pointer output
     meanStress = 0.;
-    meanStress = stressTools::calculateMeanStress( stressVector );
-    BOOST_CHECK( vectorTools::fuzzyEquals( meanStress, meanStressExpected ) );
+    meanStress = tardigradeStressTools::calculateMeanStress( stressVector );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( meanStress, meanStressExpected ) );
 
     //Test for correct mean stress calculation from stressMatrix with pointer output
     meanStress = 0.;
-    result = stressTools::calculateMeanStress( stressMatrix, meanStress );
-    BOOST_CHECK( vectorTools::fuzzyEquals( meanStress, meanStressExpected ) );
+    result = tardigradeStressTools::calculateMeanStress( stressMatrix, meanStress );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( meanStress, meanStressExpected ) );
 
     //Test for correct mean stress calculation from stressMatrix without pointer output
     meanStress = 0.;
-    meanStress = stressTools::calculateMeanStress( stressMatrix );
-    BOOST_CHECK( vectorTools::fuzzyEquals( meanStress, meanStressExpected ) );
+    meanStress = tardigradeStressTools::calculateMeanStress( stressMatrix );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( meanStress, meanStressExpected ) );
 
     //Test for correct mean stress and jacobian calculation
     meanStress = 0.;
     std::fill( jacobianVector.begin( ), jacobianVector.end( ), 0. );
-    result = stressTools::calculateMeanStress( stressVector, meanStress, jacobianVector );
-    BOOST_CHECK( vectorTools::fuzzyEquals( meanStress, meanStressExpected ) &&
-                 vectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
+    result = tardigradeStressTools::calculateMeanStress( stressVector, meanStress, jacobianVector );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( meanStress, meanStressExpected ) &&
+                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
 
 }
 
@@ -112,47 +112,47 @@ BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress ){
 
     //Test computation of deviatoric tensor in row major format
     std::fill( deviatoricVector.begin( ), deviatoricVector.end( ), 0. );
-    result = stressTools::calculateDeviatoricStress( stressVector, deviatoricVector );
+    result = tardigradeStressTools::calculateDeviatoricStress( stressVector, deviatoricVector );
 
     BOOST_CHECK( ! result );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( expectedVector, deviatoricVector ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( expectedVector, deviatoricVector ) );
 
     std::fill( deviatoricVector.begin( ), deviatoricVector.end( ), 0. );
 
-    deviatoricVector = stressTools::calculateDeviatoricStress( stressVector );
+    deviatoricVector = tardigradeStressTools::calculateDeviatoricStress( stressVector );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( expectedVector, deviatoricVector ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( expectedVector, deviatoricVector ) );
 
     //Test the computation of the jacobian
-    result = stressTools::calculateDeviatoricStress( stressVector, deviatoricVectorJ, jacobian );
+    result = tardigradeStressTools::calculateDeviatoricStress( stressVector, deviatoricVectorJ, jacobian );
 
     BOOST_CHECK( ! result );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( expectedVector, deviatoricVectorJ ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( expectedVector, deviatoricVectorJ ) );
 
     //Test the jacobian
     for ( unsigned int i=0; i<stressVector.size( ); i++ ){
         floatVector delta( stressVector.size( ), 0 );
         delta[ i ] = eps * fabs( stressVector[ i ] ) + eps;
 
-        result = stressTools::calculateDeviatoricStress( stressVector + delta, deviatoricVectorJ, jacobian );
+        result = tardigradeStressTools::calculateDeviatoricStress( stressVector + delta, deviatoricVectorJ, jacobian );
 
         BOOST_CHECK( ! result );
 
         floatVector grad = ( deviatoricVectorJ - deviatoricVector ) / delta[ i ];
 
         for ( unsigned int j=0; j<grad.size( ); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( grad[ j ], jacobian[ j ][ i ] ) );
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( grad[ j ], jacobian[ j ][ i ] ) );
         }
 
     }
 
-    deviatoricVector = stressTools::calculateDeviatoricStress( stressVector, jacobian2 );
+    deviatoricVector = tardigradeStressTools::calculateDeviatoricStress( stressVector, jacobian2 );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( deviatoricVector, expectedVector ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( deviatoricVector, expectedVector ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( jacobian, jacobian2 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobian, jacobian2 ) );
 
 }
 
@@ -176,19 +176,19 @@ BOOST_AUTO_TEST_CASE( testCalculateVonMisesStress ){
 
     //Test computation of vonMises stress from row major stress tensor
     vonMises = 0.;
-    stressTools::calculateVonMisesStress( stressVector, vonMises );
-    BOOST_CHECK( vectorTools::fuzzyEquals( vonMises, vonMisesExpected ) );
+    tardigradeStressTools::calculateVonMisesStress( stressVector, vonMises );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( vonMises, vonMisesExpected ) );
 
     vonMises = 0.;
-    vonMises = stressTools::calculateVonMisesStress( stressVector );
-    BOOST_CHECK( vectorTools::fuzzyEquals( vonMises, vonMisesExpected ) );
+    vonMises = tardigradeStressTools::calculateVonMisesStress( stressVector );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( vonMises, vonMisesExpected ) );
 
     //Test computation of vonMises stress and jacobian
     vonMises = 0.;
     std::fill( jacobianVector.begin( ), jacobianVector.end( ), 0. );
-    stressTools::calculateVonMisesStress( stressVector, vonMises, jacobianVector );
-    BOOST_CHECK( vectorTools::fuzzyEquals( vonMises, vonMisesExpected ) &&
-                 vectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
+    tardigradeStressTools::calculateVonMisesStress( stressVector, vonMises, jacobianVector );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( vonMises, vonMisesExpected ) &&
+                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
 
 }
 
@@ -233,67 +233,67 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
 
     //Test computation of DP yield criterion from vonMises and meanStress
     dpYield = 0;
-    stressTools::druckerPragerSurface( vonMises, meanStress, A, B, dpYield );
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    tardigradeStressTools::druckerPragerSurface( vonMises, meanStress, A, B, dpYield );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
 
     dpYield = 0;
-    stressTools::druckerPragerSurface( vonMises, meanStress, dpParam, dpYield );
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    tardigradeStressTools::druckerPragerSurface( vonMises, meanStress, dpParam, dpYield );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
 
     dpYield = 0;
-    dpYield = stressTools::druckerPragerSurface( vonMises, meanStress, A, B );
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    dpYield = tardigradeStressTools::druckerPragerSurface( vonMises, meanStress, A, B );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
 
     dpYield = 0;
-    dpYield = stressTools::druckerPragerSurface( vonMises, meanStress, dpParam );
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    dpYield = tardigradeStressTools::druckerPragerSurface( vonMises, meanStress, dpParam );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
 
     //Test computation of DP yield criterion from row major stress tensor
     dpYield = 0;
-    stressTools::druckerPragerSurface( stressVector, A, B, dpYield );
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    tardigradeStressTools::druckerPragerSurface( stressVector, A, B, dpYield );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
 
     dpYield = 0;
-    stressTools::druckerPragerSurface( stressVector, dpParam, dpYield );
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    tardigradeStressTools::druckerPragerSurface( stressVector, dpParam, dpYield );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
 
     dpYield = 0;
-    dpYield = stressTools::druckerPragerSurface( stressVector, A, B );
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    dpYield = tardigradeStressTools::druckerPragerSurface( stressVector, A, B );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
 
     dpYield = 0;
-    dpYield = stressTools::druckerPragerSurface( stressVector, dpParam );
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    dpYield = tardigradeStressTools::druckerPragerSurface( stressVector, dpParam );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
 
     //Test computation of DP yield and jacobian from row major stress tensor
     dpYield = 0;
     std::fill( jacobianVector.begin( ), jacobianVector.end( ), 0. );
-    stressTools::druckerPragerSurface( stressVector, A, B, dpYield, jacobianVector );
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
-                 vectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
+    tardigradeStressTools::druckerPragerSurface( stressVector, A, B, dpYield, jacobianVector );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
+                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
 
     dpYield = 0;
     std::fill( jacobianVector.begin( ), jacobianVector.end( ), 0. );
-    stressTools::druckerPragerSurface( stressVector, dpParam, dpYield, jacobianVector );
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
-                 vectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
+    tardigradeStressTools::druckerPragerSurface( stressVector, dpParam, dpYield, jacobianVector );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
+                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
 
     //Test computation of DP yield, jacobian, and unit normal from row major stress tensor
     dpYield = 0;
     std::fill( jacobianVector.begin( ), jacobianVector.end( ), 0. );
     std::fill( unitDirectionVector.begin( ), unitDirectionVector.end( ), 0. );
-    stressTools::druckerPragerSurface( stressVector, A, B, dpYield, jacobianVector, unitDirectionVector );
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
-                 vectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) &&
-                 vectorTools::fuzzyEquals( unitDirectionVector, unitDirectionVectorExpected ) );
+    tardigradeStressTools::druckerPragerSurface( stressVector, A, B, dpYield, jacobianVector, unitDirectionVector );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
+                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) &&
+                 tardigradeVectorTools::fuzzyEquals( unitDirectionVector, unitDirectionVectorExpected ) );
 
     dpYield = 0;
     std::fill( jacobianVector.begin( ), jacobianVector.end( ), 0. );
     std::fill( unitDirectionVector.begin( ), unitDirectionVector.end( ), 0. );
-    stressTools::druckerPragerSurface( stressVector, dpParam, dpYield, jacobianVector, unitDirectionVector );
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
-                 vectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) &&
-                 vectorTools::fuzzyEquals( unitDirectionVector, unitDirectionVectorExpected ) );
+    tardigradeStressTools::druckerPragerSurface( stressVector, dpParam, dpYield, jacobianVector, unitDirectionVector );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
+                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) &&
+                 tardigradeVectorTools::fuzzyEquals( unitDirectionVector, unitDirectionVectorExpected ) );
 
     //Test the computation of the DP yield, jacobian, and the derivative of the jacobian
     //w.r.t. the stress
@@ -304,19 +304,19 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         std::fill( djacobiandstress[ i ].begin( ), djacobiandstress[ i ].end( ), 0. );
     }
 
-    error = stressTools::druckerPragerSurface( stressVector, A, B, dpYield, jacobianVector, djacobiandstress );
+    error = tardigradeStressTools::druckerPragerSurface( stressVector, A, B, dpYield, jacobianVector, djacobiandstress );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
-                 vectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
+                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
 
     eps = 1e-6;
     for ( unsigned int i=0; i<stressVector.size( ); i++ ){
         std::fill( delta.begin( ), delta.end( ), 0. );
         delta[ i ] = eps*fabs( stressVector[ i ] ) + eps;
 
-        error = stressTools::druckerPragerSurface( stressVector + delta, A, B, dpYield, jacobianVectorJ );
+        error = tardigradeStressTools::druckerPragerSurface( stressVector + delta, A, B, dpYield, jacobianVectorJ );
 
         BOOST_CHECK( ! error );
 
@@ -324,7 +324,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         gradCol = ( jacobianVectorJ - jacobianVector )/delta[ i ];
 
         for ( unsigned int j=0; j<gradCol.size( ); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( djacobiandstress[ j ][ i ], gradCol[ j ] ) );
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( djacobiandstress[ j ][ i ], gradCol[ j ] ) );
         }
     }
 
@@ -337,19 +337,19 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         std::fill( djacobiandstress[ i ].begin( ), djacobiandstress[ i ].end( ), 0. );
     }
 
-    error = stressTools::druckerPragerSurface( stressVector, dpParam, dpYield, jacobianVector, djacobiandstress );
+    error = tardigradeStressTools::druckerPragerSurface( stressVector, dpParam, dpYield, jacobianVector, djacobiandstress );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
-                 vectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
+                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
 
     eps = 1e-6;
     for ( unsigned int i=0; i<stressVector.size( ); i++ ){
         std::fill( delta.begin( ), delta.end( ), 0. );
         delta[ i ] = eps*fabs( stressVector[ i ] ) + eps;
 
-        error = stressTools::druckerPragerSurface( stressVector + delta, dpParam, dpYield, jacobianVectorJ );
+        error = tardigradeStressTools::druckerPragerSurface( stressVector + delta, dpParam, dpYield, jacobianVectorJ );
 
         BOOST_CHECK( ! error );
 
@@ -357,7 +357,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         gradCol = ( jacobianVectorJ - jacobianVector )/delta[ i ];
 
         for ( unsigned int j=0; j<gradCol.size( ); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( djacobiandstress[ j ][ i ], gradCol[ j ] ) );
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( djacobiandstress[ j ][ i ], gradCol[ j ] ) );
         }
     }
 
@@ -369,19 +369,19 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         std::fill( unitDirectionJacobian[ i ].begin( ), unitDirectionJacobian[ i ].end( ), 0. );
     }
     std::fill( unitDirectionVectorJ.begin( ), unitDirectionVectorJ.end( ), 0. );
-    error = stressTools::druckerPragerSurface( stressVector, A, B, dpYield, jacobianVector, unitDirectionVector, unitDirectionJacobian );
+    error = tardigradeStressTools::druckerPragerSurface( stressVector, A, B, dpYield, jacobianVector, unitDirectionVector, unitDirectionJacobian );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
-                 vectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) &&
-                 vectorTools::fuzzyEquals( unitDirectionVector, unitDirectionVectorExpected ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
+                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) &&
+                 tardigradeVectorTools::fuzzyEquals( unitDirectionVector, unitDirectionVectorExpected ) );
 
     for ( unsigned int i=0; i<stressVector.size( ); i++ ){
         floatVector delta( stressVector.size( ), 0 );
         delta[ i ] = eps*fabs( stressVector[ i ] ) + eps;
 
-        error = stressTools::druckerPragerSurface( stressVector + delta, A, B, dpYield, jacobianVector, unitDirectionVectorJ );
+        error = tardigradeStressTools::druckerPragerSurface( stressVector + delta, A, B, dpYield, jacobianVector, unitDirectionVectorJ );
 
         BOOST_CHECK( ! error );
 
@@ -389,7 +389,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         gradCol = ( unitDirectionVectorJ - unitDirectionVector )/delta[ i ];
 
         for ( unsigned int j=0; j<gradCol.size( ); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( unitDirectionJacobian[ j ][ i ], gradCol[ j ] ) );
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( unitDirectionJacobian[ j ][ i ], gradCol[ j ] ) );
         }
     }
 
@@ -401,19 +401,19 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         std::fill( unitDirectionJacobian[ i ].begin( ), unitDirectionJacobian[ i ].end( ), 0. );
     }
     std::fill( unitDirectionVectorJ.begin( ), unitDirectionVectorJ.end( ), 0. );
-    error = stressTools::druckerPragerSurface( stressVector, dpParam, dpYield, jacobianVector, unitDirectionVector, unitDirectionJacobian );
+    error = tardigradeStressTools::druckerPragerSurface( stressVector, dpParam, dpYield, jacobianVector, unitDirectionVector, unitDirectionJacobian );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
-                 vectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) &&
-                 vectorTools::fuzzyEquals( unitDirectionVector, unitDirectionVectorExpected ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
+                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) &&
+                 tardigradeVectorTools::fuzzyEquals( unitDirectionVector, unitDirectionVectorExpected ) );
 
     for ( unsigned int i=0; i<stressVector.size( ); i++ ){
         floatVector delta( stressVector.size( ), 0 );
         delta[ i ] = eps*fabs( stressVector[ i ] ) + eps;
 
-        error = stressTools::druckerPragerSurface( stressVector + delta, dpParam, dpYield, jacobianVector, unitDirectionVectorJ );
+        error = tardigradeStressTools::druckerPragerSurface( stressVector + delta, dpParam, dpYield, jacobianVector, unitDirectionVectorJ );
 
         BOOST_CHECK( ! error );
 
@@ -421,7 +421,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
         gradCol = ( unitDirectionVectorJ - unitDirectionVector )/delta[ i ];
 
         for ( unsigned int j=0; j<gradCol.size( ); j++ ){
-            BOOST_CHECK( vectorTools::fuzzyEquals( unitDirectionJacobian[ j ][ i ], gradCol[ j ] ) );
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( unitDirectionJacobian[ j ][ i ], gradCol[ j ] ) );
         }
     }
 
@@ -468,7 +468,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     floatVector stress;
     floatVector currentStateVariables;
 
-    stressTools::linearViscoelasticity( currentTime,  currentStrain,
+    tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                         previousTime, previousStrain,
                                         currentRateModifier, previousRateModifier,
                                         previousStateVariables,
@@ -476,25 +476,25 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
                                         stress, currentStateVariables );
 
     //!Test for symmetry in the output stress
-    BOOST_CHECK( vectorTools::fuzzyEquals( stress[ 1 ], stress[ 3 ] ) &&
-                 vectorTools::fuzzyEquals( stress[ 2 ], stress[ 6 ] ) &&
-                 vectorTools::fuzzyEquals( stress[ 5 ], stress[ 7 ] ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( stress[ 1 ], stress[ 3 ] ) &&
+                 tardigradeVectorTools::fuzzyEquals( stress[ 2 ], stress[ 6 ] ) &&
+                 tardigradeVectorTools::fuzzyEquals( stress[ 5 ], stress[ 7 ] ) );
 
     //!Check that dStress is being computed correctly
     floatVector dStress;
-    stressTools::linearViscoelasticity( currentTime,  currentStrain,
+    tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                         previousTime, previousStrain,
                                         currentRateModifier, previousRateModifier,
                                         previousStateVariables,
                                         materialParameters, alpha,
                                         dStress, stress, currentStateVariables );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dStress, stress - previousStress ) );    
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStress, stress - previousStress ) );    
 
     //!Test for passing the state variables through properly
     currentTime = previousTime;
 
-    errorOut res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+    errorOut res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                                        previousTime, previousStrain,
                                                        currentRateModifier, previousRateModifier,
                                                        previousStateVariables,
@@ -503,14 +503,14 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
     BOOST_CHECK( ! res );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( previousStateVariables, currentStateVariables ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousStateVariables, currentStateVariables ) );
 
     //!Test to make sure the state variable evolution is occurring
     //!as expected for very large dt and alpha=0 ( fully implicit )
 
     currentTime = 1e10;
 
-    res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+    res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                               previousTime, previousStrain,
                                               currentRateModifier, previousRateModifier,
                                               previousStateVariables,
@@ -519,7 +519,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
     BOOST_CHECK( ! res );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( currentStrain*materialParameters[ 0 ], stress ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( currentStrain*materialParameters[ 0 ], stress ) );
 
     unsigned int dim = currentStrain.size( );
 
@@ -531,8 +531,8 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
             indices[ j ] = i*dim + j;
         }
 
-        vectorTools::getValuesByIndex( currentStateVariables, indices, subv );
-        BOOST_CHECK( vectorTools::fuzzyEquals( subv, currentStrain ) );
+        tardigradeVectorTools::getValuesByIndex( currentStateVariables, indices, subv );
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( subv, currentStrain ) );
     }
 
     //!Test for frame invariance
@@ -549,13 +549,13 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
     //!Rotate the previous strain
     floatVector rotatedPreviousStrain( currentStrain.size( ), 0 );
-    res = constitutiveTools::rotateMatrix( previousStrain, Q, rotatedPreviousStrain );
+    res = tardigradeConstitutiveTools::rotateMatrix( previousStrain, Q, rotatedPreviousStrain );
 
     BOOST_CHECK( ! res );
 
     //!Rotate the current strain
     floatVector rotatedCurrentStrain( currentStrain.size( ), 0 );
-    res = constitutiveTools::rotateMatrix( currentStrain, Q, rotatedCurrentStrain );
+    res = tardigradeConstitutiveTools::rotateMatrix( currentStrain, Q, rotatedCurrentStrain );
 
     BOOST_CHECK( ! res );
 
@@ -569,10 +569,10 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
             indices[ j ] = i*dim + j;
         }
 
-        vectorTools::getValuesByIndex( previousStateVariables, indices, subv );
-        res = constitutiveTools::rotateMatrix( subv, Q, rotatedSubv );
+        tardigradeVectorTools::getValuesByIndex( previousStateVariables, indices, subv );
+        res = tardigradeConstitutiveTools::rotateMatrix( subv, Q, rotatedSubv );
         BOOST_CHECK( ! res );
-        rotatedPreviousStateVariables = vectorTools::appendVectors( {rotatedPreviousStateVariables, rotatedSubv } );
+        rotatedPreviousStateVariables = tardigradeVectorTools::appendVectors( {rotatedPreviousStateVariables, rotatedSubv } );
     }
 
     currentTime = 23.8;
@@ -581,7 +581,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     floatVector rotatedCurrentStateVariables;
 
     //Calculate the rotated stress
-    res = stressTools::linearViscoelasticity( currentTime,  rotatedCurrentStrain,
+    res = tardigradeStressTools::linearViscoelasticity( currentTime,  rotatedCurrentStrain,
                                               previousTime, rotatedPreviousStrain,
                                               currentRateModifier, previousRateModifier,
                                               rotatedPreviousStateVariables,
@@ -591,7 +591,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     BOOST_CHECK( ! res );
 
     //Re-calculate the initial values
-    res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+    res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                               previousTime, previousStrain,
                                               currentRateModifier, previousRateModifier,
                                               previousStateVariables,
@@ -601,10 +601,10 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     BOOST_CHECK( ! res );
 
     floatVector stresspp;
-    res = constitutiveTools::rotateMatrix( rotatedStress, QT, stresspp );
+    res = tardigradeConstitutiveTools::rotateMatrix( rotatedStress, QT, stresspp );
     BOOST_CHECK( ! res );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( stress, stresspp ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( stress, stresspp ) );
 
     for ( unsigned int i=0; i<rotatedCurrentStateVariables.size( )/dim; i++ ){
         std::vector< unsigned int > indices( dim, 0 );
@@ -614,12 +614,12 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
             indices[ j ] = i*dim + j;
         }
 
-        vectorTools::getValuesByIndex( rotatedCurrentStateVariables, indices, rCSV );
-        vectorTools::getValuesByIndex( currentStateVariables, indices, CSV );
+        tardigradeVectorTools::getValuesByIndex( rotatedCurrentStateVariables, indices, rCSV );
+        tardigradeVectorTools::getValuesByIndex( currentStateVariables, indices, CSV );
 
-        res = constitutiveTools::rotateMatrix( rCSV, QT, CSVpp );
+        res = tardigradeConstitutiveTools::rotateMatrix( rCSV, QT, CSVpp );
         BOOST_CHECK( ! res );
-        BOOST_CHECK( vectorTools::fuzzyEquals( CSVpp, CSV ) );
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( CSVpp, CSV ) );
     }
 
     //Test the implementation of the jacobian
@@ -630,7 +630,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     floatVector dstressdrateModifier;
 
     //Compute the jacobian
-    res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+    res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                               previousTime, previousStrain,
                                               currentRateModifier, previousRateModifier,
                                               previousStateVariables,
@@ -640,7 +640,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     BOOST_CHECK( !res );
 
     floatVector stressJ, dStressJ, currentStateVariablesJ;
-    res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+    res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                               previousTime, previousStrain,
                                               currentRateModifier, previousRateModifier,
                                               previousStateVariables,
@@ -649,14 +649,14 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
                                               dstressdrateModifier );
 
     BOOST_CHECK( !res );
-    BOOST_CHECK( vectorTools::fuzzyEquals( stressJ, stress ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( stressJ, stress ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( currentStateVariables, currentStateVariablesJ ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( currentStateVariables, currentStateVariablesJ ) );
 
     floatVector stress_2, dStress_2, currentStateVariables_2, dstressdrateModifier_2;
     floatMatrix jacobian_2;
 
-    res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+    res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                               previousTime, previousStrain,
                                               currentRateModifier, previousRateModifier,
                                               previousStateVariables,
@@ -666,11 +666,11 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
     BOOST_CHECK( !res );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( stress, stress_2 ) );
-    BOOST_CHECK( vectorTools::fuzzyEquals( dStress, dStress_2 ) );
-    BOOST_CHECK( vectorTools::fuzzyEquals( currentStateVariables, currentStateVariables_2 ) );
-    BOOST_CHECK( vectorTools::fuzzyEquals( jacobian, jacobian_2 ) );
-    BOOST_CHECK( vectorTools::fuzzyEquals( dstressdrateModifier, dstressdrateModifier_2 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( stress, stress_2 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStress, dStress_2 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( currentStateVariables, currentStateVariables_2 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobian, jacobian_2 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dstressdrateModifier, dstressdrateModifier_2 ) );
 
     floatVector stress_3, dStress_3, currentStateVariables_3, dstressdrateModifier_3, dstressdPreviousRateModifier,
                 dStateVariablesdRateModifier, dStateVariablesdPreviousRateModifier;
@@ -678,7 +678,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
     floatMatrix jacobian_3, dstressdPreviousStrain, dstressdPreviousStateVariables,
                 dStateVariablesdStrain, dStateVariablesdPreviousStrain, dStateVariablesdPreviousStateVariables;
 
-    res = stressTools::linearViscoelasticity( currentTime, currentStrain,
+    res = tardigradeStressTools::linearViscoelasticity( currentTime, currentStrain,
                                               previousTime, previousStrain,
                                               currentRateModifier, previousRateModifier,
                                               previousStateVariables, materialParameters,
@@ -692,13 +692,13 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
                                               dStateVariablesdPreviousStateVariables );
 
     BOOST_CHECK( !res );
-    BOOST_CHECK( vectorTools::fuzzyEquals( stress_3, stress ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( stress_3, stress ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( currentStateVariables_3, currentStateVariables ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( currentStateVariables_3, currentStateVariables ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( jacobian_3, jacobian ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobian_3, jacobian ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dstressdrateModifier_3, dstressdrateModifier ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dstressdrateModifier_3, dstressdrateModifier ) );
 
     floatMatrix jacobian_answer( stress.size( ), floatVector( currentStrain.size( ), 0 ) );
     floatVector dstressdrateModifier_answer( stress.size( ), 0 );
@@ -719,7 +719,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
         floatVector s_p, s_m, xi_p, xi_m;
 
-        res = stressTools::linearViscoelasticity( currentTime,  currentStrain + delta,
+        res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain + delta,
                                                   previousTime, previousStrain,
                                                   currentRateModifier, previousRateModifier,
                                                   previousStateVariables,
@@ -728,7 +728,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
         BOOST_CHECK( ! res );
 
-        res = stressTools::linearViscoelasticity( currentTime,  currentStrain - delta,
+        res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain - delta,
                                                   previousTime, previousStrain,
                                                   currentRateModifier, previousRateModifier,
                                                   previousStateVariables,
@@ -752,9 +752,9 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( jacobian, jacobian_answer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobian, jacobian_answer ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dStateVariablesdStrain, dStateVariablesdStrain_answer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStateVariablesdStrain, dStateVariablesdStrain_answer ) );
 
     //Test the gradient w.r.t. the rate modifier
     for ( unsigned int i = 0; i < 1; i++ ){
@@ -764,7 +764,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
         floatVector s_p, s_m;
         floatVector xi_p, xi_m;
     
-        res = stressTools::linearViscoelasticity( currentTime, currentStrain,
+        res = tardigradeStressTools::linearViscoelasticity( currentTime, currentStrain,
                                                   previousTime, previousStrain,
                                                   currentRateModifier + delta, previousRateModifier,
                                                   previousStateVariables,
@@ -773,7 +773,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
         BOOST_CHECK( !res );
 
-        res = stressTools::linearViscoelasticity( currentTime, currentStrain,
+        res = tardigradeStressTools::linearViscoelasticity( currentTime, currentStrain,
                                                   previousTime, previousStrain,
                                                   currentRateModifier - delta, previousRateModifier,
                                                   previousStateVariables,
@@ -788,9 +788,9 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dstressdrateModifier, dstressdrateModifier_answer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dstressdrateModifier, dstressdrateModifier_answer ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dStateVariablesdRateModifier, dStateVariablesdRateModifier_answer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStateVariablesdRateModifier, dStateVariablesdRateModifier_answer ) );
 
     for ( unsigned int i=0; i<previousStrain.size( ); i++ ){
 
@@ -800,7 +800,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
         floatVector s_p, s_m, xi_p, xi_m;
 
-        res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+        res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                                   previousTime, previousStrain + delta,
                                                   currentRateModifier, previousRateModifier,
                                                   previousStateVariables,
@@ -809,7 +809,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
         BOOST_CHECK( ! res );
 
-        res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+        res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                                   previousTime, previousStrain - delta,
                                                   currentRateModifier, previousRateModifier,
                                                   previousStateVariables,
@@ -833,9 +833,9 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dstressdPreviousStrain, dstressdPreviousStrain_answer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dstressdPreviousStrain, dstressdPreviousStrain_answer ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dStateVariablesdPreviousStrain, dStateVariablesdPreviousStrain_answer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStateVariablesdPreviousStrain, dStateVariablesdPreviousStrain_answer ) );
 
     //Test the gradient w.r.t. the previous rate modifier
     for ( unsigned int i = 0; i < 1; i++ ){
@@ -845,7 +845,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
         floatVector s_p, s_m;
         floatVector xi_p, xi_m;
     
-        res = stressTools::linearViscoelasticity( currentTime, currentStrain,
+        res = tardigradeStressTools::linearViscoelasticity( currentTime, currentStrain,
                                                   previousTime, previousStrain,
                                                   currentRateModifier, previousRateModifier + delta,
                                                   previousStateVariables,
@@ -854,7 +854,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
         BOOST_CHECK( !res );
 
-        res = stressTools::linearViscoelasticity( currentTime, currentStrain,
+        res = tardigradeStressTools::linearViscoelasticity( currentTime, currentStrain,
                                                   previousTime, previousStrain,
                                                   currentRateModifier, previousRateModifier - delta,
                                                   previousStateVariables,
@@ -869,9 +869,9 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dstressdPreviousRateModifier, dstressdPreviousRateModifier_answer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dstressdPreviousRateModifier, dstressdPreviousRateModifier_answer ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dStateVariablesdPreviousRateModifier, dStateVariablesdPreviousRateModifier_answer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStateVariablesdPreviousRateModifier, dStateVariablesdPreviousRateModifier_answer ) );
 
     for ( unsigned int i=0; i<previousStateVariables.size( ); i++ ){
 
@@ -881,7 +881,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
         floatVector s_p, s_m, xi_p, xi_m;
 
-        res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+        res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                                   previousTime, previousStrain,
                                                   currentRateModifier, previousRateModifier,
                                                   previousStateVariables + delta,
@@ -890,7 +890,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
         BOOST_CHECK( ! res );
 
-        res = stressTools::linearViscoelasticity( currentTime,  currentStrain,
+        res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                                   previousTime, previousStrain,
                                                   currentRateModifier, previousRateModifier,
                                                   previousStateVariables - delta,
@@ -914,15 +914,15 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dstressdPreviousStateVariables, dstressdPreviousStateVariables_answer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dstressdPreviousStateVariables, dstressdPreviousStateVariables_answer ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dStateVariablesdPreviousStateVariables, dStateVariablesdPreviousStateVariables_answer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStateVariablesdPreviousStateVariables, dStateVariablesdPreviousStateVariables_answer ) );
 
     //Test to make sure odd numbers of prony series terms can be passed in
     floatVector materialParametersOdd = { materialParameters[ 1 ], 1, 10, 100, 400, 300, 200 };
     floatVector previousStateVariablesOdd( 3 * 9, 0 );
 
-    res = stressTools::linearViscoelasticity(  currentTime, currentStrain,
+    res = tardigradeStressTools::linearViscoelasticity(  currentTime, currentStrain,
                                                previousTime, previousStrain,
                                                currentRateModifier, previousRateModifier,
                                                previousStateVariablesOdd,
@@ -948,10 +948,10 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
     //Run the test when there is no deformation
     floatType meanStress;
 
-    errorOut res = stressTools::volumetricNeoHookean( deformationGradient, bulkModulus, meanStress );
+    errorOut res = tardigradeStressTools::volumetricNeoHookean( deformationGradient, bulkModulus, meanStress );
     BOOST_CHECK( ! res );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( meanStress, 0. ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( meanStress, 0. ) );
 
     //Test the meanStress computation as compared to the expected value
     deformationGradient = { 0.39874077,  0.11561812, -0.75485222,
@@ -960,29 +960,29 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
 
     floatType J = 0.25430054895115856;
 
-    res = stressTools::volumetricNeoHookean( deformationGradient, bulkModulus, meanStress );
+    res = tardigradeStressTools::volumetricNeoHookean( deformationGradient, bulkModulus, meanStress );
     BOOST_CHECK( ! res );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( meanStress, 0.5*bulkModulus*( J - 1/J ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( meanStress, 0.5*bulkModulus*( J - 1/J ) ) );
 
     //Test the meanStress computation subject to a rotation
     deformationGradient = { -0.2350804 ,  0.16410551, -1.13402371,
                              0.1296644 , -0.22975865, -1.03460443,
                             -0.4188584 , -0.16322821,  0.31618178 };
 
-    res = stressTools::volumetricNeoHookean( deformationGradient, bulkModulus, meanStress );
+    res = tardigradeStressTools::volumetricNeoHookean( deformationGradient, bulkModulus, meanStress );
     BOOST_CHECK( ! res );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( meanStress, 0.5*bulkModulus*( J - 1/J ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( meanStress, 0.5*bulkModulus*( J - 1/J ) ) );
 
     //Test the computation of the derivative of the mean stress w.r.t. J
     floatType jacobianMeanStress;
     floatType dmeanStressdJ;
-    res = stressTools::volumetricNeoHookean( deformationGradient, bulkModulus, jacobianMeanStress, dmeanStressdJ );
+    res = tardigradeStressTools::volumetricNeoHookean( deformationGradient, bulkModulus, jacobianMeanStress, dmeanStressdJ );
     BOOST_CHECK( ! res );
 
     //Make sure the mean stress is identical
-    BOOST_CHECK( vectorTools::fuzzyEquals( jacobianMeanStress, meanStress ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobianMeanStress, meanStress ) );
 
     //Make sure the jacobian is correct
     floatType ms;
@@ -991,14 +991,14 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
     for ( unsigned int i=0; i<deformationGradient.size( ); i++ ){
         floatVector delta( deformationGradient.size( ), 0 );
         delta[ i ] = fabs( eps*deformationGradient[ i ] );
-        stressTools::volumetricNeoHookean( deformationGradient + delta, bulkModulus, ms );
+        tardigradeStressTools::volumetricNeoHookean( deformationGradient + delta, bulkModulus, ms );
 
         dmeanStressdF[ i ] = ( ms - meanStress )/delta[ i ];
     }
 
-    floatVector dJdF = vectorTools::computeDDetADA( deformationGradient, 3, 3 );
+    floatVector dJdF = tardigradeVectorTools::computeDDetADA( deformationGradient, 3, 3 );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dmeanStressdJ*dJdF, dmeanStressdF ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dmeanStressdJ*dJdF, dmeanStressdF ) );
 
 
 }
@@ -1015,89 +1015,89 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
     floatVector parameters = { n };
 
     floatType p;
-    errorOut error = stressTools::peryznaModel( f, q, A, n, p );
+    errorOut error = tardigradeStressTools::peryznaModel( f, q, A, n, p );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( p, A*pow( (f/q ), n ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( p, A*pow( (f/q ), n ) ) );
 
-    error = stressTools::peryznaModel( f, q, A, parameters, p );
+    error = tardigradeStressTools::peryznaModel( f, q, A, parameters, p );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( p, A*pow( (f/q ), n ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( p, A*pow( (f/q ), n ) ) );
 
     floatType pJ;
     floatType dpdf, dpdq, dpdA;
-    error = stressTools::peryznaModel( f, q, A, n, pJ, dpdf, dpdq, dpdA );
+    error = tardigradeStressTools::peryznaModel( f, q, A, n, pJ, dpdf, dpdq, dpdA );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( p, pJ ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( p, pJ ) );
 
     floatType eps = 1e-6;
     floatType delta = eps*fabs( f ) + eps;
-    error = stressTools::peryznaModel( f + delta, q, A, n, pJ );
+    error = tardigradeStressTools::peryznaModel( f + delta, q, A, n, pJ );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( (pJ - p )/delta, dpdf, 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( (pJ - p )/delta, dpdf, 1e-5, 1e-5 ) );
 
     delta = eps*fabs( q ) + eps;
-    error = stressTools::peryznaModel( f, q + delta, A, n, pJ );
+    error = tardigradeStressTools::peryznaModel( f, q + delta, A, n, pJ );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( (pJ - p )/delta, dpdq, 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( (pJ - p )/delta, dpdq, 1e-5, 1e-5 ) );
 
     delta = eps*fabs( A ) + eps;
-    error = stressTools::peryznaModel( f, q, A + delta, n, pJ );
+    error = tardigradeStressTools::peryznaModel( f, q, A + delta, n, pJ );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( (pJ - p )/delta, dpdA, 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( (pJ - p )/delta, dpdA, 1e-5, 1e-5 ) );
 
     f = -1;
-    error = stressTools::peryznaModel( f, q, A, n, p );
+    error = tardigradeStressTools::peryznaModel( f, q, A, n, p );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( p, 0. ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( p, 0. ) );
 
-    error = stressTools::peryznaModel( f, q, A, n, pJ, dpdf, dpdq, dpdA );
+    error = tardigradeStressTools::peryznaModel( f, q, A, n, pJ, dpdf, dpdq, dpdA );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( p, pJ ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( p, pJ ) );
 
     delta = eps*fabs( f ) + eps;
-    error = stressTools::peryznaModel( f + delta, q, A, n, pJ );
+    error = tardigradeStressTools::peryznaModel( f + delta, q, A, n, pJ );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( (pJ - p )/delta, dpdf, 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( (pJ - p )/delta, dpdf, 1e-5, 1e-5 ) );
 
     delta = eps*fabs( q ) + eps;
-    error = stressTools::peryznaModel( f, q + delta, A, n, pJ );
+    error = tardigradeStressTools::peryznaModel( f, q + delta, A, n, pJ );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( (pJ - p )/delta, dpdq, 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( (pJ - p )/delta, dpdq, 1e-5, 1e-5 ) );
 
     delta = eps*fabs( A ) + eps;
-    error = stressTools::peryznaModel( f, q, A + delta, n, pJ );
+    error = tardigradeStressTools::peryznaModel( f, q, A + delta, n, pJ );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( (pJ - p )/delta, dpdA, 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( (pJ - p )/delta, dpdA, 1e-5, 1e-5 ) );
 
     floatType pJv, dpdfv, dpdqv, dpdAv;
-    error = stressTools::peryznaModel( f, q, A, parameters, pJv, dpdfv, dpdqv, dpdAv );
+    error = tardigradeStressTools::peryznaModel( f, q, A, parameters, pJv, dpdfv, dpdqv, dpdAv );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( pJv, p ) &&
-                 vectorTools::fuzzyEquals( dpdfv, dpdf ) &&
-                 vectorTools::fuzzyEquals( dpdqv, dpdq ) &&
-                 vectorTools::fuzzyEquals( dpdAv, dpdA ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( pJv, p ) &&
+                 tardigradeVectorTools::fuzzyEquals( dpdfv, dpdf ) &&
+                 tardigradeVectorTools::fuzzyEquals( dpdqv, dpdq ) &&
+                 tardigradeVectorTools::fuzzyEquals( dpdAv, dpdA ) );
 
 }
 
@@ -1111,31 +1111,31 @@ BOOST_AUTO_TEST_CASE( testLinearHardening ){
     floatType shiftFactor = 3.7;
     floatType value;
 
-    errorOut error = stressTools::linearHardening( stateVariables, linearModuli, shiftFactor, value );
+    errorOut error = tardigradeStressTools::linearHardening( stateVariables, linearModuli, shiftFactor, value );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( value, 133.7 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( value, 133.7 ) );
 
     floatType valueJ;
     floatVector valueJacobian;
 
-    error = stressTools::linearHardening( stateVariables, linearModuli, shiftFactor, valueJ, valueJacobian );
+    error = tardigradeStressTools::linearHardening( stateVariables, linearModuli, shiftFactor, valueJ, valueJacobian );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( value, valueJ ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( value, valueJ ) );
 
     floatType eps = 1e-6;
     for ( unsigned int i=0; i<stateVariables.size( ); i++ ){
         floatVector delta( stateVariables.size( ), 0 );
         delta[ i ] = eps*fabs( stateVariables[ i ] ) + eps;
 
-        error = stressTools::linearHardening( stateVariables + delta, linearModuli, shiftFactor, valueJ );
+        error = tardigradeStressTools::linearHardening( stateVariables + delta, linearModuli, shiftFactor, valueJ );
 
         BOOST_CHECK( ! error );
 
-        BOOST_CHECK( vectorTools::fuzzyEquals( (valueJ - value )/delta[ i ], valueJacobian[ i ] ) );
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( (valueJ - value )/delta[ i ], valueJacobian[ i ] ) );
     }
 
 }
@@ -1181,10 +1181,10 @@ BOOST_AUTO_TEST_CASE( testComputeJaumannStiffnessTensor ){
 
     floatMatrix CResult;
 
-    errorOut error = stressTools::computeJaumannStiffnessTensor( cauchyStress, currentDeformationGradient, dCauchydF, CResult );
+    errorOut error = tardigradeStressTools::computeJaumannStiffnessTensor( cauchyStress, currentDeformationGradient, dCauchydF, CResult );
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( CResult, CAnswer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( CResult, CAnswer ) );
 
 }

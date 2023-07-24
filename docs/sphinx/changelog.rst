@@ -6,8 +6,21 @@ Changelog
 #########
 
 ******************
-0.4.2 (unreleased)
+0.5.1 (2023-07-24)
 ******************
+
+Breaking changes
+================
+- Change project, package, and namespace from 'solver tools' to 'tardigrade solver tools' (:issue:`15`, :merge:`48`). By
+  `Kyle Brindley`_.
+
+Internal Changes
+================
+- Clean up conda-build recipe (:issue:`22`, :merge:`46`). By `Kyle Brindley`_.
+- Help CMake find the correct Python executable for conda-build on osx-arm64 (:merge:`47`). By `Kyle Brindley`_.
+- Remove compiler as a runtime dependency. The OS-correct standard library package is added as a depedency by
+  conda-build (:merge:`48`). By `Kyle Brindley`_.
+- Build stdlib variants instead of compiler variants (:merge:`49`). By `Kyle Brindley`_.
 
 ******************
 0.4.1 (2023-06-20)
@@ -51,12 +64,12 @@ New Features
 
 Internal Changes
 ================
-- Update minimum version requirements for ``vector_tools`` dependency (:merge:`25`). By `Kyle Brindley`_.
+- Update minimum version requirements for ``tardigrade_vector_tools`` dependency (:merge:`25`). By `Kyle Brindley`_.
 - Project configuration and conda build recipe changes to allow macOS builds and conda-build test stage (:merge:`16`).
   By `Kyle Brindley`_.
 - Remove depreciated shell build script and documentation references in preference to direct cmake commands
   (:issue:`15`, :merge:`28`). By `Kyle Brindley`_.
-- Update minimum ``vector_tools`` version requirement. By `Kyle Brindley`_.
+- Update minimum ``tardigrade_vector_tools`` version requirement. By `Kyle Brindley`_.
 - Fall back to aea-beta environment when project's CI environment doesn't exist (:merge:`32`). By `Kyle Brindley`_.
 
 ******************

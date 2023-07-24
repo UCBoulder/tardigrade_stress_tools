@@ -11,18 +11,18 @@
 #define LINEARELASTICITY_H
 
 #define USE_EIGEN
-#include<vector_tools.h>
-#include<error_tools.h>
-#include<constitutive_tools.h>
+#include<tardigrade_vector_tools.h>
+#include<tardigrade_error_tools.h>
+#include<tardigrade_constitutive_tools.h>
 
-namespace stressTools{
+namespace tardigradeStressTools{
 namespace linearElasticity{
 
-    typedef constitutiveTools::errorNode errorNode; //!< Redefinition for the error node
-    typedef constitutiveTools::errorOut errorOut; //!< Redefinition for a pointer to the error node
-    typedef constitutiveTools::floatType floatType; //!< Define the float values type.
-    typedef constitutiveTools::floatVector floatVector; //!< Define a vector of floats
-    typedef constitutiveTools::floatMatrix floatMatrix; //!< Define a matrix of floats
+    typedef tardigradeConstitutiveTools::errorNode errorNode; //!< Redefinition for the error node
+    typedef tardigradeConstitutiveTools::errorOut errorOut; //!< Redefinition for a pointer to the error node
+    typedef tardigradeConstitutiveTools::floatType floatType; //!< Define the float values type.
+    typedef tardigradeConstitutiveTools::floatVector floatVector; //!< Define a vector of floats
+    typedef tardigradeConstitutiveTools::floatMatrix floatMatrix; //!< Define a matrix of floats
 
     errorOut formReferenceStiffnessTensor( const floatVector &parameters, floatMatrix &stiffnessTensor );
 
@@ -49,6 +49,6 @@ namespace linearElasticity{
                              floatVector &d2EnergydChi2, floatMatrix &d2CauchyStressdChi2 );
 
 }  // linearElasticity
-}  // stressTools
+}  // tardigradeStressTools
 
 #endif
