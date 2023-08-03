@@ -1,7 +1,7 @@
 #include<linear_elasticity.h>
 #include<sstream>
 
-namespace stressTools{
+namespace tardigradeStressTools{
 namespace linearElasticity{
 
     /** Define the expected number of spatial dimensions */
@@ -63,7 +63,7 @@ namespace linearElasticity{
         if ( parameters.size( ) == 81 ){
 
             unsigned int length = 9;
-            stiffnessTensor = vectorTools::inflate( parameters, length, length );
+            stiffnessTensor = tardigradeVectorTools::inflate( parameters, length, length );
             return NULL;
 
         }
@@ -242,7 +242,7 @@ namespace linearElasticity{
          * \f$C_{mnop}\f$ is the original stiffness tensor.
          *
          * \param &bungeEulerAngles: Vector containing three Bunge-Euler angles in radians to form the rotation matrix,
-         *     \f$R_{ij}\f$, using ``vectorTools::rotationMatrix``
+         *     \f$R_{ij}\f$, using ``tardigradeVectorTools::rotationMatrix``
          * \param &parameters: The tensor components of the 9x9 stiffness tensor, \f$C_{mnop}\f$. Vector length determines the symmetry.
          *
          * - 81: A row-major vector representing the full 9x9 stiffness tensor directly.
@@ -261,7 +261,7 @@ namespace linearElasticity{
 
         floatMatrix directionCosines;
 
-        vectorTools::rotationMatrix( bungeEulerAngles, directionCosines );
+        tardigradeVectorTools::rotationMatrix( bungeEulerAngles, directionCosines );
 
         errorOut error = formReferenceStiffnessTensor( directionCosines, parameters, stiffnessTensor );
         if ( error ){
@@ -301,7 +301,7 @@ namespace linearElasticity{
         }
 
         floatVector E;
-        errorOut error = constitutiveTools::computeGreenLagrangeStrain( chi, E );
+        errorOut error = tardigradeConstitutiveTools::computeGreenLagrangeStrain( chi, E );
 
         if ( error ){
 
@@ -315,7 +315,7 @@ namespace linearElasticity{
 
         try{
 
-            detChi = vectorTools::determinant( chi, spatialDimensions, spatialDimensions );
+            detChi = tardigradeVectorTools::determinant( chi, spatialDimensions, spatialDimensions );
 
         }
         catch ( std::exception &e ) {
@@ -338,7 +338,7 @@ namespace linearElasticity{
 
         }
 
-        energy = 0.5 * vectorTools::dot( vectorTools::dot( C, E ), E ) / detChi;
+        energy = 0.5 * tardigradeVectorTools::dot( tardigradeVectorTools::dot( C, E ), E ) / detChi;
 
         return NULL;
     }
@@ -377,7 +377,7 @@ namespace linearElasticity{
 
         floatVector E;
         floatMatrix dEdChi;
-        errorOut error = constitutiveTools::computeGreenLagrangeStrain( chi, E, dEdChi );
+        errorOut error = tardigradeConstitutiveTools::computeGreenLagrangeStrain( chi, E, dEdChi );
 
         if ( error ){
 
@@ -393,8 +393,8 @@ namespace linearElasticity{
 
         try{
 
-            detChi = vectorTools::determinant( chi, spatialDimensions, spatialDimensions );
-            invChi = vectorTools::inverse( chi, spatialDimensions, spatialDimensions );
+            detChi = tardigradeVectorTools::determinant( chi, spatialDimensions, spatialDimensions );
+            invChi = tardigradeVectorTools::inverse( chi, spatialDimensions, spatialDimensions );
 
         }
         catch ( std::exception &e ) {
@@ -418,12 +418,12 @@ namespace linearElasticity{
         }
 
         floatVector eye( spatialDimensions * spatialDimensions );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
-        energy = 0.5 * vectorTools::dot( vectorTools::dot( C, E ), E ) / detChi;
+        energy = 0.5 * tardigradeVectorTools::dot( tardigradeVectorTools::dot( C, E ), E ) / detChi;
 
-        floatVector dEnergydChi = vectorTools::Tdot( dEdChi, vectorTools::dot( C, E ) ) / detChi
-                                - energy * vectorTools::matrixMultiply( eye, invChi, spatialDimensions, spatialDimensions, spatialDimensions, spatialDimensions, false, true );
+        floatVector dEnergydChi = tardigradeVectorTools::Tdot( dEdChi, tardigradeVectorTools::dot( C, E ) ) / detChi
+                                - energy * tardigradeVectorTools::matrixMultiply( eye, invChi, spatialDimensions, spatialDimensions, spatialDimensions, spatialDimensions, false, true );
 
         // Use the energy gradient to compute the Cauchy stress
         cauchyStress = floatVector( spatialDimensions * spatialDimensions, 0 );
@@ -477,7 +477,7 @@ namespace linearElasticity{
 
         floatVector E;
         floatMatrix dEdChi;
-        errorOut error = constitutiveTools::computeGreenLagrangeStrain( chi, E, dEdChi );
+        errorOut error = tardigradeConstitutiveTools::computeGreenLagrangeStrain( chi, E, dEdChi );
 
         if ( error ){
 
@@ -493,10 +493,10 @@ namespace linearElasticity{
 
         try{
 
-            detChi = vectorTools::determinant( chi, spatialDimensions, spatialDimensions );
-            dDetChidChi = vectorTools::computeDDetADA( chi, spatialDimensions, spatialDimensions );
+            detChi = tardigradeVectorTools::determinant( chi, spatialDimensions, spatialDimensions );
+            dDetChidChi = tardigradeVectorTools::computeDDetADA( chi, spatialDimensions, spatialDimensions );
 
-            invChi = vectorTools::inverse( chi, spatialDimensions, spatialDimensions );
+            invChi = tardigradeVectorTools::inverse( chi, spatialDimensions, spatialDimensions );
 
         }
         catch ( std::exception &e ) {
@@ -520,16 +520,16 @@ namespace linearElasticity{
         }
 
         floatVector eye( spatialDimensions * spatialDimensions );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
-        floatVector invChiT = vectorTools::matrixMultiply( eye, invChi, spatialDimensions, spatialDimensions, spatialDimensions, spatialDimensions, false, true );
+        floatVector invChiT = tardigradeVectorTools::matrixMultiply( eye, invChi, spatialDimensions, spatialDimensions, spatialDimensions, spatialDimensions, false, true );
 
-        floatVector CE = vectorTools::dot( C, E );
-        floatMatrix dCEdChi = vectorTools::dot( C, dEdChi );
+        floatVector CE = tardigradeVectorTools::dot( C, E );
+        floatMatrix dCEdChi = tardigradeVectorTools::dot( C, dEdChi );
 
-        energy = 0.5 * vectorTools::dot( CE, E ) / detChi;
+        energy = 0.5 * tardigradeVectorTools::dot( CE, E ) / detChi;
 
-        dEnergydChi = vectorTools::Tdot( dEdChi, CE ) / detChi - energy * invChiT;
+        dEnergydChi = tardigradeVectorTools::Tdot( dEdChi, CE ) / detChi - energy * invChiT;
 
         floatVector d2EnergydChi2( spatialDimensions * spatialDimensions * spatialDimensions * spatialDimensions, 0 );
 
@@ -623,7 +623,7 @@ namespace linearElasticity{
 
         floatVector E;
         floatMatrix dEdChi;
-        errorOut error = constitutiveTools::computeGreenLagrangeStrain( chi, E, dEdChi );
+        errorOut error = tardigradeConstitutiveTools::computeGreenLagrangeStrain( chi, E, dEdChi );
 
         if ( error ){
 
@@ -639,10 +639,10 @@ namespace linearElasticity{
 
         try{
 
-            detChi = vectorTools::determinant( chi, spatialDimensions, spatialDimensions );
-            dDetChidChi = vectorTools::computeDDetADA( chi, spatialDimensions, spatialDimensions );
+            detChi = tardigradeVectorTools::determinant( chi, spatialDimensions, spatialDimensions );
+            dDetChidChi = tardigradeVectorTools::computeDDetADA( chi, spatialDimensions, spatialDimensions );
 
-            invChi = vectorTools::inverse( chi, spatialDimensions, spatialDimensions );
+            invChi = tardigradeVectorTools::inverse( chi, spatialDimensions, spatialDimensions );
 
         }
         catch ( std::exception &e ) {
@@ -666,16 +666,16 @@ namespace linearElasticity{
         }
 
         floatVector eye( spatialDimensions * spatialDimensions );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
-        floatVector invChiT = vectorTools::matrixMultiply( eye, invChi, spatialDimensions, spatialDimensions, spatialDimensions, spatialDimensions, false, true );
+        floatVector invChiT = tardigradeVectorTools::matrixMultiply( eye, invChi, spatialDimensions, spatialDimensions, spatialDimensions, spatialDimensions, false, true );
 
-        floatVector CE = vectorTools::dot( C, E );
-        floatMatrix dCEdChi = vectorTools::dot( C, dEdChi );
+        floatVector CE = tardigradeVectorTools::dot( C, E );
+        floatMatrix dCEdChi = tardigradeVectorTools::dot( C, dEdChi );
 
-        energy = 0.5 * vectorTools::dot( CE, E ) / detChi;
+        energy = 0.5 * tardigradeVectorTools::dot( CE, E ) / detChi;
 
-        dEnergydChi = vectorTools::Tdot( dEdChi, CE ) / detChi - energy * invChiT;
+        dEnergydChi = tardigradeVectorTools::Tdot( dEdChi, CE ) / detChi - energy * invChiT;
 
         d2EnergydChi2 = floatVector( spatialDimensions * spatialDimensions * spatialDimensions * spatialDimensions, 0 );
 
@@ -800,7 +800,7 @@ namespace linearElasticity{
          * \f$\sigma_{ij} = \frac{1}{J} \frac{ \partial \left( \rho \psi \right ) }{\partial F_{iI}} F_{jI} \f$
          *
          * \param &bungeEulerAngles: Vector containing three Bunge-Euler angles in radians to form the rotation matrix,
-         *     \f$R_{ij}\f$, using ``vectorTools::rotationMatrix``
+         *     \f$R_{ij}\f$, using ``tardigradeVectorTools::rotationMatrix``
          * \param &chi: The micro-deformation
          * \param &parameters: The tensor components of the 9x9 stiffness tensor. Vector length determines the symmetry.
          *
@@ -831,7 +831,7 @@ namespace linearElasticity{
             result->addNext( error );
             return result;
         }
-        floatVector flatStiffnessTensor = vectorTools::appendVectors( stiffnessTensor );
+        floatVector flatStiffnessTensor = tardigradeVectorTools::appendVectors( stiffnessTensor );
 
         error = evaluateEnergy( chi, flatStiffnessTensor, energy, cauchyStress,
                                 dEnergydChi, dCauchyStressdChi,
@@ -847,4 +847,4 @@ namespace linearElasticity{
     }
 
 }  // linearElasticity
-}  // stressTools
+}  // tardigradeStressTools
