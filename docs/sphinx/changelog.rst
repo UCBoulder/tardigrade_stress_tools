@@ -6,7 +6,11 @@ Changelog
 #########
 
 ******************
-0.5.2 (Unreleased)
+0.5.3 (unreleased)
+******************
+
+******************
+0.5.2 (2023-09-20)
 ******************
 - Clean up conda package CI files after conda-build (:issue:`23`, :merge:`50`, :issue:`25`, :merge:`53`). 
   By `Sergio Cordova`_.
