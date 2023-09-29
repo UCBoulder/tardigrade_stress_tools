@@ -6,6 +6,27 @@ Changelog
 #########
 
 ******************
+0.5.4 (unreleased)
+******************
+
+******************
+0.5.3 (2023-09-29)
+******************
+
+Internal Changes
+================
+- Add draft GitHub release action (:merge:`78`). By `Kyle Brindley`_.
+
+******************
+0.5.2 (2023-09-20)
+******************
+- Clean up conda package CI files after conda-build (:issue:`23`, :merge:`50`, :issue:`25`, :merge:`53`). 
+  By `Sergio Cordova`_.
+
+Internal Changes
+================
+
+******************
 0.5.1 (2023-07-24)
 ******************
 
