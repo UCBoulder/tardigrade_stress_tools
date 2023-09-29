@@ -6,8 +6,16 @@ Changelog
 #########
 
 ******************
-0.5.3 (unreleased)
+0.5.4 (unreleased)
 ******************
+
+******************
+0.5.3 (2023-09-29)
+******************
+
+Internal Changes
+================
+- Add draft GitHub release action (:merge:`78`). By `Kyle Brindley`_.
 
 ******************
 0.5.2 (2023-09-20)
