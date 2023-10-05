@@ -329,7 +329,10 @@ namespace tardigradeStressTools{
             return new errorNode( "druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface." );
         }
 
-        druckerPragerSurface( vonMises, meanStress, dpParam[ 0 ], dpParam[ 1 ], dpYield );
+        errorOut error = druckerPragerSurface( vonMises, meanStress, dpParam[ 0 ], dpParam[ 1 ], dpYield );
+        if ( error ){
+            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
+        }
 
         return NULL;
     }
@@ -353,7 +356,7 @@ namespace tardigradeStressTools{
         floatType dpYield = 0;
 
         //Calculate DP yield criterion
-        druckerPragerSurface( vonMises, meanStress, A, B, dpYield );
+        TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( druckerPragerSurface( vonMises, meanStress, A, B, dpYield ) );
 
         return dpYield;
     }
@@ -371,7 +374,7 @@ namespace tardigradeStressTools{
          */
 
         floatType dpYield = 0;
-        druckerPragerSurface( vonMises, meanStress, dpParam, dpYield );
+        TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( druckerPragerSurface( vonMises, meanStress, dpParam, dpYield ) );
 
         return dpYield;
     }
@@ -398,7 +401,10 @@ namespace tardigradeStressTools{
         calculateMeanStress( stress, meanStress );
 
         //Calculate DP yield criterion
-        druckerPragerSurface( vonMises, meanStress, A, B, dpYield );
+        errorOut error = druckerPragerSurface( vonMises, meanStress, A, B, dpYield );
+        if ( error ){
+            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
+        }
 
         return NULL;
     }
@@ -420,7 +426,10 @@ namespace tardigradeStressTools{
         }
 
         //Calculate DP yield criterion
-        druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield );
+        errorOut error = druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield );
+        if ( error ){
+            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
+        }
 
         return NULL;
     }
@@ -443,7 +452,7 @@ namespace tardigradeStressTools{
         floatType dpYield = 0.;
 
         //Calculate DP yield criterion
-        druckerPragerSurface( stress, A, B, dpYield );
+        TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( druckerPragerSurface( stress, A, B, dpYield ) );
 
         return dpYield;
     }
@@ -462,7 +471,7 @@ namespace tardigradeStressTools{
         floatType dpYield = 0.;
 
         //Calculate DP yield criterion
-        druckerPragerSurface( stress, dpParam, dpYield );
+        TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( druckerPragerSurface( stress, dpParam, dpYield ) );
 
         return dpYield;
     }
@@ -498,7 +507,10 @@ namespace tardigradeStressTools{
         calculateMeanStress( stress, meanStress, meanStressJacobian );
 
         //Calculate the Drucker-Prager yield criterion
-        druckerPragerSurface( stress, A, B, dpYield );
+        errorOut error = druckerPragerSurface( stress, A, B, dpYield );
+        if ( error ){
+            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
+        }
 
         //Calculate the Drucker-Prager jacobian
         jacobian = vonMisesJacobian + A * meanStressJacobian;
@@ -526,7 +538,10 @@ namespace tardigradeStressTools{
             return new errorNode( "druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface." );
         }
 
-        druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield, jacobian );
+        errorOut error = druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield, jacobian );
+        if ( error ){
+            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
+        }
 
         return NULL;
     }
@@ -563,7 +578,10 @@ namespace tardigradeStressTools{
         calculateMeanStress( stress, meanStress, meanStressJacobian );
 
         //Calculate the Drucker-Prager yield criterion
-        druckerPragerSurface( stress, A, B, dpYield );
+        errorOut error = druckerPragerSurface( stress, A, B, dpYield );
+        if ( error ){
+            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
+        }
 
         //Calculate the Drucker-Prager jacobian
         jacobian = vonMisesJacobian + A * meanStressJacobian;
@@ -602,7 +620,10 @@ namespace tardigradeStressTools{
             return new errorNode( "druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface." );
         }
 
-        druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield, jacobian, djacobiandstress );
+        errorOut error = druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield, jacobian, djacobiandstress );
+        if ( error ){
+            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
+        }
 
         return NULL;
     }
@@ -625,7 +646,10 @@ namespace tardigradeStressTools{
          */
 
         //Calculate the Drucker-Prager yield criterion and jacobian
-        druckerPragerSurface( stress, A, B, dpYield, jacobian );
+        errorOut error = druckerPragerSurface( stress, A, B, dpYield, jacobian );
+        if ( error ){
+            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
+        }
 
         //Calculate the Drucker-Prager unit normal flow direction as the normalized jacobian
         unitDirection = jacobian / std::sqrt( 3./2. + pow( A, 2. )/3. );
@@ -647,7 +671,10 @@ namespace tardigradeStressTools{
          */
 
         //Calculate the Drucker-Prager yield criterion and jacobian
-        druckerPragerSurface( stress, dpParam, dpYield, jacobian );
+        errorOut error = druckerPragerSurface( stress, dpParam, dpYield, jacobian );
+        if ( error ){
+            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
+        }
 
         //Calculate the Drucker-Prager unit normal flow direction as the normalized jacobian
         unitDirection = jacobian / std::sqrt( 3./2. + pow( dpParam[ 0 ], 2. )/3. );
@@ -675,7 +702,10 @@ namespace tardigradeStressTools{
 
         //Calculate the Drucker-Prager yield criterion and jacobian
         floatMatrix djacobiandstress;
-        druckerPragerSurface( stress, A, B, dpYield, jacobian, djacobiandstress );
+        errorOut error = druckerPragerSurface( stress, A, B, dpYield, jacobian, djacobiandstress );
+        if ( error ){
+            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
+        }
 
         //Compute the unit normal flow direction and the jacobian of the unit normal flow direction
         //w.r.t. stress
@@ -703,7 +733,10 @@ namespace tardigradeStressTools{
 
         //Calculate the Drucker-Prager yield criterion and jacobian
         floatMatrix djacobiandstress;
-        druckerPragerSurface( stress, dpParam, dpYield, jacobian, djacobiandstress );
+        errorOut error = druckerPragerSurface( stress, dpParam, dpYield, jacobian, djacobiandstress );
+        if ( error ){
+            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
+        }
 
         //Compute the unit normal flow direction and the jacobian of the unit normal flow direction
         //w.r.t. stress
