@@ -10,12 +10,20 @@ Changelog
 ******************
 
 ******************
+0.5.3 (2023-10-05)
+******************
+
+Bug Fixes
+=========
+- Corrected bugs where some errors weren't being caught (:merge:`57`). By `Nathan Miller`_.
+
+******************
 0.5.3 (2023-09-29)
 ******************
 
 Internal Changes
 ================
-- Add draft GitHub release action (:merge:`78`). By `Kyle Brindley`_.
+- Add draft GitHub release action (:merge:`56`). By `Kyle Brindley`_.
 
 ******************
 0.5.2 (2023-09-20)
