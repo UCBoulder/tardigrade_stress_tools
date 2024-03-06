@@ -72,29 +72,29 @@ BOOST_AUTO_TEST_CASE( testCalculateMeanStress, * boost::unit_test::tolerance( DE
     errorOut result = tardigradeStressTools::calculateMeanStress( stressVector, meanStress );
     BOOST_CHECK( ! result );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( meanStress, meanStressExpected ) );
+    BOOST_TEST( meanStress == meanStressExpected );
 
     //Test for correct mean stress calculation from stressVector without pointer output
     meanStress = 0.;
     meanStress = tardigradeStressTools::calculateMeanStress( stressVector );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( meanStress, meanStressExpected ) );
+    BOOST_TEST( meanStress == meanStressExpected );
 
     //Test for correct mean stress calculation from stressMatrix with pointer output
     meanStress = 0.;
     result = tardigradeStressTools::calculateMeanStress( stressMatrix, meanStress );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( meanStress, meanStressExpected ) );
+    BOOST_TEST( meanStress == meanStressExpected );
 
     //Test for correct mean stress calculation from stressMatrix without pointer output
     meanStress = 0.;
     meanStress = tardigradeStressTools::calculateMeanStress( stressMatrix );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( meanStress, meanStressExpected ) );
+    BOOST_TEST( meanStress == meanStressExpected );
 
     //Test for correct mean stress and jacobian calculation
     meanStress = 0.;
     std::fill( jacobianVector.begin( ), jacobianVector.end( ), 0. );
     result = tardigradeStressTools::calculateMeanStress( stressVector, meanStress, jacobianVector );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( meanStress, meanStressExpected ) &&
-                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
+    BOOST_TEST( meanStress == meanStressExpected );
+    BOOST_TEST( jacobianVector == jacobianVectorExpected, CHECK_PER_ELEMENT );
 
 }
 
