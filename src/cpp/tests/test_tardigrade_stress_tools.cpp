@@ -12,6 +12,9 @@
 #define BOOST_TEST_MODULE test_tardigrade_stress_tools
 #include <boost/test/included/unit_test.hpp>
 
+#define DEFAULT_TEST_TOLERANCE 1e-6
+#define CHECK_PER_ELEMENT boost::test_tools::per_element( )
+
 typedef tardigradeConstitutiveTools::errorOut errorOut;
 typedef tardigradeConstitutiveTools::floatType floatType;
 typedef tardigradeConstitutiveTools::floatVector floatVector;
@@ -43,7 +46,7 @@ struct cerr_redirect{
         std::streambuf * old;
 };
 
-BOOST_AUTO_TEST_CASE( testCalculateMeanStress ){
+BOOST_AUTO_TEST_CASE( testCalculateMeanStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the mean stress calculation
      */
@@ -95,7 +98,7 @@ BOOST_AUTO_TEST_CASE( testCalculateMeanStress ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress ){
+BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the deviatoric stress calculation
      */
@@ -156,7 +159,7 @@ BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testCalculateVonMisesStress ){
+BOOST_AUTO_TEST_CASE( testCalculateVonMisesStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the von Mises stress calculation
      */
@@ -192,7 +195,7 @@ BOOST_AUTO_TEST_CASE( testCalculateVonMisesStress ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
+BOOST_AUTO_TEST_CASE( testDruckerPragerSurface, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the Drucker-Prager yield criterion calculation.
      */
@@ -427,7 +430,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
+BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the implementation of linear finite-deformation
      * viscoelasticity.
@@ -934,7 +937,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
+BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the mean stress ( -pressure ) using a Neo-Hookean model
      */
@@ -1003,7 +1006,7 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testPeryznaModel ){
+BOOST_AUTO_TEST_CASE( testPeryznaModel, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the implementation of the Peryzna style model
      */
@@ -1101,7 +1104,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testLinearHardening ){
+BOOST_AUTO_TEST_CASE( testLinearHardening, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the linear hardening function.
      */
@@ -1140,7 +1143,7 @@ BOOST_AUTO_TEST_CASE( testLinearHardening ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testComputeJaumannStiffnessTensor ){
+BOOST_AUTO_TEST_CASE( testComputeJaumannStiffnessTensor, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the Jaumann stiffness tensor
      */
