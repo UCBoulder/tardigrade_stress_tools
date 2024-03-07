@@ -119,43 +119,49 @@ BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress, * boost::unit_test::toleran
 
     BOOST_CHECK( ! result );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( expectedVector, deviatoricVector ) );
+    BOOST_TEST( expectedVector == deviatoricVector, CHECK_PER_ELEMENT );
 
     std::fill( deviatoricVector.begin( ), deviatoricVector.end( ), 0. );
 
     deviatoricVector = tardigradeStressTools::calculateDeviatoricStress( stressVector );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( expectedVector, deviatoricVector ) );
+    BOOST_TEST( expectedVector == deviatoricVector, CHECK_PER_ELEMENT );
 
     //Test the computation of the jacobian
     result = tardigradeStressTools::calculateDeviatoricStress( stressVector, deviatoricVectorJ, jacobian );
 
     BOOST_CHECK( ! result );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( expectedVector, deviatoricVectorJ ) );
+    BOOST_TEST( expectedVector == deviatoricVectorJ, CHECK_PER_ELEMENT );
 
     //Test the jacobian
     for ( unsigned int i=0; i<stressVector.size( ); i++ ){
         floatVector delta( stressVector.size( ), 0 );
         delta[ i ] = eps * fabs( stressVector[ i ] ) + eps;
 
-        result = tardigradeStressTools::calculateDeviatoricStress( stressVector + delta, deviatoricVectorJ, jacobian );
+        floatVector Rp( 9, 0 ), Rm( 9, 0 );
+
+        result = tardigradeStressTools::calculateDeviatoricStress( stressVector + delta, Rp );
 
         BOOST_CHECK( ! result );
 
-        floatVector grad = ( deviatoricVectorJ - deviatoricVector ) / delta[ i ];
+        result = tardigradeStressTools::calculateDeviatoricStress( stressVector - delta, Rm );
+
+        BOOST_CHECK( ! result );
+
+        floatVector grad = ( Rp - Rm ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j=0; j<grad.size( ); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( grad[ j ], jacobian[ j ][ i ] ) );
+            BOOST_TEST( grad[ j ] == jacobian[ j ][ i ] );
         }
 
     }
 
     deviatoricVector = tardigradeStressTools::calculateDeviatoricStress( stressVector, jacobian2 );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( deviatoricVector, expectedVector ) );
+    BOOST_TEST( deviatoricVector == expectedVector, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobian, jacobian2 ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( jacobian ) == tardigradeVectorTools::appendVectors( jacobian2 ), CHECK_PER_ELEMENT );
 
 }
 
@@ -180,18 +186,18 @@ BOOST_AUTO_TEST_CASE( testCalculateVonMisesStress, * boost::unit_test::tolerance
     //Test computation of vonMises stress from row major stress tensor
     vonMises = 0.;
     tardigradeStressTools::calculateVonMisesStress( stressVector, vonMises );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( vonMises, vonMisesExpected ) );
+    BOOST_TEST( vonMises == vonMisesExpected );
 
     vonMises = 0.;
     vonMises = tardigradeStressTools::calculateVonMisesStress( stressVector );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( vonMises, vonMisesExpected ) );
+    BOOST_TEST( vonMises == vonMisesExpected );
 
     //Test computation of vonMises stress and jacobian
     vonMises = 0.;
     std::fill( jacobianVector.begin( ), jacobianVector.end( ), 0. );
     tardigradeStressTools::calculateVonMisesStress( stressVector, vonMises, jacobianVector );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( vonMises, vonMisesExpected ) &&
-                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
+    BOOST_TEST( vonMises == vonMisesExpected );
+    BOOST_TEST( jacobianVector == jacobianVectorExpected, CHECK_PER_ELEMENT );
 
 }
 
@@ -237,66 +243,66 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface, * boost::unit_test::tolerance( D
     //Test computation of DP yield criterion from vonMises and meanStress
     dpYield = 0;
     tardigradeStressTools::druckerPragerSurface( vonMises, meanStress, A, B, dpYield );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    BOOST_TEST( dpYield == dpYieldExpected );
 
     dpYield = 0;
     tardigradeStressTools::druckerPragerSurface( vonMises, meanStress, dpParam, dpYield );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    BOOST_TEST( dpYield == dpYieldExpected );
 
     dpYield = 0;
     dpYield = tardigradeStressTools::druckerPragerSurface( vonMises, meanStress, A, B );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    BOOST_TEST( dpYield == dpYieldExpected );
 
     dpYield = 0;
     dpYield = tardigradeStressTools::druckerPragerSurface( vonMises, meanStress, dpParam );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    BOOST_TEST( dpYield == dpYieldExpected );
 
     //Test computation of DP yield criterion from row major stress tensor
     dpYield = 0;
     tardigradeStressTools::druckerPragerSurface( stressVector, A, B, dpYield );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    BOOST_TEST( dpYield == dpYieldExpected );
 
     dpYield = 0;
     tardigradeStressTools::druckerPragerSurface( stressVector, dpParam, dpYield );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    BOOST_TEST( dpYield == dpYieldExpected );
 
     dpYield = 0;
     dpYield = tardigradeStressTools::druckerPragerSurface( stressVector, A, B );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    BOOST_TEST( dpYield == dpYieldExpected );
 
     dpYield = 0;
     dpYield = tardigradeStressTools::druckerPragerSurface( stressVector, dpParam );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) );
+    BOOST_TEST( dpYield == dpYieldExpected );
 
     //Test computation of DP yield and jacobian from row major stress tensor
     dpYield = 0;
     std::fill( jacobianVector.begin( ), jacobianVector.end( ), 0. );
     tardigradeStressTools::druckerPragerSurface( stressVector, A, B, dpYield, jacobianVector );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
-                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
+    BOOST_TEST( dpYield == dpYieldExpected );
+    BOOST_TEST( jacobianVector == jacobianVectorExpected, CHECK_PER_ELEMENT );
 
     dpYield = 0;
     std::fill( jacobianVector.begin( ), jacobianVector.end( ), 0. );
     tardigradeStressTools::druckerPragerSurface( stressVector, dpParam, dpYield, jacobianVector );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
-                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
+    BOOST_TEST( dpYield == dpYieldExpected );
+    BOOST_TEST( jacobianVector == jacobianVectorExpected, CHECK_PER_ELEMENT );
 
     //Test computation of DP yield, jacobian, and unit normal from row major stress tensor
     dpYield = 0;
     std::fill( jacobianVector.begin( ), jacobianVector.end( ), 0. );
     std::fill( unitDirectionVector.begin( ), unitDirectionVector.end( ), 0. );
     tardigradeStressTools::druckerPragerSurface( stressVector, A, B, dpYield, jacobianVector, unitDirectionVector );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
-                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) &&
-                 tardigradeVectorTools::fuzzyEquals( unitDirectionVector, unitDirectionVectorExpected ) );
+    BOOST_TEST( dpYield == dpYieldExpected );
+    BOOST_TEST( jacobianVector == jacobianVectorExpected, CHECK_PER_ELEMENT );
+    BOOST_TEST( unitDirectionVector == unitDirectionVectorExpected, CHECK_PER_ELEMENT );
 
     dpYield = 0;
     std::fill( jacobianVector.begin( ), jacobianVector.end( ), 0. );
     std::fill( unitDirectionVector.begin( ), unitDirectionVector.end( ), 0. );
     tardigradeStressTools::druckerPragerSurface( stressVector, dpParam, dpYield, jacobianVector, unitDirectionVector );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
-                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) &&
-                 tardigradeVectorTools::fuzzyEquals( unitDirectionVector, unitDirectionVectorExpected ) );
+    BOOST_TEST( dpYield == dpYieldExpected );
+    BOOST_TEST( jacobianVector == jacobianVectorExpected, CHECK_PER_ELEMENT );
+    BOOST_TEST( unitDirectionVector == unitDirectionVectorExpected, CHECK_PER_ELEMENT );
 
     //Test the computation of the DP yield, jacobian, and the derivative of the jacobian
     //w.r.t. the stress
@@ -311,8 +317,8 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface, * boost::unit_test::tolerance( D
 
     BOOST_CHECK( ! error );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dpYield, dpYieldExpected ) &&
-                 tardigradeVectorTools::fuzzyEquals( jacobianVector, jacobianVectorExpected ) );
+    BOOST_TEST( dpYield == dpYieldExpected );
+    BOOST_TEST( jacobianVector == jacobianVectorExpected, CHECK_PER_ELEMENT );
 
     eps = 1e-6;
     for ( unsigned int i=0; i<stressVector.size( ); i++ ){
