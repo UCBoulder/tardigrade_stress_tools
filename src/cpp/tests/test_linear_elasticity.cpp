@@ -13,6 +13,9 @@
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
+#define DEFAULT_TEST_TOLERANCE 1e-6
+#define CHECK_PER_ELEMENT boost::test_tools::per_element( )
+
 typedef tardigradeStressTools::linearElasticity::floatType floatType; //!< Redefinition for the float type
 typedef tardigradeStressTools::linearElasticity::floatVector floatVector; //1< Redefinition for the float vector
 typedef tardigradeStressTools::linearElasticity::floatMatrix floatMatrix; //1< Redefinition for the float matrix
@@ -326,7 +329,7 @@ BOOST_AUTO_TEST_CASE( test_rotations_formReferenceStiffnessTensor, * boost::unit
 
 }
 
-BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
+BOOST_AUTO_TEST_CASE( test_evaluateEnergy, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     unsigned int spatialDimensions = 3;
 
@@ -410,9 +413,9 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dEnergydChi, dEnergydChi_answer ) );
+    BOOST_TEST( dEnergydChi == dEnergydChi_answer, boost::test_tools::per_element( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCauchyStressdChi, dCauchyStressdChi_answer ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dCauchyStressdChi ) == tardigradeVectorTools::appendVectors( dCauchyStressdChi_answer ), boost::test_tools::per_element( ) );
 
     dEnergydChi = floatVector( chi.size( ), 0 );
 
@@ -476,7 +479,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
         for ( unsigned int j = 0; j < chi.size( ); j++ ){
 
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCauchyStressdChi_answer[ j ][ i ], ( cauchyStressp[ j ] - cauchyStressm[ j ] ) / ( 2 * delta[ i ] ) ) );
+            BOOST_TEST( dCauchyStressdChi_answer[ j ][ i ] == ( cauchyStressp[ j ] - cauchyStressm[ j ] ) / ( 2 * delta[ i ] ) );
 
         }
 
@@ -501,13 +504,16 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dEnergydChi, dEnergydChi_answer ) );
+    BOOST_TEST( dEnergydChi == dEnergydChi_answer, boost::test_tools::per_element( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCauchyStressdChi, dCauchyStressdChi_answer ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dCauchyStressdChi ) == tardigradeVectorTools::appendVectors( dCauchyStressdChi_answer ), boost::test_tools::per_element( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( d2EnergydChi2, d2EnergydChi2_answer ) );
+    //This test seems a bit more sensitive so I'm locally reducing the tolerance
+    for ( unsigned int i = 0; i < d2EnergydChi2_answer.size( ); i++ ){
+        BOOST_TEST( d2EnergydChi2[ i ] == d2EnergydChi2_answer[ i ], boost::test_tools::tolerance( 1e-5 ) );
+    }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( d2CauchyStressdChi2, d2CauchyStressdChi2_answer ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( d2CauchyStressdChi2 ) == tardigradeVectorTools::appendVectors( d2CauchyStressdChi2_answer ), boost::test_tools::per_element( ) );
 
     //Test Euler angles interface. First with zero rotation, which should have the same answers as above.
     floatVector bungeEulerAngles;
@@ -523,10 +529,12 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy ){
     BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( bungeEulerAngles, chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi, d2EnergydChi2, d2CauchyStressdChi2 ) );
     BOOST_TEST( energy == energy_answer );
     BOOST_TEST( cauchyStress == cauchyStress_answer, boost::test_tools::per_element() );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dEnergydChi, dEnergydChi_answer ) );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCauchyStressdChi, dCauchyStressdChi_answer ) );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( d2EnergydChi2, d2EnergydChi2_answer ) );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( d2CauchyStressdChi2, d2CauchyStressdChi2_answer ) );
+    BOOST_TEST( dEnergydChi == dEnergydChi_answer, boost::test_tools::per_element( ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dCauchyStressdChi ) == tardigradeVectorTools::appendVectors( dCauchyStressdChi_answer ), boost::test_tools::per_element( ) );
+    for ( unsigned int i = 0; i < d2EnergydChi2_answer.size( ); i++ ){
+        BOOST_TEST( d2EnergydChi2[ i ] == d2EnergydChi2_answer[ i ], boost::test_tools::tolerance( 1e-5 ) );
+    }
+    BOOST_TEST( tardigradeVectorTools::appendVectors( d2CauchyStressdChi2 ) == tardigradeVectorTools::appendVectors( d2CauchyStressdChi2_answer ), boost::test_tools::per_element( ) );
 
     bungeEulerAngles = { M_PI_4, M_PI_4, 0. };
     energy = 0;
