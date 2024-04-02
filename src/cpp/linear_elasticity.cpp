@@ -149,7 +149,7 @@ namespace linearElasticity{
         }
         else{
 
-            return new errorNode( __func__, "Requires 81, 21, 9, 5, 3, or 2 parameters. Parameters length is " + std::to_string( parameters.size( ) ) );
+            throw std::runtime_error( "Requires 81, 21, 9, 5, 3, or 2 parameters. Parameters length is " + std::to_string( parameters.size( ) ) );
 
         }
 
@@ -197,12 +197,7 @@ namespace linearElasticity{
          */
 
         floatMatrix unrotatedStiffnessTensor;
-        errorOut error = formReferenceStiffnessTensor( parameters, unrotatedStiffnessTensor );
-        if ( error ){
-            errorOut result = new errorNode( __func__, "Error in computation of the unrotated reference stiffness tensor" );
-            result->addNext( error );
-            return result;
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( formReferenceStiffnessTensor( parameters, unrotatedStiffnessTensor ) )
 
         stiffnessTensor = floatMatrix( spatialDimensions * spatialDimensions, floatVector( spatialDimensions * spatialDimensions, 0 ) );
 
@@ -263,12 +258,7 @@ namespace linearElasticity{
 
         tardigradeVectorTools::rotationMatrix( bungeEulerAngles, directionCosines );
 
-        errorOut error = formReferenceStiffnessTensor( directionCosines, parameters, stiffnessTensor );
-        if ( error ){
-            errorOut result = new errorNode( __func__, "Error in computation of the rotated reference stiffness tensor" );
-            result->addNext( error );
-            return result;
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( formReferenceStiffnessTensor( directionCosines, parameters, stiffnessTensor ) )
 
         return NULL;
     }
@@ -296,20 +286,10 @@ namespace linearElasticity{
          * \param &energy: The resulting free energy in the current configuration
          */
 
-        if ( chi.size( ) != spatialDimensions * spatialDimensions ){
-            return new errorNode( __func__, "The spatial dimension of " + std::to_string( spatialDimensions ) + " is not reflected by chi which has a size of " + std::to_string( chi.size( ) ) + " rather than " + std::to_string( spatialDimensions * spatialDimensions ) );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( chi.size( ) == spatialDimensions * spatialDimensions, "The spatial dimension of " + std::to_string( spatialDimensions ) + " is not reflected by chi which has a size of " + std::to_string( chi.size( ) ) + " rather than " + std::to_string( spatialDimensions * spatialDimensions ) );
 
         floatVector E;
-        errorOut error = tardigradeConstitutiveTools::computeGreenLagrangeStrain( chi, E );
-
-        if ( error ){
-
-            errorOut result = new errorNode( __func__, "Error in the computation of the Green-Lagrange strain" );
-            result->addNext( error );
-            return result;
-
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeGreenLagrangeStrain( chi, E ) )
 
         floatType detChi;
 
@@ -322,21 +302,13 @@ namespace linearElasticity{
             std::ostringstream message;
             message << "Error in calculation of det( chi ). Error follows:\n";
             message << e.what( );
-            return new errorNode( __func__, message.str( ) );
+            throw std::runtime_error( message.str( ) );
 
         }
 
         floatMatrix C;
 
-        error = formReferenceStiffnessTensor( parameters, C );
-
-        if ( error ){
-
-            errorOut result = new errorNode( __func__, "Error in computation of the reference stiffness tensor" );
-            result->addNext( error );
-            return result;
-
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( formReferenceStiffnessTensor( parameters, C ) );
 
         energy = 0.5 * tardigradeVectorTools::dot( tardigradeVectorTools::dot( C, E ), E ) / detChi;
 
@@ -371,21 +343,11 @@ namespace linearElasticity{
          * \param &cauchyStress; The expected cauchy stress
          */
 
-        if ( chi.size( ) != spatialDimensions * spatialDimensions ){
-            return new errorNode( __func__, "The spatial dimension of " + std::to_string( spatialDimensions ) + " is not reflected by chi which has a size of " + std::to_string( chi.size( ) ) + " rather than " + std::to_string( spatialDimensions * spatialDimensions ) );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( chi.size( ) == spatialDimensions * spatialDimensions, "The spatial dimension of " + std::to_string( spatialDimensions ) + " is not reflected by chi which has a size of " + std::to_string( chi.size( ) ) + " rather than " + std::to_string( spatialDimensions * spatialDimensions ) );
 
         floatVector E;
         floatMatrix dEdChi;
-        errorOut error = tardigradeConstitutiveTools::computeGreenLagrangeStrain( chi, E, dEdChi );
-
-        if ( error ){
-
-            errorOut result = new errorNode( __func__, "Error in the computation of the Green-Lagrange strain" );
-            result->addNext( error );
-            return result;
-
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeGreenLagrangeStrain( chi, E, dEdChi ) )
 
         floatType detChi;
         floatVector dDetChidChi;
@@ -402,20 +364,12 @@ namespace linearElasticity{
             std::ostringstream message;
             message << "Error in calculation of det( chi ). Error follows:\n";
             message << e.what( );
-            return new errorNode( __func__, message.str( ) );
+            throw std::runtime_error( message.str( ) );
 
         }
 
         floatMatrix C;
-        error = formReferenceStiffnessTensor( parameters, C );
-
-        if ( error ){
-
-            errorOut result = new errorNode( __func__, "Error in computation of the reference stiffness tensor" );
-            result->addNext( error );
-            return result;
-
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( formReferenceStiffnessTensor( parameters, C ) )
 
         floatVector eye( spatialDimensions * spatialDimensions );
         tardigradeVectorTools::eye( eye );
@@ -471,21 +425,11 @@ namespace linearElasticity{
          *
          */
 
-        if ( chi.size( ) != spatialDimensions * spatialDimensions ){
-            return new errorNode( __func__, "The spatial dimension of " + std::to_string( spatialDimensions ) + " is not reflected by chi which has a size of " + std::to_string( chi.size( ) ) + " rather than " + std::to_string( spatialDimensions * spatialDimensions ) );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( chi.size( ) == spatialDimensions * spatialDimensions, "The spatial dimension of " + std::to_string( spatialDimensions ) + " is not reflected by chi which has a size of " + std::to_string( chi.size( ) ) + " rather than " + std::to_string( spatialDimensions * spatialDimensions ) );
 
         floatVector E;
         floatMatrix dEdChi;
-        errorOut error = tardigradeConstitutiveTools::computeGreenLagrangeStrain( chi, E, dEdChi );
-
-        if ( error ){
-
-            errorOut result = new errorNode( __func__, "Error in the computation of the Green-Lagrange strain" );
-            result->addNext( error );
-            return result;
-
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeGreenLagrangeStrain( chi, E, dEdChi ) );
 
         floatType detChi;
         floatVector dDetChidChi;
@@ -504,20 +448,12 @@ namespace linearElasticity{
             std::ostringstream message;
             message << "Error in calculation of det( chi ). Error follows:\n";
             message << e.what( );
-            return new errorNode( __func__, message.str( ) );
+            throw std::runtime_error( message.str( ) );
 
         }
 
         floatMatrix C;
-        error = formReferenceStiffnessTensor( parameters, C );
-
-        if ( error ){
-
-            errorOut result = new errorNode( __func__, "Error in computation of the reference stiffness tensor" );
-            result->addNext( error );
-            return result;
-
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( formReferenceStiffnessTensor( parameters, C ) )
 
         floatVector eye( spatialDimensions * spatialDimensions );
         tardigradeVectorTools::eye( eye );
@@ -617,21 +553,11 @@ namespace linearElasticity{
          *
          */
 
-        if ( chi.size( ) != spatialDimensions * spatialDimensions ){
-            return new errorNode( __func__, "The spatial dimension of " + std::to_string( spatialDimensions ) + " is not reflected by chi which has a size of " + std::to_string( chi.size( ) ) + " rather than " + std::to_string( spatialDimensions * spatialDimensions ) );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( chi.size( ) == spatialDimensions * spatialDimensions, "The spatial dimension of " + std::to_string( spatialDimensions ) + " is not reflected by chi which has a size of " + std::to_string( chi.size( ) ) + " rather than " + std::to_string( spatialDimensions * spatialDimensions ) );
 
         floatVector E;
         floatMatrix dEdChi;
-        errorOut error = tardigradeConstitutiveTools::computeGreenLagrangeStrain( chi, E, dEdChi );
-
-        if ( error ){
-
-            errorOut result = new errorNode( __func__, "Error in the computation of the Green-Lagrange strain" );
-            result->addNext( error );
-            return result;
-
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeGreenLagrangeStrain( chi, E, dEdChi ) )
 
         floatType detChi;
         floatVector dDetChidChi;
@@ -650,20 +576,12 @@ namespace linearElasticity{
             std::ostringstream message;
             message << "Error in calculation of det( chi ). Error follows:\n";
             message << e.what( );
-            return new errorNode( __func__, message.str( ) );
+            throw std::runtime_error( message.str( ) );
 
         }
 
         floatMatrix C;
-        error = formReferenceStiffnessTensor( parameters, C );
-
-        if ( error ){
-
-            errorOut result = new errorNode( __func__, "Error in computation of the reference stiffness tensor" );
-            result->addNext( error );
-            return result;
-
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( formReferenceStiffnessTensor( parameters, C ) )
 
         floatVector eye( spatialDimensions * spatialDimensions );
         tardigradeVectorTools::eye( eye );
@@ -825,22 +743,13 @@ namespace linearElasticity{
          */
 
         floatMatrix stiffnessTensor;
-        errorOut error = formReferenceStiffnessTensor( bungeEulerAngles, parameters, stiffnessTensor );
-        if ( error ){
-            errorOut result = new errorNode( __func__, "Error in computation of the rotated reference stiffness tensor" );
-            result->addNext( error );
-            return result;
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( formReferenceStiffnessTensor( bungeEulerAngles, parameters, stiffnessTensor ) )
+
         floatVector flatStiffnessTensor = tardigradeVectorTools::appendVectors( stiffnessTensor );
 
-        error = evaluateEnergy( chi, flatStiffnessTensor, energy, cauchyStress,
-                                dEnergydChi, dCauchyStressdChi,
-                                d2EnergydChi2, d2CauchyStressdChi2 );
-        if ( error ){
-            errorOut result = new errorNode( __func__, "Error in computation of the linear elastic free energy" );
-            result->addNext( error );
-            return result;
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( evaluateEnergy( chi, flatStiffnessTensor, energy, cauchyStress,
+                                                      dEnergydChi, dCauchyStressdChi,
+                                                      d2EnergydChi2, d2CauchyStressdChi2 ) )
 
         return NULL;
 
