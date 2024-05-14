@@ -19,10 +19,14 @@ namespace tardigradeStressTools{
     namespace massChangeDeformation{
 
         constexpr int spatial_dimension = 3;
+        constexpr int sot_dimension = spatial_dimension * spatial_dimension;
+        constexpr int tot_dimension = sot_dimension * spatial_dimension;
+        constexpr int fot_dimension = tot_dimension * spatial_dimension;
 
         typedef double floatType;
         typedef std::array< floatType, spatial_dimension > vector3d;
-        typedef std::array< floatType, spatial_dimension > secondOrderTensor;
+        typedef std::array< floatType, sot_dimension > secondOrderTensor;
+        typedef std::array< floatType, fot_dimension > fourthOrderTensor;
 
         //! Base class for the calculation of the deformation associated with a change in mass
         template< std::size_t num_params = 2 >
@@ -71,6 +75,8 @@ namespace tardigradeStressTools{
 
                 virtual void solveForGamma( );
 
+                virtual void computeMassDeformation( );
+
             private:
 
                 floatType _JAt;
@@ -98,6 +104,14 @@ namespace tardigradeStressTools{
                 secondOrderTensor _dGammadJAtp1;
 
                 secondOrderTensor _dGammadNtp1;
+
+                secondOrderTensor _Atp1;
+
+                fourthOrderTensor _dAtp1dL;
+
+                secondOrderTensor _dAtp1dC;
+
+                secondOrderTensor _dAtp1dRho;
 
         };
 

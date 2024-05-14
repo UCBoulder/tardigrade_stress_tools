@@ -220,6 +220,72 @@ namespace tardigradeStressTools{
 
         }
 
+        template< std::size_t num_params >
+        void massChangeDeformationBase<num_params>::computeMassDeformation( ){
+            /*!
+             * Compute the deformation associated with the mass change
+             */
+
+            secondOrderTensor LHS, TERM1, RHS, invLHS;
+
+            std::fill( std::begin( LHS ), std::end( LHS ), 0 );
+
+            std::fill( std::begin( TERM1 ), std::end( TERM1 ), 0 );
+
+            std::fill( std::begin( RHS ), std::end( RHS ), 0 );
+
+            std::fill( std::begin( invLHS ), std::end( invLHS ), 0 );
+
+            std::fill( std::begin( _Atp1 ), std::end( _Atp1 ), 0 );
+
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){ LHS[ spatial_dimension * i + i ] = 1.; TERM1[ spatial_dimension * i + i ] = 1.; }
+
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){
+
+                for ( unsigned int j = 0; j < spatial_dimension; j++ ){
+
+                    LHS[ spatial_dimension * i + j ] -= _alpha * _dt * _gammatp1 * _ntp1[ spatial_dimension * i + j ];
+
+                    TERM1[ spatial_dimension * i + j ] += ( 1. - _alpha ) * _dt * _gammat * _nt[ spatial_dimension * i + j ];
+
+                }
+
+            }
+
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){
+
+                for ( unsigned int j = 0; j < spatial_dimension; j++ ){
+
+                    for ( unsigned int k = 0; k < spatial_dimension; k++ ){
+
+                        RHS[ spatial_dimension * i + k ] += TERM1[ spatial_dimension * i + j ] * _At[ spatial_dimension * j + k ];
+
+                    }
+
+                }
+
+            }
+
+            Eigen::Map< const Eigen::Matrix< floatType, spatial_dimension, spatial_dimension, Eigen::RowMajor > > LHS_map( LHS.data( ) );
+            Eigen::Map< const Eigen::Matrix< floatType, spatial_dimension, spatial_dimension, Eigen::RowMajor > > invLHS_map( invLHS.data( ) );
+            invLHS_map = LHS_map.inverse( ).eval( );
+
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){
+
+                for ( unsigned int j = 0; j < spatial_dimension; j++ ){
+
+                    for ( unsigned int k = 0; k < spatial_dimension; k++ ){
+
+                        _Atp1[ spatial_dimension * i + k ] += invLHS[ spatial_dimension * i + j ] * RHS[ spatial_dimension * j + k ];
+
+                    }
+
+                }
+
+            }
+
+        }
+
     }
 
 }
