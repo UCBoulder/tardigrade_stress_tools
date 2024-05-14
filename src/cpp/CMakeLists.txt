@@ -20,3 +20,12 @@ install(TARGETS ${PROJECT_NAME}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(FILES ${PROJECT_PRIVATE_HEADERS}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+foreach(package ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
+    install(TARGETS ${package}
+            EXPORT ${package}_Targets
+            INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    install(FILES ${package}.h ${package}.cpp
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+endforeach(package)
