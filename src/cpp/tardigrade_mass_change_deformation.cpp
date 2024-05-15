@@ -8,6 +8,7 @@
 
 #include "tardigrade_mass_change_deformation.h"
 
+#define USE_EIGEN
 #include "tardigrade_vector_tools.h"
 
 namespace tardigradeStressTools{
@@ -18,7 +19,7 @@ namespace tardigradeStressTools{
         massChangeDeformationBase<num_params>::massChangeDeformationBase( const floatType &dt,     const secondOrderTensor &At, const floatType &ct,     const floatType &ctp1,
                                                                           const floatType &rhot,   const floatType &rhotp1,
                                                                           const floatType &gammat, const std::array< floatType, num_params > &parameters,
-                                                                          const floatType &alpha,  const floatType &tolr, const floatType &tola, const unsigned int &maxiter )
+                                                                          const floatType alpha,   const floatType tolr, const floatType tola, const unsigned int maxiter )
                                                                           : _dt( dt ), _At( At ), _ct( ct ), _ctp1( ctp1 ), _rhot( rhot ), _rhotp1( rhotp1 ),
                                                                             _gammat( gammat ),
                                                                             _parameters( parameters ), _alpha( alpha ), _tolr( tolr ), _tola( tola ), _maxiter( maxiter ){
@@ -48,17 +49,27 @@ namespace tardigradeStressTools{
              *    accurate value of 0.5
              */
 
+        }
+
+        template< std::size_t num_params >
+        void massChangeDeformationBase<num_params>::setJAt( ){
+            /*!
+             * Set the previous value of the mass-change jacobian of deformation
+             */
+
             Eigen::Map< const Eigen::Matrix< floatType, spatial_dimension, spatial_dimension, Eigen::RowMajor > > _At_map( _At.data( ) );
 
-            _JAt = _At_map.determinant( );
+            set_JAt( _At_map.determinant( ) );
 
         }
 
         template< std::size_t num_params >
-        void massChangeDeformationBase<num_params>::solveMassJacobian( ){
+        void massChangeDeformationBase<num_params>::setJAtp1( ){
             /*!
              * Solve for the updated mass Jacobian numerically using the midpoint rule
              */
+
+            const floatType *JAt = get_JAt( );
 
             floatType rt = _ct / _rhot;
 
@@ -68,11 +79,31 @@ namespace tardigradeStressTools{
 
             floatType den = 1. - _dt * _alpha * rtp1;
 
-            _JAtp1 = ( num / den ) * _JAt;
+            set_JAtp1( ( num / den ) * ( *JAt ) );
 
-            _dJAtp1dC = num / ( den * den ) * _dt * _alpha / _rhotp1 * _JAt;
+            set_dJAtp1dCtp1( num / ( den * den ) * _dt * _alpha / _rhotp1 * ( *JAt ) );
 
-            _dJAtp1dRho = -num / ( den * den ) * _dt * _alpha * _ctp1 / ( _rhotp1 * _rhotp1 ) * _JAt;
+            set_dJAtp1dRhotp1( -num / ( den * den ) * _dt * _alpha * _ctp1 / ( _rhotp1 * _rhotp1 ) * ( *JAt ) );
+
+        }
+
+        template< std::size_t num_params >
+        void massChangeDeformationBase<num_params>::setdJAtp1dCtp1( ){
+            /*!
+             * Solve for the derivative of the updated mass Jacobian w.r.t. the current mass growth rate
+             */
+
+            setJAtp1( );
+
+        }
+
+        template< std::size_t num_params >
+        void massChangeDeformationBase<num_params>::setdJAtp1dRhotp1( ){
+            /*!
+             * Solve for the derivative of the updated mass Jacobian w.r.t. the current density
+             */
+
+            setJAtp1( );
 
         }
 
@@ -94,13 +125,17 @@ namespace tardigradeStressTools{
              * Compute the right-hand side for the iteration to solve for gammatp1
              */
 
+            const floatType *JAt = get_JAt( );
+
+            const floatType *JAtp1 = get_JAtp1( );
+
             secondOrderTensor term1, term2;
 
             std::fill( std::begin( term1 ), std::end( term1 ), 0 );
 
             std::fill( std::begin( term2 ), std::end( term2 ), 0 );
 
-            floatType factor = _JAt / _JAtp1;
+            floatType factor = ( *JAt ) / ( *JAtp1 );
 
             for ( unsigned int i = 0; i < spatial_dimension; i++ ){ term1[ spatial_dimension * i + i ] = 1; term2[ spatial_dimension * i + i ] = factor; }
 
@@ -120,7 +155,7 @@ namespace tardigradeStressTools{
 
             Eigen::Map< const Eigen::Matrix< floatType, spatial_dimension, spatial_dimension, Eigen::RowMajor > > term2_map( term2.data( ) );
 
-            floatType _gammaRHS = term1_map.determinant( ) - term2_map.determinant( );
+            _gammaRHS = term1_map.determinant( ) - term2_map.determinant( );
 
         }
 
@@ -130,6 +165,10 @@ namespace tardigradeStressTools{
              * Compute the left-hand side for the iteration to solve for gammatp1
              */
 
+            const floatType *JAt = get_JAt( );
+
+            const floatType *JAtp1 = get_JAtp1( );
+
             secondOrderTensor term1, term2, invterm1;
 
             std::fill( std::begin( term1 ), std::end( term1 ), 0 );
@@ -138,7 +177,7 @@ namespace tardigradeStressTools{
 
             std::fill( std::begin( invterm1 ), std::end( invterm1 ), 0 );
 
-            floatType factor = _JAt / _JAtp1;
+            floatType factor = ( *JAt ) / ( *JAtp1 );
 
             for ( unsigned int i = 0; i < spatial_dimension; i++ ){ term1[ spatial_dimension * i + i ] = 1; term2[ spatial_dimension * i + i ] = factor; }
 
@@ -156,11 +195,11 @@ namespace tardigradeStressTools{
             // Compute the inverse of term1
             Eigen::Map< const Eigen::Matrix< floatType, spatial_dimension, spatial_dimension, Eigen::RowMajor > > term1_map( term1.data( ) );
             Eigen::Map< const Eigen::Matrix< floatType, spatial_dimension, spatial_dimension, Eigen::RowMajor > > term2_map( term2.data( ) );
-            Eigen::Map< const Eigen::Matrix< floatType, spatial_dimension, spatial_dimension, Eigen::RowMajor > > invterm1_map( invterm1.data( ) );
+            Eigen::Map< Eigen::Matrix< floatType, spatial_dimension, spatial_dimension, Eigen::RowMajor > > invterm1_map( invterm1.data( ) );
 
             floatType detTerm1 = term1_map.determinant( );
 
-            _dGammaRHSdJAtp1 = -term2_map.determinant( ) / _JAtp1;
+            _dGammaRHSdJAtp1 = -term2_map.determinant( ) / ( *JAtp1 );
 
             invterm1_map = term1_map.inverse( ).eval( );
 
@@ -206,14 +245,13 @@ namespace tardigradeStressTools{
 
             if ( std::fabs( _gammaRHS ) > tol ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::exception( "The solve for gamma did not converge" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "The solve for gamma did not converge" ) );
 
             }
 
             // Compute the derivatives
             computeGammaLHS( );
 
-            _dGammadJAtp1 = -_dGammaRHSdJAtp1 / _gammaLHS;
             for ( auto v = std::begin( _dGammaRHSdNtp1 ); v != std::end( _dGammaRHSdNtp1 ); v++ ){
                 _dGammadNtp1[ ( unsigned int )( v - std::begin( _dGammaRHSdNtp1 ) ) ] = -( *v ) / _gammaLHS;
             }
@@ -267,7 +305,7 @@ namespace tardigradeStressTools{
             }
 
             Eigen::Map< const Eigen::Matrix< floatType, spatial_dimension, spatial_dimension, Eigen::RowMajor > > LHS_map( LHS.data( ) );
-            Eigen::Map< const Eigen::Matrix< floatType, spatial_dimension, spatial_dimension, Eigen::RowMajor > > invLHS_map( invLHS.data( ) );
+            Eigen::Map< Eigen::Matrix< floatType, spatial_dimension, spatial_dimension, Eigen::RowMajor > > invLHS_map( invLHS.data( ) );
             invLHS_map = LHS_map.inverse( ).eval( );
 
             for ( unsigned int i = 0; i < spatial_dimension; i++ ){
