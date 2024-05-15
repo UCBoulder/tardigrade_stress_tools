@@ -16,7 +16,8 @@
 #define DEFAULT_TEST_TOLERANCE 1e-6
 #define CHECK_PER_ELEMENT boost::test_tools::per_element( )
 
-typedef tardigradeStressTools::massChangeDeformation::floatType floatType; //!< Redefinition for the float type
+typedef tardigradeStressTools::massChangeDeformation::floatType         floatType; //!< Redefinition for the float type
+typedef tardigradeStressTools::massChangeDeformation::vector3d          vector3d; //!< Redefinition for a 3d vector
 typedef tardigradeStressTools::massChangeDeformation::secondOrderTensor secondOrderTensor; //!< Redefinition for the second order tensor
 typedef tardigradeStressTools::massChangeDeformation::fourthOrderTensor fourthOrderTensor; //!< Redefinition for the fourth order tensor
 
@@ -659,3 +660,60 @@ BOOST_AUTO_TEST_CASE( test_massChangeDeformationBase_computeMassDeformation2, * 
     BOOST_TEST( dAtp1dNtp1 == *massChange.get_dAtp1dNtp1( ), CHECK_PER_ELEMENT );
 
 }
+
+BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_constructor, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    floatType dt = 1.2;
+
+    secondOrderTensor At = { 1.03834461, -0.02177823, -0.02781574,
+                             0.00522557,  1.04068676, -0.00783036,
+                             0.04895802,  0.0188219 ,  1.01639564 };
+
+    floatType ct     = 0.1;
+
+    floatType ctp1   = 0.2;
+
+    floatType rhot   = 1.4;
+
+    floatType rhotp1 = 1.5;
+
+    floatType gammat = 0.1;
+
+    vector3d vt = { 3, 4, 5 };
+
+    vector3d vtp1 = { 4, 5, 6 };
+
+    std::array< floatType, 2 > parameters = { 1, 2 };
+
+    floatType alpha = 0.53;
+
+    tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection massChange( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1, parameters, alpha );
+
+    BOOST_TEST( dt         == *massChange.get_dt( ) );
+
+    BOOST_TEST( At         == *massChange.get_At( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( ct         == *massChange.get_ct( ) );
+
+    BOOST_TEST( ctp1       == *massChange.get_ctp1( ) );
+
+    BOOST_TEST( rhot       == *massChange.get_rhot( ) );
+
+    BOOST_TEST( rhotp1     == *massChange.get_rhotp1( ) );
+
+    BOOST_TEST( gammat     == *massChange.get_gammat( ) );
+
+    BOOST_TEST( parameters == *massChange.get_parameters( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( alpha      == *massChange.get_alpha( ) );
+
+    BOOST_TEST( parameters[ 0 ] == *massChange.get_d( ) );
+
+    BOOST_TEST( parameters[ 1 ] == *massChange.get_factor( ) );
+
+    BOOST_TEST( vt == *massChange.get_vt( ) );
+
+    BOOST_TEST( vtp1 == *massChange.get_vtp1( ) );
+
+}
+

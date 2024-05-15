@@ -611,6 +611,36 @@ namespace tardigradeStressTools{
 
         }
 
+        massChangeWeightedDirection::massChangeWeightedDirection( const floatType &dt,     const secondOrderTensor &At, const floatType &ct,     const floatType &ctp1,
+                                                                  const floatType &rhot,   const floatType &rhotp1,     const floatType &gammat,
+                                                                  const vector3d  &vt,     const vector3d &vtp1,
+                                                                  const std::array< floatType, 2 > &parameters,
+                                                                  const floatType alpha, const floatType tolr, const floatType tola, const unsigned int maxiter ) : 
+                                                                  massChangeDeformationBase( dt, At, ct, ctp1, rhot, rhotp1, gammat, parameters, alpha, tolr, tola, maxiter ),
+                                                                  _d( parameters[ 0 ] ), _factor( parameters[ 1 ] ), _vt( vt ), _vtp1( vtp1 ){
+            /*!
+             * The constructor for the class which defines mass change in a weighted direction
+             * 
+             * Expects to perform calculations in 3d
+             *
+             * \param &dt: The change in time (units: \f$\frac{m}{dv}\f$ )
+             * \param &At: The previous value of the mass change deformation gradient (units: None, size=9)
+             * \param &ct: The previous value of the mass density rate of change (units: \f$\frac{m}{dv t}\f$)
+             * \param &ctp1: The current value of the mass density rate of change (units: \f$\frac{m}{dv t}\f$)
+             * \param &rhot: The previous value of the mass density (units: \f$ \frac{m}{dv} \f$)
+             * \param &rhotp1: The current value of the mass density (units: \f$ \frac{m}{dv} \f$)
+             * \param &gammat: The previous rate multiplier for the evolution of the mass-change deformation (units: None)
+             * \param &parameters: The parameter vector
+             *     d The weighting factor for whether the flow is volumetric (0) or in a direction with an eigen-vector in the
+             *       direction of \f$ \bf{v}^t \f$ and \f$ \bf{v}^{t+1} \f$ (1)
+             *
+             *     factor The scale factor applied to the densities to change the scale of the volume change (greater than 1)
+             * \param &alpha: The integration parameter (0 for explicit 1 for implicit). Defaults to the second-order
+             *    accurate value of 0.5
+             */
+
+        }
+
     }
 
 }
