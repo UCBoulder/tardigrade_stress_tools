@@ -11,11 +11,15 @@ set(DOXYGEN_SRC_PATH "docs/doxygen")
 set(SPHINX_SRC_PATH "docs/sphinx")
 # Set the internal support libraries
 set(INTERNAL_SUPPORT_LIBRARIES "linear_elasticity")
+set(ADDITIONAL_HEADER_ONLY_LIBRARIES "tardigrade_mass_change_deformation")
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
 set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
     set(PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES} ${package}.cpp ${package}.h)
     set(PROJECT_PRIVATE_HEADERS ${PROJECT_PRIVATE_HEADERS} ${package}.h)
+endforeach(package)
+foreach(package ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
+    add_library(${package} INTERFACE "${CPP_SRC_PATH}/${package}.cpp" "${CPP_SRC_PATH}/${package}.h")
 endforeach(package)
 set(PROJECT_LINK_LIBRARIES tardigrade_error_tools tardigrade_constitutive_tools)
 
@@ -127,24 +131,26 @@ endif()
 
 #==================================================================================== SETUP INSTALLATION CMAKE FILES ===
 if(${not_conda_test} STREQUAL "true")
-    include(CMakePackageConfigHelpers)
-    write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake"
-                                     VERSION ${PROJECT_VERSION}
-                                     COMPATIBILITY SameMajorVersion)
-    configure_package_config_file(
-      "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}/Config.cmake.in"
-      "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-      INSTALL_DESTINATION
-      ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+    foreach(package ${PROJECT_NAME} ${UMAT})
+        include(CMakePackageConfigHelpers)
+        write_basic_package_version_file("${package}ConfigVersion.cmake"
+                                         VERSION ${PROJECT_VERSION}
+                                         COMPATIBILITY SameMajorVersion)
+        configure_package_config_file(
+          "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}/Config.cmake.in"
+          "${PROJECT_BINARY_DIR}/${package}Config.cmake"
+          INSTALL_DESTINATION
+          ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
 
-    # CMake won't build the targets for local builds of upstream projects
-    if(cmake_build_type_lower STREQUAL release)
-        install(EXPORT ${PROJECT_NAME}_Targets
-                FILE ${PROJECT_NAME}Targets.cmake
-                DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
-    endif()
+        # CMake won't build the targets for local builds of upstream projects
+        if(cmake_build_type_lower STREQUAL release)
+            install(EXPORT ${package}_Targets
+                    FILE ${package}Targets.cmake
+                    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
+        endif()
 
-    install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-                  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-            DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+        install(FILES "${PROJECT_BINARY_DIR}/${package}Config.cmake"
+                      "${PROJECT_BINARY_DIR}/${package}ConfigVersion.cmake"
+                DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
+    endforeach(package)
 endif()

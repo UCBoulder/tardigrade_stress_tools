@@ -13,6 +13,10 @@ Internal Changes
 ================
 - Changed the way errors are handled to the new error_tools approach. Will need to remove errorOut returns to complete task. (:pull:`4`). By `Nathan Miller`_.
 
+New Features
+============
+- Added a mass-change deformation modeling framework (:pull:`5`). By `Nathan Miller`_.
+
 ******************
 0.5.3 (2023-10-05)
 ******************
