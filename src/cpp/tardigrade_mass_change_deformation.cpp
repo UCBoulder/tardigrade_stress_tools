@@ -301,9 +301,57 @@ namespace tardigradeStressTools{
             }
 
             // Compute the derivatives
+            set_dGammatp1dJAtp1( -( *get_dGammaRHSdJAtp1( ) ) / ( *get_gammaLHS( ) ) );
+            set_dGammatp1dRhotp1( ( *get_dGammatp1dJAtp1( ) ) * ( *get_dJAtp1dRhotp1( ) ) );
+            set_dGammatp1dCtp1( ( *get_dGammatp1dJAtp1( ) ) * ( *get_dJAtp1dCtp1( ) ) );
+
+            secondOrderTensor dGammatp1dNtp1;
+
             for ( auto v = std::begin( *get_dGammaRHSdNtp1( ) ); v != std::end( *get_dGammaRHSdNtp1( ) ); v++ ){
-                _dGammadNtp1[ ( unsigned int )( v - std::begin( *get_dGammaRHSdNtp1( ) ) ) ] = -( *v ) / ( *get_gammaLHS( ) );
+                dGammatp1dNtp1[ ( unsigned int )( v - std::begin( *get_dGammaRHSdNtp1( ) ) ) ] = -( *v ) / ( *get_gammaLHS( ) );
             }
+
+            set_dGammatp1dNtp1( dGammatp1dNtp1 );
+
+        }
+
+        template< std::size_t num_params >
+        void massChangeDeformationBase<num_params>::setdGammatp1dJAtp1( ){
+            /*!
+             * Set the derivative of the updated gamma w.r.t. the current mass-change deformation jacobian
+             */
+
+            solveGammatp1( );
+
+        }
+
+        template< std::size_t num_params >
+        void massChangeDeformationBase<num_params>::setdGammatp1dCtp1( ){
+            /*!
+             * Set the derivative of the updated gamma w.r.t. the current density-change rate
+             */
+
+            solveGammatp1( );
+
+        }
+
+        template< std::size_t num_params >
+        void massChangeDeformationBase<num_params>::setdGammatp1dRhotp1( ){
+            /*!
+             * Set the derivative of the updated gamma w.r.t. the current density rate
+             */
+
+            solveGammatp1( );
+
+        }
+
+        template< std::size_t num_params >
+        void massChangeDeformationBase<num_params>::setdGammatp1dNtp1( ){
+            /*!
+             * Set the derivative of the updated gamma w.r.t. the current flow direction
+             */
+
+            solveGammatp1( );
 
         }
 

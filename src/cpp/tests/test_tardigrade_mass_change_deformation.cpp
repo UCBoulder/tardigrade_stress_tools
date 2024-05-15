@@ -308,3 +308,144 @@ BOOST_AUTO_TEST_CASE( test_massChangeDeformationBase_getGammaRHS, * boost::unit_
     BOOST_TEST( dGammaRHSdNtp1 == *massChange.get_dGammaRHSdNtp1( ), CHECK_PER_ELEMENT );
 
 }
+
+BOOST_AUTO_TEST_CASE( test_massChangeDeformationBase_solveGamma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class massChangeMock : public tardigradeStressTools::massChangeDeformation::massChangeDeformationBase< 2 >{
+
+        public:
+
+            using tardigradeStressTools::massChangeDeformation::massChangeDeformationBase< 2 >::massChangeDeformationBase;
+
+            secondOrderTensor nt   = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            secondOrderTensor ntp1 = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
+
+            virtual void setNt( ) override{
+                set_nt( nt );
+            }
+
+            virtual void setNtp1( ) override{
+                set_ntp1( ntp1 );
+            }
+
+            virtual void solveGamma_test( ){
+
+                solveGammatp1( );
+
+            }
+
+    };
+
+    floatType dt = 1.2;
+
+    secondOrderTensor At = { 1.03834461, -0.02177823, -0.02781574,
+                             0.00522557,  1.04068676, -0.00783036,
+                             0.04895802,  0.0188219 ,  1.01639564 };
+
+    floatType ct     = 0.1;
+
+    floatType ctp1   = 0.2;
+
+    floatType rhot   = 1.4;
+
+    floatType rhotp1 = 1.5;
+
+    floatType gammat = 0.1;
+
+    std::array< floatType, 2 > parameters = { 1, 2 };
+
+    floatType gamma_answer = -0.30717013919187797;
+
+    massChangeMock massChange( dt, At, ct, ctp1, rhot, rhotp1, gammat, parameters, 0.67 );
+
+    massChange.solveGamma_test( );
+
+    BOOST_TEST( gamma_answer == *massChange.get_gammatp1( ) );
+
+    floatType eps = 1e-6;
+
+    floatType dGammatp1dCtp1;
+
+    floatType dGammatp1dRhotp1;
+
+    secondOrderTensor dGammatp1dNtp1;
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatType delta = eps * std::fabs( ctp1 ) + eps;
+
+        secondOrderTensor vp = massChange.ntp1;
+        secondOrderTensor vm = massChange.ntp1;
+
+        massChangeMock massChangep( dt, At, ct, ctp1 + delta, rhot, rhotp1, gammat, parameters, 0.67 );
+        massChangeMock massChangem( dt, At, ct, ctp1 - delta, rhot, rhotp1, gammat, parameters, 0.67 );
+
+        massChangep.set_ntp1( vp );
+        massChangem.set_ntp1( vm );
+
+        massChangep.solveGamma_test( );
+        massChangem.solveGamma_test( );
+
+        floatType rp = *massChangep.get_gammatp1( );
+        floatType rm = *massChangem.get_gammatp1( );
+
+        dGammatp1dCtp1 = ( rp - rm ) / ( 2 * delta );
+
+    }
+
+    BOOST_TEST( dGammatp1dCtp1 == *massChange.get_dGammatp1dCtp1( ) );
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatType delta = eps * std::fabs( rhotp1 ) + eps;
+
+        secondOrderTensor vp = massChange.ntp1;
+        secondOrderTensor vm = massChange.ntp1;
+
+        massChangeMock massChangep( dt, At, ct, ctp1, rhot, rhotp1 + delta, gammat, parameters, 0.67 );
+        massChangeMock massChangem( dt, At, ct, ctp1, rhot, rhotp1 - delta, gammat, parameters, 0.67 );
+
+        massChangep.set_ntp1( vp );
+        massChangem.set_ntp1( vm );
+
+        massChangep.solveGamma_test( );
+        massChangem.solveGamma_test( );
+
+        floatType rp = *massChangep.get_gammatp1( );
+        floatType rm = *massChangem.get_gammatp1( );
+
+        dGammatp1dRhotp1 = ( rp - rm ) / ( 2 * delta );
+
+    }
+
+    BOOST_TEST( dGammatp1dRhotp1 == *massChange.get_dGammatp1dRhotp1( ) );
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatType delta = eps * std::fabs( massChange.ntp1[ i ] ) + eps;
+
+        secondOrderTensor vp = massChange.ntp1;
+        secondOrderTensor vm = massChange.ntp1;
+
+        vp[i] += delta;
+        vm[i] -= delta;
+
+        massChangeMock massChangep( dt, At, ct, ctp1, rhot, rhotp1, gammat, parameters, 0.67 );
+        massChangeMock massChangem( dt, At, ct, ctp1, rhot, rhotp1, gammat, parameters, 0.67 );
+
+        massChangep.set_ntp1( vp );
+        massChangem.set_ntp1( vm );
+
+        massChangep.solveGamma_test( );
+        massChangem.solveGamma_test( );
+
+        floatType rp = *massChangep.get_gammatp1( );
+        floatType rm = *massChangem.get_gammatp1( );
+
+        dGammatp1dNtp1[ i ] = ( rp - rm ) / ( 2 * delta );
+
+    }
+
+    BOOST_TEST( dGammatp1dNtp1 == *massChange.get_dGammatp1dNtp1( ), CHECK_PER_ELEMENT );
+}

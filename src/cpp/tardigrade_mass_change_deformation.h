@@ -400,6 +400,14 @@ namespace tardigradeStressTools{
 
                 virtual void solveGammatp1( );
 
+                virtual void setdGammatp1dJAtp1( );
+
+                virtual void setdGammatp1dCtp1( );
+
+                virtual void setdGammatp1dRhotp1( );
+
+                virtual void setdGammatp1dNtp1( );
+
                 virtual void computeMassDeformation( );
 
             private:
@@ -407,10 +415,6 @@ namespace tardigradeStressTools{
                 void resetIterationData( );
 
                 dataStorage< floatType > _gammatp1;
-
-                secondOrderTensor _dGammadJAtp1;
-
-                secondOrderTensor _dGammadNtp1;
 
                 secondOrderTensor _Atp1;
 
@@ -420,29 +424,37 @@ namespace tardigradeStressTools{
 
                 secondOrderTensor _dAtp1dRho;
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, JAtp1,           floatType,         setJAtp1           )
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, JAtp1,            floatType,         setJAtp1              )
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_PREVIOUS_STORAGE(  private, JAt,             floatType,         setJAt             )
+                TARDIGRADE_MASS_CHANGE_DECLARE_PREVIOUS_STORAGE(  private, JAt,              floatType,         setJAt                )
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, dJAtp1dCtp1,     floatType,         setdJAtp1dCtp1     )
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, dJAtp1dCtp1,      floatType,         setdJAtp1dCtp1        )
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, dJAtp1dRhotp1,   floatType,         setdJAtp1dRhotp1   )
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, dJAtp1dRhotp1,    floatType,         setdJAtp1dRhotp1      )
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, ntp1,            secondOrderTensor, setNtp1            )
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, ntp1,             secondOrderTensor, setNtp1               )
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_PREVIOUS_STORAGE(  private, nt,              secondOrderTensor, setNt              )
+                TARDIGRADE_MASS_CHANGE_DECLARE_PREVIOUS_STORAGE(  private, nt,               secondOrderTensor, setNt                 )
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, gammaRHS,        floatType,         setGammaRHS        )
+                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, gammaRHS,         floatType,         setGammaRHS           )
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, gammaTerm1,      secondOrderTensor, setGammaTerm1      )
+                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, gammaTerm1,       secondOrderTensor, setGammaTerm1         )
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, gammaTerm2,      secondOrderTensor, setGammaTerm2      )
+                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, gammaTerm2,       secondOrderTensor, setGammaTerm2         )
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, gammaLHS,        floatType,         setGammaLHS        )
+                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, gammaLHS,         floatType,         setGammaLHS           )
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, dGammaRHSdJAtp1, floatType,         setdGammaRHSdJAtp1 )
+                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, dGammaRHSdJAtp1,  floatType,         setdGammaRHSdJAtp1    )
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, dGammaRHSdNtp1,  secondOrderTensor, setdGammaRHSdNtp1  )
+                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, dGammaRHSdNtp1,   secondOrderTensor, setdGammaRHSdNtp1     )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, dGammatp1dJAtp1,  floatType,         setdGammatp1dJAtp1    )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, dGammatp1dCtp1,   floatType,         setdGammatp1dCtp1     )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, dGammatp1dRhotp1, floatType,         setdGammatp1dRhotp1   )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, dGammatp1dNtp1,   secondOrderTensor, setdGammatp1dNtp1     )
 
                 unsigned int _data_index = 0;
 
