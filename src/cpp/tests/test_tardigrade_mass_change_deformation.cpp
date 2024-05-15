@@ -18,6 +18,7 @@
 
 typedef tardigradeStressTools::massChangeDeformation::floatType floatType; //!< Redefinition for the float type
 typedef tardigradeStressTools::massChangeDeformation::secondOrderTensor secondOrderTensor; //!< Redefinition for the second order tensor
+typedef tardigradeStressTools::massChangeDeformation::fourthOrderTensor fourthOrderTensor; //!< Redefinition for the fourth order tensor
 
 BOOST_AUTO_TEST_CASE( test_massChangeDeformationBase_constructor, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
@@ -448,4 +449,213 @@ BOOST_AUTO_TEST_CASE( test_massChangeDeformationBase_solveGamma, * boost::unit_t
     }
 
     BOOST_TEST( dGammatp1dNtp1 == *massChange.get_dGammatp1dNtp1( ), CHECK_PER_ELEMENT );
+}
+
+BOOST_AUTO_TEST_CASE( test_massChangeDeformationBase_computeMassDeformation, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class massChangeMock : public tardigradeStressTools::massChangeDeformation::massChangeDeformationBase< 2 >{
+
+        public:
+
+            using tardigradeStressTools::massChangeDeformation::massChangeDeformationBase< 2 >::massChangeDeformationBase;
+
+
+
+            secondOrderTensor nt   = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            secondOrderTensor ntp1 = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
+
+            floatType convergedGammatp1 = 2.76;
+
+            floatType dGammatp1dCtp1 = 12;
+            floatType dGammatp1dRhotp1 = 12;
+
+            secondOrderTensor dGammatp1dNtp1;
+
+            virtual void setNt( ) override{
+                set_nt( nt );
+            }
+
+            virtual void setNtp1( ) override{
+                set_ntp1( ntp1 );
+            }
+
+            virtual void setConvergedGammatp1( ) override{
+                set_convergedGammatp1( convergedGammatp1 );
+            }
+
+            virtual void setdGammatp1dCtp1( ) override{
+                set_dGammatp1dCtp1( dGammatp1dCtp1 );
+            }
+
+            virtual void setdGammatp1dRhotp1( ) override{
+                set_dGammatp1dCtp1( dGammatp1dRhotp1 );
+            }
+
+            virtual void setdGammatp1dNtp1( ) override{
+                set_dGammatp1dNtp1( dGammatp1dNtp1 );
+            }
+
+    };
+
+    floatType dt = 1.2;
+
+    secondOrderTensor At = { 1.03834461, -0.02177823, -0.02781574,
+                             0.00522557,  1.04068676, -0.00783036,
+                             0.04895802,  0.0188219 ,  1.01639564 };
+
+    floatType ct     = 0.1;
+
+    floatType ctp1   = 0.2;
+
+    floatType rhot   = 1.4;
+
+    floatType rhotp1 = 1.5;
+
+    floatType gammat = 0.1;
+
+    std::array< floatType, 2 > parameters = { 1, 2 };
+
+    secondOrderTensor Atp1 = { 0.66204202, -0.29969128, -0.20888693, -0.47695429,  0.50294775,
+       -0.59785879, -0.53909912, -0.77874307,  0.01740997 };
+
+    massChangeMock massChange( dt, At, ct, ctp1, rhot, rhotp1, gammat, parameters, 0.67 );
+
+    BOOST_TEST( Atp1 == *massChange.get_Atp1( ), CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_massChangeDeformationBase_computeMassDeformation2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class massChangeMock : public tardigradeStressTools::massChangeDeformation::massChangeDeformationBase< 2 >{
+
+        public:
+
+            using tardigradeStressTools::massChangeDeformation::massChangeDeformationBase< 2 >::massChangeDeformationBase;
+
+
+
+            secondOrderTensor nt   = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            secondOrderTensor ntp1 = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
+
+            virtual void setNt( ) override{
+                set_nt( nt );
+            }
+
+            virtual void setNtp1( ) override{
+                set_ntp1( ntp1 );
+            }
+
+    };
+
+    floatType dt = 1.2;
+
+    secondOrderTensor At = { 1.03834461, -0.02177823, -0.02781574,
+                             0.00522557,  1.04068676, -0.00783036,
+                             0.04895802,  0.0188219 ,  1.01639564 };
+
+    floatType ct     = 0.1;
+
+    floatType ctp1   = 0.2;
+
+    floatType rhot   = 1.4;
+
+    floatType rhotp1 = 1.5;
+
+    floatType gammat = 0.1;
+
+    std::array< floatType, 2 > parameters = { 1, 2 };
+
+    massChangeMock massChange( dt, At, ct, ctp1, rhot, rhotp1, gammat, parameters, 0.67 );
+
+    floatType eps = 1e-6;
+
+    secondOrderTensor dAtp1dCtp1;
+
+    secondOrderTensor dAtp1dRhotp1;
+
+    fourthOrderTensor dAtp1dNtp1;
+
+    for ( unsigned int i = 0; i < 1; i++ ){
+
+        floatType delta = eps * std::fabs( ctp1 ) + eps;
+
+        secondOrderTensor vp = massChange.ntp1;
+        secondOrderTensor vm = massChange.ntp1;
+
+        massChangeMock massChangep( dt, At, ct, ctp1 + delta, rhot, rhotp1, gammat, parameters, 0.67 );
+        massChangeMock massChangem( dt, At, ct, ctp1 - delta, rhot, rhotp1, gammat, parameters, 0.67 );
+
+        massChangep.set_ntp1( vp );
+        massChangem.set_ntp1( vm );
+
+        secondOrderTensor rp = *massChangep.get_Atp1( );
+        secondOrderTensor rm = *massChangem.get_Atp1( );
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            dAtp1dCtp1[ j ] = ( rp[ j ] - rm[ j ] ) / ( 2 * delta );
+
+        }
+
+    }
+
+    BOOST_TEST( dAtp1dCtp1 == *massChange.get_dAtp1dCtp1( ), CHECK_PER_ELEMENT );
+
+    for ( unsigned int i = 0; i < 1; i++ ){
+
+        floatType delta = eps * std::fabs( rhotp1 ) + eps;
+
+        secondOrderTensor vp = massChange.ntp1;
+        secondOrderTensor vm = massChange.ntp1;
+
+        massChangeMock massChangep( dt, At, ct, ctp1, rhot, rhotp1 + delta, gammat, parameters, 0.67 );
+        massChangeMock massChangem( dt, At, ct, ctp1, rhot, rhotp1 - delta, gammat, parameters, 0.67 );
+
+        massChangep.set_ntp1( vp );
+        massChangem.set_ntp1( vm );
+
+        secondOrderTensor rp = *massChangep.get_Atp1( );
+        secondOrderTensor rm = *massChangem.get_Atp1( );
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            dAtp1dRhotp1[ j ] = ( rp[ j ] - rm[ j ] ) / ( 2 * delta );
+
+        }
+
+    }
+
+    BOOST_TEST( dAtp1dRhotp1 == *massChange.get_dAtp1dRhotp1( ), CHECK_PER_ELEMENT );
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatType delta = eps * std::fabs( massChange.ntp1[ i ] ) + eps;
+
+        secondOrderTensor vp = massChange.ntp1;
+        secondOrderTensor vm = massChange.ntp1;
+
+        vp[ i ] += delta;
+        vm[ i ] -= delta;
+
+        massChangeMock massChangep( dt, At, ct, ctp1, rhot, rhotp1, gammat, parameters, 0.67 );
+        massChangeMock massChangem( dt, At, ct, ctp1, rhot, rhotp1, gammat, parameters, 0.67 );
+
+        massChangep.set_ntp1( vp );
+        massChangem.set_ntp1( vm );
+
+        secondOrderTensor rp = *massChangep.get_Atp1( );
+        secondOrderTensor rm = *massChangem.get_Atp1( );
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            dAtp1dNtp1[ 9 * j + i ] = ( rp[ j ] - rm[ j ] ) / ( 2 * delta );
+
+        }
+
+    }
+
+    BOOST_TEST( dAtp1dNtp1 == *massChange.get_dAtp1dNtp1( ), CHECK_PER_ELEMENT );
+
 }

@@ -300,6 +300,9 @@ namespace tardigradeStressTools{
 
             }
 
+            // Set the converged value
+            set_convergedGammatp1( x0 );
+
             // Compute the derivatives
             set_dGammatp1dJAtp1( -( *get_dGammaRHSdJAtp1( ) ) / ( *get_gammaLHS( ) ) );
             set_dGammatp1dRhotp1( ( *get_dGammatp1dJAtp1( ) ) * ( *get_dJAtp1dRhotp1( ) ) );
@@ -312,6 +315,16 @@ namespace tardigradeStressTools{
             }
 
             set_dGammatp1dNtp1( dGammatp1dNtp1 );
+
+        }
+
+        template< std::size_t num_params >
+        void massChangeDeformationBase<num_params>::setConvergedGammatp1( ){
+            /*!
+             * Set the updated gamma
+             */
+
+            solveGammatp1( );
 
         }
 
@@ -365,7 +378,13 @@ namespace tardigradeStressTools{
 
             const secondOrderTensor *ntp1 = get_ntp1( );
 
-            const floatType *gammatp1 = get_gammatp1( );
+            const floatType *gammatp1 = get_convergedGammatp1( );
+
+            const floatType *dGammatp1dCtp1 = get_dGammatp1dCtp1( );
+
+            const floatType *dGammatp1dRhotp1 = get_dGammatp1dRhotp1( );
+
+            const secondOrderTensor *dGammatp1dNtp1 = get_dGammatp1dNtp1( );
 
             secondOrderTensor LHS, TERM1, RHS, invLHS;
 
@@ -377,7 +396,8 @@ namespace tardigradeStressTools{
 
             std::fill( std::begin( invLHS ), std::end( invLHS ), 0 );
 
-            std::fill( std::begin( _Atp1 ), std::end( _Atp1 ), 0 );
+            secondOrderTensor Atp1;
+            std::fill( std::begin( Atp1 ), std::end( Atp1 ), 0 );
 
             for ( unsigned int i = 0; i < spatial_dimension; i++ ){ LHS[ spatial_dimension * i + i ] = 1.; TERM1[ spatial_dimension * i + i ] = 1.; }
 
@@ -417,13 +437,145 @@ namespace tardigradeStressTools{
 
                     for ( unsigned int k = 0; k < spatial_dimension; k++ ){
 
-                        _Atp1[ spatial_dimension * i + k ] += invLHS[ spatial_dimension * i + j ] * RHS[ spatial_dimension * j + k ];
+                        Atp1[ spatial_dimension * i + k ] += invLHS[ spatial_dimension * i + j ] * RHS[ spatial_dimension * j + k ];
 
                     }
 
                 }
 
             }
+
+            set_Atp1( Atp1 );
+
+            secondOrderTensor TERM2;
+            std::fill( std::begin( TERM2 ), std::end( TERM2 ), 0 );
+            for ( unsigned int b = 0; b < spatial_dimension; b++ ){
+
+                for ( unsigned int j = 0; j < spatial_dimension; j++ ){
+
+                    for ( unsigned int k = 0; k < spatial_dimension; k++ ){
+
+                        TERM2[ spatial_dimension * b + k ] += _alpha * _dt * invLHS[ spatial_dimension * b + j ] * RHS[ spatial_dimension * j + k ];
+
+                    }
+
+                }
+
+            }
+
+            fourthOrderTensor dAtp1dLtp1;
+            std::fill( std::begin( dAtp1dLtp1 ), std::end( dAtp1dLtp1 ), 0 );
+
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){
+
+                for ( unsigned int k = 0; k < spatial_dimension; k++ ){
+
+                    for ( unsigned int a = 0; a < spatial_dimension; a++ ){
+
+                        for ( unsigned int b = 0; b < spatial_dimension; b++ ){
+
+                            dAtp1dLtp1[ spatial_dimension * spatial_dimension * spatial_dimension * i + spatial_dimension * spatial_dimension * k + spatial_dimension * a + b ]
+                                += invLHS[ spatial_dimension * i + a ] * TERM2[ spatial_dimension * b + k ];
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            secondOrderTensor dAtp1dCtp1, dAtp1dRhotp1;
+            std::fill( std::begin( dAtp1dCtp1 ), std::end( dAtp1dCtp1 ), 0 );
+            std::fill( std::begin( dAtp1dRhotp1 ), std::end( dAtp1dRhotp1 ), 0 );
+
+            for ( unsigned int i = 0; i < spatial_dimension * spatial_dimension; i++ ){
+
+                for ( unsigned int j = 0; j < spatial_dimension * spatial_dimension; j++ ){
+
+                    dAtp1dCtp1[ i ] += dAtp1dLtp1[ spatial_dimension * spatial_dimension * i + j ] * ( *ntp1 )[ j ] * ( *dGammatp1dCtp1 );
+
+                    dAtp1dRhotp1[ i ] += dAtp1dLtp1[ spatial_dimension * spatial_dimension * i + j ] * ( *ntp1 )[ j ] * ( *dGammatp1dRhotp1 );
+
+                }
+
+            }
+
+            fourthOrderTensor dLtp1dNtp1;
+            std::fill( std::begin( dLtp1dNtp1 ), std::end( dLtp1dNtp1 ), 0 );
+
+            for ( unsigned int i = 0; i < spatial_dimension * spatial_dimension; i++ ){
+
+                dLtp1dNtp1[ spatial_dimension * spatial_dimension * i + i ] += *gammatp1;
+
+                for ( unsigned int j = 0; j < spatial_dimension * spatial_dimension; j++ ){
+
+                    dLtp1dNtp1[ spatial_dimension * spatial_dimension * i + j ] += ( *ntp1 )[ i ] * ( *dGammatp1dNtp1 )[ j ];
+
+                }
+
+            }
+            
+            fourthOrderTensor dAtp1dNtp1;
+            std::fill( std::begin( dAtp1dNtp1 ), std::end( dAtp1dNtp1 ), 0 );
+
+            for ( unsigned int i = 0; i < spatial_dimension * spatial_dimension; i++ ){
+
+                for ( unsigned int j = 0; j < spatial_dimension * spatial_dimension; j++ ){
+
+                    for ( unsigned int k = 0; k < spatial_dimension * spatial_dimension; k++ ){
+
+                        dAtp1dNtp1[ spatial_dimension * spatial_dimension * i + k ] += dAtp1dLtp1[ spatial_dimension * spatial_dimension * i + j ] * dLtp1dNtp1[ spatial_dimension * spatial_dimension * j + k ];
+
+                    }
+
+                }
+
+            }
+
+            set_dAtp1dCtp1( dAtp1dCtp1 );
+            set_dAtp1dRhotp1( dAtp1dRhotp1 );
+            set_dAtp1dNtp1( dAtp1dNtp1 );
+
+        }
+
+        template< std::size_t num_params >
+        void massChangeDeformationBase<num_params>::setAtp1( ){
+            /*!
+             * Set the updated deformation
+             */
+
+            computeMassDeformation( );
+
+        }
+
+        template< std::size_t num_params >
+        void massChangeDeformationBase<num_params>::setdAtp1dCtp1( ){
+            /*!
+             * Set the derivative of the updated deformation w.r.t. the current density-change rate
+             */
+
+            computeMassDeformation( );
+
+        }
+
+        template< std::size_t num_params >
+        void massChangeDeformationBase<num_params>::setdAtp1dRhotp1( ){
+            /*!
+             * Set the derivative of the updated deformation w.r.t. the current density rate
+             */
+
+            computeMassDeformation( );
+
+        }
+
+        template< std::size_t num_params >
+        void massChangeDeformationBase<num_params>::setdAtp1dNtp1( ){
+            /*!
+             * Set the derivative of the updated deformation w.r.t. the current flow direction
+             */
+
+            computeMassDeformation( );
 
         }
 
