@@ -166,10 +166,10 @@ namespace tardigradeStressTools{
 
     namespace massChangeDeformation{
 
-        constexpr int spatial_dimension = 3;
-        constexpr int sot_dimension = spatial_dimension * spatial_dimension;
-        constexpr int tot_dimension = sot_dimension * spatial_dimension;
-        constexpr int fot_dimension = tot_dimension * spatial_dimension;
+        constexpr unsigned int spatial_dimension = 3;
+        constexpr unsigned int sot_dimension = spatial_dimension * spatial_dimension;
+        constexpr unsigned int tot_dimension = sot_dimension * spatial_dimension;
+        constexpr unsigned int fot_dimension = tot_dimension * spatial_dimension;
 
         typedef double floatType;
         typedef std::array< floatType, spatial_dimension > vector3d;
@@ -223,7 +223,7 @@ namespace tardigradeStressTools{
 
                     first = false;
 
-                    second.clear( );
+                    std::fill( std::begin( second ), std::end( second ), 0. );
 
                 }
 
@@ -294,7 +294,9 @@ namespace tardigradeStressTools{
 
                 const std::array< floatType, num_params > *get_parameters( ){ return &_parameters; } //!< Get a reference to the value of parameters
 
-                void addIterationData( dataBase *data );
+                void set_gammatp1( const floatType &val ){ _gammatp1.second = val; _gammatp1.first = true; } //!< Set the value of gammatp1
+
+                const floatType *get_gammatp1( ){ if ( !_gammatp1.first ){ set_gammatp1( 0. ); } return &_gammatp1.second; } //!< Get a reference to the value of gammatp1
 
                 template<class T>
                 void setIterationData( const T &data, dataStorage<T> &storage ){
@@ -343,6 +345,9 @@ namespace tardigradeStressTools{
 
                 }
 
+                //! Add data to the vector of values which will be cleared after each iteration
+                void addIterationData( dataBase *data );
+
             protected:
 
                 const floatType _dt; //!< The change in time
@@ -377,31 +382,31 @@ namespace tardigradeStressTools{
 
                 virtual void setdJAtp1dRhotp1( );
 
-                virtual void computeFlowDirection( );
+                virtual void setNt( );
 
-                virtual void computeGammaRHS( );
+                virtual void setNtp1( );
 
-                virtual void computeGammaLHS( );
+                virtual void setGammaRHS( );
 
-                virtual void solveForGamma( );
+                virtual void setGammaTerm1( );
+
+                virtual void setGammaTerm2( );
+
+                virtual void setGammaLHS( );
+
+                virtual void setdGammaRHSdJAtp1( );
+
+                virtual void setdGammaRHSdNtp1( );
+
+                virtual void solveGammatp1( );
 
                 virtual void computeMassDeformation( );
 
             private:
 
-                secondOrderTensor _nt;
+                void resetIterationData( );
 
-                secondOrderTensor _ntp1;
-
-                floatType _gammatp1;
-
-                floatType _gammaRHS;
-
-                floatType _gammaLHS;
-
-                secondOrderTensor _dGammaRHSdNtp1;
-
-                floatType _dGammaRHSdJAtp1;
+                dataStorage< floatType > _gammatp1;
 
                 secondOrderTensor _dGammadJAtp1;
 
@@ -415,13 +420,35 @@ namespace tardigradeStressTools{
 
                 secondOrderTensor _dAtp1dRho;
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, JAtp1,         floatType, setJAtp1         )
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, JAtp1,           floatType,         setJAtp1           )
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_PREVIOUS_STORAGE( private, JAt,           floatType, setJAt           ) 
+                TARDIGRADE_MASS_CHANGE_DECLARE_PREVIOUS_STORAGE(  private, JAt,             floatType,         setJAt             )
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dJAtp1dCtp1,   floatType, setdJAtp1dCtp1   )
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, dJAtp1dCtp1,     floatType,         setdJAtp1dCtp1     )
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dJAtp1dRhotp1, floatType, setdJAtp1dRhotp1 )
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, dJAtp1dRhotp1,   floatType,         setdJAtp1dRhotp1   )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE(  private, ntp1,            secondOrderTensor, setNtp1            )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_PREVIOUS_STORAGE(  private, nt,              secondOrderTensor, setNt              )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, gammaRHS,        floatType,         setGammaRHS        )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, gammaTerm1,      secondOrderTensor, setGammaTerm1      )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, gammaTerm2,      secondOrderTensor, setGammaTerm2      )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, gammaLHS,        floatType,         setGammaLHS        )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, dGammaRHSdJAtp1, floatType,         setdGammaRHSdJAtp1 )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_ITERATION_STORAGE( private, dGammaRHSdNtp1,  secondOrderTensor, setdGammaRHSdNtp1  )
+
+                unsigned int _data_index = 0;
+
+                static constexpr unsigned int _num_iteration_storage = 6;
+
+                std::array< dataBase*, _num_iteration_storage > _iterationData; //!< A vector of pointers to data which should be cleared at each iteration. This must be the same as the number of times itertion storage is defined
 
         };
 
