@@ -614,10 +614,10 @@ namespace tardigradeStressTools{
         massChangeWeightedDirection::massChangeWeightedDirection( const floatType &dt,     const secondOrderTensor &At, const floatType &ct,     const floatType &ctp1,
                                                                   const floatType &rhot,   const floatType &rhotp1,     const floatType &gammat,
                                                                   const vector3d  &vt,     const vector3d &vtp1,
-                                                                  const std::array< floatType, 2 > &parameters,
+                                                                  const std::array< floatType, 1 > &parameters,
                                                                   const floatType alpha, const floatType tolr, const floatType tola, const unsigned int maxiter ) : 
                                                                   massChangeDeformationBase( dt, At, ct, ctp1, rhot, rhotp1, gammat, parameters, alpha, tolr, tola, maxiter ),
-                                                                  _d( parameters[ 0 ] ), _factor( parameters[ 1 ] ), _vt( vt ), _vtp1( vtp1 ){
+                                                                  _d( parameters[ 0 ] ), _vt( vt ), _vtp1( vtp1 ){
             /*!
              * The constructor for the class which defines mass change in a weighted direction
              * 
@@ -633,8 +633,6 @@ namespace tardigradeStressTools{
              * \param &parameters: The parameter vector
              *     d The weighting factor for whether the flow is volumetric (0) or in a direction with an eigen-vector in the
              *       direction of \f$ \bf{v}^t \f$ and \f$ \bf{v}^{t+1} \f$ (1)
-             *
-             *     factor The scale factor applied to the densities to change the scale of the volume change (greater than 1)
              * \param &alpha: The integration parameter (0 for explicit 1 for implicit). Defaults to the second-order
              *    accurate value of 0.5
              */
@@ -747,20 +745,112 @@ namespace tardigradeStressTools{
 
         }
 
-        void massChangeWeightedDirection::setNtp1( ){
+        void massChangeWeightedDirection::setNt( ){
             /*!
-             * Set the direction tensor
+             * Set the direction tensor for the current timestep
              */
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( ( 1 <= _d ) && ( _d >= 0 ), "The d parameter must be between 0 and 1.\n  value: " + std::to_string( _d ) );
+            TARDIGRADE_ERROR_TOOLS_CHECK( ( 1 >= _d ) && ( _d >= 0 ), "The d parameter must be between 0 and 1.\n  value: " + std::to_string( _d ) );
 
-            secondOrderTensor ntp1;
-            std::fill( std::begin( ntp1 ), std::end( ntp1 ), 0 );
-            for ( unsigned int i = 0; i < spatial_dimension; i++ ){ ntp1[ spatial_dimension * i + i ] += ( 1 - _d ); }
+            secondOrderTensor nt;
+
+            if ( !std::isfinite( 1 / ( *get_normvt( ) ) ) ){
+
+                nt = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+
+                set_nt( nt );
+
+                return;
+
+            }
+
+            std::fill( std::begin( nt ), std::end( nt ), 0 );
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){ nt[ spatial_dimension * i + i ] += ( 1 - _d ); }
+
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){
+
+                for ( unsigned int j = 0; j < spatial_dimension; j++ ){
+
+                    nt[ spatial_dimension * i + j ] += _d * ( *get_dirt( ) )[ i ] * ( *get_dirt( ) )[ j ];
+
+                }
+
+            }
+
+            set_nt( nt );
 
         }
 
-        void massChangeWeightedDirection::setdNtp1dVtp1( ){}
+        void massChangeWeightedDirection::setNtp1( ){
+            /*!
+             * Set the direction tensor for the current timestep
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( ( 1 >= _d ) && ( _d >= 0 ), "The d parameter must be between 0 and 1.\n  value: " + std::to_string( _d ) );
+
+            secondOrderTensor ntp1;
+
+            if ( !std::isfinite( 1 / ( *get_normvtp1( ) ) ) ){
+
+                ntp1 = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+
+                set_ntp1( ntp1 );
+
+                thirdOrderTensor dNtp1dVtp1;
+                std::fill( std::begin( dNtp1dVtp1 ), std::end( dNtp1dVtp1 ), 0 );
+
+                set_dNtp1dVtp1( dNtp1dVtp1 );
+
+                return;
+
+            }
+
+            std::fill( std::begin( ntp1 ), std::end( ntp1 ), 0 );
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){ ntp1[ spatial_dimension * i + i ] += ( 1 - _d ); }
+
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){
+
+                for ( unsigned int j = 0; j < spatial_dimension; j++ ){
+
+                    ntp1[ spatial_dimension * i + j ] += _d * ( *get_dirtp1( ) )[ i ] * ( *get_dirtp1( ) )[ j ];
+
+                }
+
+            }
+
+            set_ntp1( ntp1 );
+
+        }
+
+        void massChangeWeightedDirection::setdNtp1dVtp1( ){
+            /*!
+             * Set the derivative of the flow direction tensor w.r.t. the direction vector
+             */
+
+            if ( !std::isfinite( 1 / ( *get_normvtp1( ) ) ) ){
+
+                setNtp1( );
+
+            }
+
+            thirdOrderTensor dNtp1dVtp1;
+            std::fill( std::begin( dNtp1dVtp1 ), std::end( dNtp1dVtp1 ), 0 );
+
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){
+
+                for ( unsigned int j = 0; j < spatial_dimension; j++ ){
+
+                    dNtp1dVtp1[ spatial_dimension * spatial_dimension * i + spatial_dimension * j + i ] += _d * ( *get_dirtp1( ) )[ j ];
+
+                    dNtp1dVtp1[ spatial_dimension * spatial_dimension * i + spatial_dimension * j + j ] += _d * ( *get_dirtp1( ) )[ i ];
+
+                }
+
+            }
+
+            set_dNtp1dVtp1( dNtp1dVtp1 );
+
+        }
 
         void massChangeWeightedDirection::setdAtp1dVtp1( ){}
 

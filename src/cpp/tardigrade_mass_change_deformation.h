@@ -484,21 +484,19 @@ namespace tardigradeStressTools{
         };
 
         //! Class for the calculation of the deformation associated with a change in mass where the volume change is weighted between a volumetric expansion and 
-        class massChangeWeightedDirection : public massChangeDeformationBase<2>{
+        class massChangeWeightedDirection : public massChangeDeformationBase<1>{
 
             public:
 
                 massChangeWeightedDirection( const floatType &dt,     const secondOrderTensor &At, const floatType &ct,     const floatType &ctp1,
                                              const floatType &rhot,   const floatType &rhotp1,     const floatType &gammat,
                                              const vector3d  &vt,     const vector3d &vtp1,
-                                             const std::array< floatType, 2 > &parameters,
+                                             const std::array< floatType, 1 > &parameters,
                                              const floatType alpha=0.5, const floatType tolr=1e-9, const floatType tola=1e-9, const unsigned int maxiter=2 );
 
             public:
 
                 const floatType *get_d( ){ return &_d; }
-
-                const floatType *get_factor( ){ return &_factor; }
 
                 const vector3d *get_vt( ){ return &_vt; }
 
@@ -507,8 +505,6 @@ namespace tardigradeStressTools{
             protected:
 
                 const floatType _d;
-
-                const floatType _factor;
 
                 const vector3d _vt; //!< A vector which defines the evolution direction in the previous timestep
 
@@ -523,6 +519,8 @@ namespace tardigradeStressTools{
                 virtual void setDirtp1( );
 
                 virtual void setdDirtp1dVtp1( );
+
+                virtual void setNt( ) override;
 
                 virtual void setNtp1( ) override;
 
@@ -542,7 +540,7 @@ namespace tardigradeStressTools{
 
                 TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dDirtp1dVtp1, secondOrderTensor, setdDirtp1dVtp1 )
 
-                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dNtp1dVtp1,   secondOrderTensor, setdNtp1dVtp1   )
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dNtp1dVtp1,   thirdOrderTensor,  setdNtp1dVtp1   )
 
                 TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dAtp1dVtp1,   thirdOrderTensor,  setdAtp1dVtp1   )
 

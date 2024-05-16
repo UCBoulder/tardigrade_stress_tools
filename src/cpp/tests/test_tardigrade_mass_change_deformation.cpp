@@ -683,7 +683,7 @@ BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_constructor, * boost::uni
 
     vector3d vtp1 = { 4, 5, 6 };
 
-    std::array< floatType, 2 > parameters = { 1, 2 };
+    std::array< floatType, 1 > parameters = { 0.7 };
 
     floatType alpha = 0.53;
 
@@ -708,8 +708,6 @@ BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_constructor, * boost::uni
     BOOST_TEST( alpha      == *massChange.get_alpha( ) );
 
     BOOST_TEST( parameters[ 0 ] == *massChange.get_d( ) );
-
-    BOOST_TEST( parameters[ 1 ] == *massChange.get_factor( ) );
 
     BOOST_TEST( vt == *massChange.get_vt( ) );
 
@@ -739,7 +737,11 @@ BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_dir, * boost::unit_test::
 
     vector3d vtp1 = { 4, 5, 6 };
 
-    std::array< floatType, 2 > parameters = { 1, 2 };
+    floatType norm_vt = 7.0710678118654755;
+
+    floatType norm_vtp1 = 8.774964387392123;
+
+    std::array< floatType, 1 > parameters = { 0.7 };
 
     floatType alpha = 0.53;
 
@@ -752,6 +754,10 @@ BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_dir, * boost::unit_test::
     BOOST_TEST( dirt == *massChange.get_dirt( ), CHECK_PER_ELEMENT );
 
     BOOST_TEST( dirtp1 == *massChange.get_dirtp1( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( norm_vt = *massChange.get_normvt( ) );
+
+    BOOST_TEST( norm_vtp1 = *massChange.get_normvtp1( ) );
 
     floatType eps = 1e-6;
 
@@ -784,5 +790,246 @@ BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_dir, * boost::unit_test::
     }
 
     BOOST_TEST( dDirtp1dVtp1 == *massChange.get_dDirtp1dVtp1( ), CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class massChangeMock : public tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection{
+
+
+        public:
+
+            vector3d dirt   = { 1, 2, 3 };
+
+            vector3d dirtp1 = { 2, 3, 4 };
+
+            secondOrderTensor dDirtp1dVtp1;
+
+            using tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection::massChangeWeightedDirection;
+
+        public:
+
+            virtual void setDirt( ) override{
+
+                set_dirt( dirt );
+
+            }
+
+            virtual void setDirtp1( ) override{
+
+                set_dirtp1( dirtp1 );
+
+            }
+
+            virtual void setdDirtp1dVtp1( ) override{
+
+                set_dDirtp1dVtp1( dDirtp1dVtp1 );
+
+            }
+
+    };
+
+    floatType dt = 1.2;
+
+    secondOrderTensor At = { 1.03834461, -0.02177823, -0.02781574,
+                             0.00522557,  1.04068676, -0.00783036,
+                             0.04895802,  0.0188219 ,  1.01639564 };
+
+    floatType ct     = 0.1;
+
+    floatType ctp1   = 0.2;
+
+    floatType rhot   = 1.4;
+
+    floatType rhotp1 = 1.5;
+
+    floatType gammat = 0.1;
+
+    vector3d vt = { 3, 4, 5 };
+
+    vector3d vtp1 = { 4, 5, 6 };
+
+    std::array< floatType, 1 > parameters = { 0.4 };
+
+    floatType alpha = 0.53;
+
+    secondOrderTensor nt = { 1. , 0.8, 1.2, 0.8, 2.2, 2.4, 1.2, 2.4, 4.2 };
+
+    secondOrderTensor ntp1 = { 2.2, 2.4, 3.2, 2.4, 4.2, 4.8, 3.2, 4.8, 7. };
+
+    massChangeMock massChange( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1, parameters, alpha );
+
+    BOOST_TEST( nt   == *massChange.get_nt( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( ntp1 == *massChange.get_ntp1( ), CHECK_PER_ELEMENT );
+
+    floatType eps = 1e-6;
+
+}
+
+BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class massChangeMock : public tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection{
+
+
+        public:
+
+            vector3d dirt   = { 0, 0, 0 };
+
+            vector3d dirtp1 = { 2, 3, 4 };
+
+            secondOrderTensor dDirtp1dVtp1;
+
+            using tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection::massChangeWeightedDirection;
+
+        public:
+
+            virtual void setNormvt( ) override{
+
+                set_normvt( 0 );
+
+            }
+
+            virtual void setDirt( ) override{
+
+                set_dirt( dirt );
+
+            }
+
+            virtual void setDirtp1( ) override{
+
+                set_normvtp1( 1 );
+
+                set_dirtp1( dirtp1 );
+
+            }
+
+            virtual void setdDirtp1dVtp1( ) override{
+
+                set_dDirtp1dVtp1( dDirtp1dVtp1 );
+
+            }
+
+    };
+
+    floatType dt = 1.2;
+
+    secondOrderTensor At = { 1.03834461, -0.02177823, -0.02781574,
+                             0.00522557,  1.04068676, -0.00783036,
+                             0.04895802,  0.0188219 ,  1.01639564 };
+
+    floatType ct     = 0.1;
+
+    floatType ctp1   = 0.2;
+
+    floatType rhot   = 1.4;
+
+    floatType rhotp1 = 1.5;
+
+    floatType gammat = 0.1;
+
+    vector3d vt = { 3, 4, 5 };
+
+    vector3d vtp1 = { 4, 5, 6 };
+
+    std::array< floatType, 1 > parameters = { 0.4 };
+
+    floatType alpha = 0.53;
+
+    secondOrderTensor nt = { 1. , 0, 0, 0, 1, 0, 0, 0, 1 };
+
+    secondOrderTensor ntp1 = { 2.2, 2.4, 3.2, 2.4, 4.2, 4.8, 3.2, 4.8, 7. };
+
+    massChangeMock massChange( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1, parameters, alpha );
+
+    BOOST_TEST( nt   == *massChange.get_nt( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( ntp1 == *massChange.get_ntp1( ), CHECK_PER_ELEMENT );
+
+    floatType eps = 1e-6;
+
+}
+
+BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n3, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class massChangeMock : public tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection{
+
+
+        public:
+
+            vector3d dirt   = { 1, 2, 3 };
+
+            vector3d dirtp1 = { 2, 3, 4 };
+
+            secondOrderTensor dDirtp1dVtp1;
+
+            using tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection::massChangeWeightedDirection;
+
+        public:
+
+            virtual void setNormvtp1( ) override{
+
+                set_normvtp1( 0 );
+
+            }
+
+            virtual void setDirt( ) override{
+
+                set_normvt( 1 );
+
+                set_dirt( dirt );
+
+            }
+
+            virtual void setDirtp1( ) override{
+
+                set_dirtp1( dirtp1 );
+
+            }
+
+            virtual void setdDirtp1dVtp1( ) override{
+
+                set_dDirtp1dVtp1( dDirtp1dVtp1 );
+
+            }
+
+    };
+
+    floatType dt = 1.2;
+
+    secondOrderTensor At = { 1.03834461, -0.02177823, -0.02781574,
+                             0.00522557,  1.04068676, -0.00783036,
+                             0.04895802,  0.0188219 ,  1.01639564 };
+
+    floatType ct     = 0.1;
+
+    floatType ctp1   = 0.2;
+
+    floatType rhot   = 1.4;
+
+    floatType rhotp1 = 1.5;
+
+    floatType gammat = 0.1;
+
+    vector3d vt = { 3, 4, 5 };
+
+    vector3d vtp1 = { 4, 5, 6 };
+
+    std::array< floatType, 1 > parameters = { 0.4 };
+
+    floatType alpha = 0.53;
+
+    secondOrderTensor nt = { 1. , 0.8, 1.2, 0.8, 2.2, 2.4, 1.2, 2.4, 4.2 };
+
+    secondOrderTensor ntp1 = { 1. , 0, 0, 0, 1, 0, 0, 0, 1 };
+
+    massChangeMock massChange( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1, parameters, alpha );
+
+    BOOST_TEST( nt   == *massChange.get_nt( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( ntp1 == *massChange.get_ntp1( ), CHECK_PER_ELEMENT );
+
+    floatType eps = 1e-6;
 
 }
