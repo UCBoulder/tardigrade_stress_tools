@@ -474,7 +474,7 @@ namespace tardigradeStressTools{
 
                         for ( unsigned int b = 0; b < spatial_dimension; b++ ){
 
-                            dAtp1dLtp1[ spatial_dimension * spatial_dimension * spatial_dimension * i + spatial_dimension * spatial_dimension * k + spatial_dimension * a + b ]
+                            dAtp1dLtp1[ sot_dimension * spatial_dimension * i + sot_dimension * k + spatial_dimension * a + b ]
                                 += invLHS[ spatial_dimension * i + a ] * TERM2[ spatial_dimension * b + k ];
 
                         }
@@ -489,13 +489,13 @@ namespace tardigradeStressTools{
             std::fill( std::begin( dAtp1dCtp1 ), std::end( dAtp1dCtp1 ), 0 );
             std::fill( std::begin( dAtp1dRhotp1 ), std::end( dAtp1dRhotp1 ), 0 );
 
-            for ( unsigned int i = 0; i < spatial_dimension * spatial_dimension; i++ ){
+            for ( unsigned int i = 0; i < sot_dimension; i++ ){
 
-                for ( unsigned int j = 0; j < spatial_dimension * spatial_dimension; j++ ){
+                for ( unsigned int j = 0; j < sot_dimension; j++ ){
 
-                    dAtp1dCtp1[ i ] += dAtp1dLtp1[ spatial_dimension * spatial_dimension * i + j ] * ( *ntp1 )[ j ] * ( *dGammatp1dCtp1 );
+                    dAtp1dCtp1[ i ] += dAtp1dLtp1[ sot_dimension * i + j ] * ( *ntp1 )[ j ] * ( *dGammatp1dCtp1 );
 
-                    dAtp1dRhotp1[ i ] += dAtp1dLtp1[ spatial_dimension * spatial_dimension * i + j ] * ( *ntp1 )[ j ] * ( *dGammatp1dRhotp1 );
+                    dAtp1dRhotp1[ i ] += dAtp1dLtp1[ sot_dimension * i + j ] * ( *ntp1 )[ j ] * ( *dGammatp1dRhotp1 );
 
                 }
 
@@ -504,13 +504,13 @@ namespace tardigradeStressTools{
             fourthOrderTensor dLtp1dNtp1;
             std::fill( std::begin( dLtp1dNtp1 ), std::end( dLtp1dNtp1 ), 0 );
 
-            for ( unsigned int i = 0; i < spatial_dimension * spatial_dimension; i++ ){
+            for ( unsigned int i = 0; i < sot_dimension; i++ ){
 
-                dLtp1dNtp1[ spatial_dimension * spatial_dimension * i + i ] += *gammatp1;
+                dLtp1dNtp1[ sot_dimension * i + i ] += *gammatp1;
 
-                for ( unsigned int j = 0; j < spatial_dimension * spatial_dimension; j++ ){
+                for ( unsigned int j = 0; j < sot_dimension; j++ ){
 
-                    dLtp1dNtp1[ spatial_dimension * spatial_dimension * i + j ] += ( *ntp1 )[ i ] * ( *dGammatp1dNtp1 )[ j ];
+                    dLtp1dNtp1[ sot_dimension * i + j ] += ( *ntp1 )[ i ] * ( *dGammatp1dNtp1 )[ j ];
 
                 }
 
@@ -519,13 +519,13 @@ namespace tardigradeStressTools{
             fourthOrderTensor dAtp1dNtp1;
             std::fill( std::begin( dAtp1dNtp1 ), std::end( dAtp1dNtp1 ), 0 );
 
-            for ( unsigned int i = 0; i < spatial_dimension * spatial_dimension; i++ ){
+            for ( unsigned int i = 0; i < sot_dimension; i++ ){
 
-                for ( unsigned int j = 0; j < spatial_dimension * spatial_dimension; j++ ){
+                for ( unsigned int j = 0; j < sot_dimension; j++ ){
 
-                    for ( unsigned int k = 0; k < spatial_dimension * spatial_dimension; k++ ){
+                    for ( unsigned int k = 0; k < sot_dimension; k++ ){
 
-                        dAtp1dNtp1[ spatial_dimension * spatial_dimension * i + k ] += dAtp1dLtp1[ spatial_dimension * spatial_dimension * i + j ] * dLtp1dNtp1[ spatial_dimension * spatial_dimension * j + k ];
+                        dAtp1dNtp1[ sot_dimension * i + k ] += dAtp1dLtp1[ sot_dimension * i + j ] * dLtp1dNtp1[ sot_dimension * j + k ];
 
                     }
 
@@ -640,6 +640,130 @@ namespace tardigradeStressTools{
              */
 
         }
+
+        void massChangeWeightedDirection::setDirt( ){
+            /*!
+             * Set the previous growth direction
+             */
+
+            floatType norm_v = 0;
+            for ( auto v = std::begin( *get_vt( ) ); v != std::end( *get_vt( ) ); v++ ){
+
+                norm_v += ( *v ) * ( *v );
+
+            }
+
+            norm_v = std::sqrt( norm_v );
+            set_normvt( norm_v );
+
+            vector3d dir;
+            std::fill( std::begin( dir ), std::end( dir ), 0 );
+
+            if ( !std::isfinite( 1. / norm_v ) ){ set_dirtp1( dir ); return; }
+
+            for ( auto v = std::begin( *get_vt( ) ); v != std::end( *get_vt( ) ); v++ ){
+
+                dir[ ( unsigned int )( v - std::begin( *get_vt( ) ) ) ] = ( *v ) / norm_v;
+
+            }
+
+            set_dirt( dir );
+
+        }
+
+        void massChangeWeightedDirection::setNormvt( ){
+            /*!
+             * Set the norm of the previous direction vector
+             */
+
+            setDirt( );
+
+        }
+
+        void massChangeWeightedDirection::setNormvtp1( ){
+            /*!
+             * Set the norm of the current direction vector
+             */
+
+            setDirtp1( );
+
+        }
+
+        void massChangeWeightedDirection::setDirtp1( ){
+            /*!
+             * Set the current growth direction
+             */
+
+            floatType norm_v = 0;
+
+            for ( auto v = std::begin( *get_vtp1( ) ); v != std::end( *get_vtp1( ) ); v++ ){
+
+                norm_v += ( *v ) * ( *v );
+
+            }
+
+            norm_v = std::sqrt( norm_v );
+            set_normvtp1( norm_v );
+
+            vector3d dir;
+            std::fill( std::begin( dir ), std::end( dir ), 0 );
+
+            secondOrderTensor dDirtp1dVtp1;
+            std::fill( std::begin( dDirtp1dVtp1 ), std::end( dDirtp1dVtp1 ), 0 );
+
+
+            if ( !std::isfinite( 1 / norm_v ) ){ set_dirtp1( dir ); set_dDirtp1dVtp1( dDirtp1dVtp1 ); return; }
+
+            for ( auto v = std::begin( *get_vtp1( ) ); v != std::end( *get_vtp1( ) ); v++ ){
+
+                dir[ ( unsigned int )( v - std::begin( *get_vtp1( ) ) ) ] = ( *v ) / norm_v;
+
+            }
+
+            set_dirtp1( dir );
+
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){
+
+                  dDirtp1dVtp1[ spatial_dimension * i + i ] += 1. / norm_v;
+
+                for ( unsigned int j = 0; j < spatial_dimension; j++ ){
+
+                    dDirtp1dVtp1[ spatial_dimension * i + j ] -= dir[ i ] * dir[ j ] / norm_v;
+
+                }
+
+            }
+
+            set_dDirtp1dVtp1( dDirtp1dVtp1 );
+
+        }
+
+        void massChangeWeightedDirection::setdDirtp1dVtp1( ){
+            /*!
+             * Compute the derivative w.r.t. the incoming vector
+             */
+
+            setDirtp1( );
+
+        }
+
+        void massChangeWeightedDirection::setNtp1( ){
+            /*!
+             * Set the direction tensor
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( ( 1 <= _d ) && ( _d >= 0 ), "The d parameter must be between 0 and 1.\n  value: " + std::to_string( _d ) );
+
+            secondOrderTensor ntp1;
+            std::fill( std::begin( ntp1 ), std::end( ntp1 ), 0 );
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){ ntp1[ spatial_dimension * i + i ] += ( 1 - _d ); }
+
+        }
+
+        void massChangeWeightedDirection::setdNtp1dVtp1( ){}
+
+        void massChangeWeightedDirection::setdAtp1dVtp1( ){}
+
 
     }
 

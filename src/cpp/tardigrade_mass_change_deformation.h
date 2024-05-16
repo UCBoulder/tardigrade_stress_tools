@@ -174,6 +174,7 @@ namespace tardigradeStressTools{
         typedef double floatType;
         typedef std::array< floatType, spatial_dimension > vector3d;
         typedef std::array< floatType, sot_dimension > secondOrderTensor;
+        typedef std::array< floatType, tot_dimension > thirdOrderTensor;
         typedef std::array< floatType, fot_dimension > fourthOrderTensor;
 
         /*!
@@ -512,6 +513,38 @@ namespace tardigradeStressTools{
                 const vector3d _vt; //!< A vector which defines the evolution direction in the previous timestep
 
                 const vector3d _vtp1; //!< A vector which defines the evolution direction in the current timestep
+
+                virtual void setNormvt( );
+
+                virtual void setNormvtp1( );
+
+                virtual void setDirt( );
+
+                virtual void setDirtp1( );
+
+                virtual void setdDirtp1dVtp1( );
+
+                virtual void setNtp1( ) override;
+
+                virtual void setdNtp1dVtp1( );
+
+                virtual void setdAtp1dVtp1( );
+
+            private:
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, normvt,       floatType,         setNormvt       )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, normvtp1,     floatType,         setNormvtp1     )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dirt,         vector3d,          setDirt         )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dirtp1,       vector3d,          setDirtp1       )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dDirtp1dVtp1, secondOrderTensor, setdDirtp1dVtp1 )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dNtp1dVtp1,   secondOrderTensor, setdNtp1dVtp1   )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dAtp1dVtp1,   thirdOrderTensor,  setdAtp1dVtp1   )
 
         };
 
