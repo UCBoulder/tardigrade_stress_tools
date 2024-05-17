@@ -19,6 +19,7 @@
 typedef tardigradeStressTools::massChangeDeformation::floatType         floatType; //!< Redefinition for the float type
 typedef tardigradeStressTools::massChangeDeformation::vector3d          vector3d; //!< Redefinition for a 3d vector
 typedef tardigradeStressTools::massChangeDeformation::secondOrderTensor secondOrderTensor; //!< Redefinition for the second order tensor
+typedef tardigradeStressTools::massChangeDeformation::thirdOrderTensor  thirdOrderTensor; //!< Redefinition for the third order tensor
 typedef tardigradeStressTools::massChangeDeformation::fourthOrderTensor fourthOrderTensor; //!< Redefinition for the fourth order tensor
 
 BOOST_AUTO_TEST_CASE( test_massChangeDeformationBase_constructor, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
@@ -864,8 +865,6 @@ BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n, * boost::unit_test::to
 
     BOOST_TEST( ntp1 == *massChange.get_ntp1( ), CHECK_PER_ELEMENT );
 
-    floatType eps = 1e-6;
-
 }
 
 BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
@@ -947,8 +946,6 @@ BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n2, * boost::unit_test::t
 
     BOOST_TEST( ntp1 == *massChange.get_ntp1( ), CHECK_PER_ELEMENT );
 
-    floatType eps = 1e-6;
-
 }
 
 BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n3, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
@@ -1022,7 +1019,7 @@ BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n3, * boost::unit_test::t
 
     secondOrderTensor nt = { 1. , 0.8, 1.2, 0.8, 2.2, 2.4, 1.2, 2.4, 4.2 };
 
-    secondOrderTensor ntp1 = { 1. , 0, 0, 0, 1, 0, 0, 0, 1 };
+    secondOrderTensor ntp1 = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
 
     massChangeMock massChange( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1, parameters, alpha );
 
@@ -1030,6 +1027,207 @@ BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n3, * boost::unit_test::t
 
     BOOST_TEST( ntp1 == *massChange.get_ntp1( ), CHECK_PER_ELEMENT );
 
+}
+
+BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n4, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class massChangeMock : public tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection{
+
+
+        public:
+
+            using tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection::massChangeWeightedDirection;
+
+    };
+
+    floatType dt = 1.2;
+
+    secondOrderTensor At = { 1.03834461, -0.02177823, -0.02781574,
+                             0.00522557,  1.04068676, -0.00783036,
+                             0.04895802,  0.0188219 ,  1.01639564 };
+
+    floatType ct     = 0.1;
+
+    floatType ctp1   = 0.2;
+
+    floatType rhot   = 1.4;
+
+    floatType rhotp1 = 1.5;
+
+    floatType gammat = 0.1;
+
+    vector3d vt = { 3, 4, 5 };
+
+    vector3d vtp1 = { 4, 5, 6 };
+
+    std::array< floatType, 1 > parameters = { 0.4 };
+
+    floatType alpha = 0.53;
+
+    massChangeMock massChange( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1, parameters, alpha );
+
     floatType eps = 1e-6;
+
+    thirdOrderTensor dNtp1dVtp1;
+
+    for ( unsigned int i = 0; i < 3; i++ ){
+
+        floatType delta = eps * std::fabs( vtp1[ i ] ) + eps;
+
+        vector3d vtp1p = vtp1;
+
+        vector3d vtp1m = vtp1;
+
+        vtp1p[ i ] += delta;
+        vtp1m[ i ] -= delta;
+
+        massChangeMock mCp( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1p, parameters, alpha );
+
+        massChangeMock mCm( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1m, parameters, alpha );
+
+        secondOrderTensor ntp1p = *mCp.get_ntp1( );
+        secondOrderTensor ntp1m = *mCm.get_ntp1( );
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            dNtp1dVtp1[ 3 * j + i ] = ( ntp1p[ j ] - ntp1m[ j ] ) / ( 2 * delta );
+
+        }
+
+    }
+
+    BOOST_TEST( dNtp1dVtp1 == *massChange.get_dNtp1dVtp1( ), CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n5, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class massChangeMock : public tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection{
+
+
+        public:
+
+            using tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection::massChangeWeightedDirection;
+
+    };
+
+    floatType dt = 1.2;
+
+    secondOrderTensor At = { 1.03834461, -0.02177823, -0.02781574,
+                             0.00522557,  1.04068676, -0.00783036,
+                             0.04895802,  0.0188219 ,  1.01639564 };
+
+    floatType ct     = 0.1;
+
+    floatType ctp1   = 0.2;
+
+    floatType rhot   = 1.4;
+
+    floatType rhotp1 = 1.5;
+
+    floatType gammat = 0.1;
+
+    vector3d vt = { 0, 0, 0 };
+
+    vector3d vtp1 = { 4, 5, 6 };
+
+    std::array< floatType, 1 > parameters = { 0.4 };
+
+    floatType alpha = 0.53;
+
+    secondOrderTensor nt = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+
+    massChangeMock massChange( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1, parameters, alpha );
+
+    BOOST_TEST( nt == *massChange.get_nt( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( 0. == *massChange.get_normvt( ) );
+
+    BOOST_TEST( vt == *massChange.get_vt( ) );
+
+    floatType eps = 1e-6;
+
+    thirdOrderTensor dNtp1dVtp1;
+
+    for ( unsigned int i = 0; i < 3; i++ ){
+
+        floatType delta = eps * std::fabs( vtp1[ i ] ) + eps;
+
+        vector3d vtp1p = vtp1;
+
+        vector3d vtp1m = vtp1;
+
+        vtp1p[ i ] += delta;
+        vtp1m[ i ] -= delta;
+
+        massChangeMock mCp( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1p, parameters, alpha );
+
+        massChangeMock mCm( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1m, parameters, alpha );
+
+        secondOrderTensor ntp1p = *mCp.get_ntp1( );
+        secondOrderTensor ntp1m = *mCm.get_ntp1( );
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            dNtp1dVtp1[ 3 * j + i ] = ( ntp1p[ j ] - ntp1m[ j ] ) / ( 2 * delta );
+
+        }
+
+    }
+
+    BOOST_TEST( dNtp1dVtp1 == *massChange.get_dNtp1dVtp1( ), CHECK_PER_ELEMENT );
+
+    thirdOrderTensor zeros;
+    std::fill( std::begin( zeros ), std::begin( zeros ), 0 );
+
+    BOOST_TEST( zeros != *massChange.get_dNtp1dVtp1( ), CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n6, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class massChangeMock : public tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection{
+
+
+        public:
+
+            using tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection::massChangeWeightedDirection;
+
+    };
+
+    floatType dt = 1.2;
+
+    secondOrderTensor At = { 1.03834461, -0.02177823, -0.02781574,
+                             0.00522557,  1.04068676, -0.00783036,
+                             0.04895802,  0.0188219 ,  1.01639564 };
+
+    floatType ct     = 0.1;
+
+    floatType ctp1   = 0.2;
+
+    floatType rhot   = 1.4;
+
+    floatType rhotp1 = 1.5;
+
+    floatType gammat = 0.1;
+
+    vector3d vt = { 0, 0, 0 };
+
+    vector3d vtp1 = { 0, 0, 0 };
+
+    std::array< floatType, 1 > parameters = { 0.4 };
+
+    floatType alpha = 0.53;
+
+    secondOrderTensor ntp1 = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+
+    massChangeMock massChange( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1, parameters, alpha );
+
+    thirdOrderTensor dNtp1dVtp1;
+    std::fill( std::begin( dNtp1dVtp1 ), std::end( dNtp1dVtp1 ), 0 );
+
+    BOOST_TEST( dNtp1dVtp1 == *massChange.get_dNtp1dVtp1( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( ntp1 == *massChange.get_ntp1( ), CHECK_PER_ELEMENT );
 
 }

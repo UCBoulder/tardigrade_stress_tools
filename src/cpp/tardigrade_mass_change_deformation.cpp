@@ -840,9 +840,13 @@ namespace tardigradeStressTools{
 
                 for ( unsigned int j = 0; j < spatial_dimension; j++ ){
 
-                    dNtp1dVtp1[ spatial_dimension * spatial_dimension * i + spatial_dimension * j + i ] += _d * ( *get_dirtp1( ) )[ j ];
+                    for ( unsigned int k = 0; k < spatial_dimension; k++ ){
 
-                    dNtp1dVtp1[ spatial_dimension * spatial_dimension * i + spatial_dimension * j + j ] += _d * ( *get_dirtp1( ) )[ i ];
+                        dNtp1dVtp1[ spatial_dimension * spatial_dimension * i + spatial_dimension * j + k ] += _d * ( *get_dirtp1( ) )[ j ] * ( *get_dDirtp1dVtp1( ) )[ spatial_dimension * i + k ];
+
+                        dNtp1dVtp1[ spatial_dimension * spatial_dimension * i + spatial_dimension * j + k ] += _d * ( *get_dirtp1( ) )[ i ] * ( *get_dDirtp1dVtp1( ) )[ spatial_dimension * j + k ];
+
+                    }
 
                 }
 
