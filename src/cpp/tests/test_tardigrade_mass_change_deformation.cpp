@@ -1086,6 +1086,7 @@ BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n4, * boost::unit_test::t
         massChangeMock mCm( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1m, parameters, alpha );
 
         secondOrderTensor ntp1p = *mCp.get_ntp1( );
+
         secondOrderTensor ntp1m = *mCm.get_ntp1( );
 
         for ( unsigned int j = 0; j < 9; j++ ){
@@ -1158,6 +1159,7 @@ BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n5, * boost::unit_test::t
         vector3d vtp1m = vtp1;
 
         vtp1p[ i ] += delta;
+
         vtp1m[ i ] -= delta;
 
         massChangeMock mCp( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1p, parameters, alpha );
@@ -1165,6 +1167,7 @@ BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n5, * boost::unit_test::t
         massChangeMock mCm( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1m, parameters, alpha );
 
         secondOrderTensor ntp1p = *mCp.get_ntp1( );
+
         secondOrderTensor ntp1m = *mCm.get_ntp1( );
 
         for ( unsigned int j = 0; j < 9; j++ ){
@@ -1229,5 +1232,51 @@ BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_n6, * boost::unit_test::t
     BOOST_TEST( dNtp1dVtp1 == *massChange.get_dNtp1dVtp1( ), CHECK_PER_ELEMENT );
 
     BOOST_TEST( ntp1 == *massChange.get_ntp1( ), CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_massChangeWeightedDirection_dAtp1dVtp1, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    //TODO: This is just a sign of life for now. Computing this derivative numerically is really difficult
+
+    class massChangeMock : public tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection{
+
+
+        public:
+
+            using tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection::massChangeWeightedDirection;
+
+    };
+
+    floatType dt = 1.2;
+
+    secondOrderTensor At = { 1.03834461, -0.02177823, -0.02781574,
+                             0.00522557,  1.04068676, -0.00783036,
+                             0.04895802,  0.0188219 ,  1.01639564 };
+
+    floatType ct     = 0.1;
+
+    floatType ctp1   = 0.2;
+
+    floatType rhot   = 1.4;
+
+    floatType rhotp1 = 1.5;
+
+    floatType gammat = 0.1;
+
+    vector3d vt = { 1, 2, 3 };
+
+    vector3d vtp1 = { 2, 3, 4 };
+
+    std::array< floatType, 1 > parameters = { 0.4 };
+
+    floatType alpha = 0.89;
+
+    massChangeMock massChange( dt, At, ct, ctp1, rhot, rhotp1, gammat, vt, vtp1, parameters, alpha );
+
+    thirdOrderTensor dAtp1dVtp1;
+    std::fill( std::begin( dAtp1dVtp1 ), std::end( dAtp1dVtp1 ), 0 );
+
+    massChange.get_dAtp1dVtp1( );
 
 }

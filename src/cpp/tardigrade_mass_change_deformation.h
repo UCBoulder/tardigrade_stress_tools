@@ -275,7 +275,8 @@ namespace tardigradeStressTools{
                 massChangeDeformationBase( const floatType &dt,     const secondOrderTensor &At, const floatType &ct,     const floatType &ctp1,
                                            const floatType &rhot,   const floatType &rhotp1,     const floatType &gammat,
                                            const std::array< floatType, num_params > &parameters,
-                                           const floatType alpha=0.5, const floatType tolr=1e-9, const floatType tola=1e-9, const unsigned int maxiter=20 );
+                                           const floatType alpha=0.5, const floatType tolr=1e-9, const floatType tola=1e-9, const unsigned int maxiter=20,
+                                           const floatType lsalpha=1e-4, const unsigned int maxlsiter=5 );
 
                 const floatType *get_dt( ){ return &_dt; } //!< Get a reference to the value of dt
 
@@ -297,7 +298,7 @@ namespace tardigradeStressTools{
 
                 void set_gammatp1( const floatType &val ){ _gammatp1.second = val; _gammatp1.first = true; } //!< Set the value of gammatp1
 
-                const floatType *get_gammatp1( ){ if ( !_gammatp1.first ){ set_gammatp1( 0. ); } return &_gammatp1.second; } //!< Get a reference to the value of gammatp1
+                const floatType *get_gammatp1( ){ if ( !_gammatp1.first ){ set_gammatp1( 0 ); } return &_gammatp1.second; } //!< Get a reference to the value of gammatp1
 
                 template<class T>
                 void setIterationData( const T &data, dataStorage<T> &storage ){
@@ -374,6 +375,10 @@ namespace tardigradeStressTools{
                 const floatType _tola; //!< The absolute tolerance
 
                 const unsigned int _maxiter; //!< The maximuim number of iterations
+
+                const floatType _lsalpha; //!< The alpha parameter for the line search algorithm describing the minimum allowable reduction in the residual
+
+                const unsigned int _maxlsiter; //!< The maximum iterations allowed in the line search
 
                 virtual void setJAt( );
 
@@ -492,7 +497,8 @@ namespace tardigradeStressTools{
                                              const floatType &rhot,   const floatType &rhotp1,     const floatType &gammat,
                                              const vector3d  &vt,     const vector3d &vtp1,
                                              const std::array< floatType, 1 > &parameters,
-                                             const floatType alpha=0.5, const floatType tolr=1e-9, const floatType tola=1e-9, const unsigned int maxiter=2 );
+                                             const floatType alpha=0.5, const floatType tolr=1e-9, const floatType tola=1e-9, const unsigned int maxiter=20,
+                                             const floatType lsalpha=1e-4, const unsigned int maxlsiter=5 );
 
             public:
 

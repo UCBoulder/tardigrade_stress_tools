@@ -19,10 +19,12 @@ namespace tardigradeStressTools{
         massChangeDeformationBase<num_params>::massChangeDeformationBase( const floatType &dt,     const secondOrderTensor &At, const floatType &ct,     const floatType &ctp1,
                                                                           const floatType &rhot,   const floatType &rhotp1,
                                                                           const floatType &gammat, const std::array< floatType, num_params > &parameters,
-                                                                          const floatType alpha,   const floatType tolr, const floatType tola, const unsigned int maxiter )
+                                                                          const floatType alpha,   const floatType tolr, const floatType tola, const unsigned int maxiter,
+                                                                          const floatType lsalpha, const unsigned int maxlsiter )
                                                                           : _dt( dt ), _At( At ), _ct( ct ), _ctp1( ctp1 ), _rhot( rhot ), _rhotp1( rhotp1 ),
                                                                             _gammat( gammat ),
-                                                                            _parameters( parameters ), _alpha( alpha ), _tolr( tolr ), _tola( tola ), _maxiter( maxiter ){
+                                                                            _parameters( parameters ), _alpha( alpha ), _tolr( tolr ), _tola( tola ), _maxiter( maxiter ),
+                                                                            _lsalpha( lsalpha ), _maxlsiter( maxlsiter ){
             /*!
              * The base class for the mass change deformation family of material models where the 
              * evolution of the mass-change deformation is described by the form
@@ -158,6 +160,7 @@ namespace tardigradeStressTools{
                 for ( unsigned int j = 0; j < spatial_dimension; j++ ){
 
                     term1[ spatial_dimension * i + j ] -= _alpha * _dt * ( *gammatp1 ) * ( *ntp1 )[ spatial_dimension * i + j ];
+
                     term2[ spatial_dimension * i + j ] += ( 1. - _alpha ) * _dt * _gammat * ( *nt )[ spatial_dimension * i + j ];
 
                 }
@@ -256,10 +259,15 @@ namespace tardigradeStressTools{
             std::fill( std::begin( dGammaRHSdNtp1 ), std::end( dGammaRHSdNtp1 ), 0 );
 
             for ( unsigned int i = 0; i < spatial_dimension; i++ ){
+
                 for ( unsigned int j = 0; j < spatial_dimension; j++ ){
+
                     gammaLHS += -detTerm1 * invterm1[ spatial_dimension * j + i ] * _alpha * _dt * ( *ntp1 )[ spatial_dimension * i + j ];
+
                     dGammaRHSdNtp1[ spatial_dimension * i + j ] += -detTerm1 * invterm1[ spatial_dimension * j + i ] * _alpha * _dt * ( *gammatp1 );
+
                 }
+
             }
 
             set_gammaLHS( gammaLHS );
@@ -279,16 +287,45 @@ namespace tardigradeStressTools{
             set_gammatp1( x0 );
 
             // Set the tolerance
-            floatType tol = _tolr * std::fabs( *get_gammaRHS( ) ) + _tola;
+            floatType Rp = std::fabs( *get_gammaRHS( ) );
+
+            floatType tol = _tolr * Rp + _tola;
 
             unsigned int niter = 0;
 
-            while ( ( niter < _maxiter ) && ( std::fabs( *get_gammaRHS( ) ) > tol ) ){
+            while ( ( niter < _maxiter ) && ( Rp > tol ) ){
 
-                x0 -= ( *get_gammaRHS( ) ) / ( *get_gammaLHS( ) );
-                set_gammatp1( x0 );
+                floatType dx = -( *get_gammaRHS( ) ) / ( *get_gammaLHS( ) );
+
+                floatType lambda = 1.0;
+
+                unsigned int nlsiter = 0;
+
+                set_gammatp1( x0 + lambda * dx );
 
                 resetIterationData( );
+
+                while ( ( std::fabs( *get_gammaRHS( ) ) > ( 1 - _lsalpha ) * Rp ) && ( nlsiter < _maxlsiter ) ){
+
+                    lambda *= 0.5;
+
+                    resetIterationData( );
+
+                    set_gammatp1( x0 + lambda * dx );
+
+                    nlsiter++;
+
+                }
+
+                if ( std::fabs( *get_gammaRHS( ) ) > ( 1 - _lsalpha ) * Rp ){
+
+                    TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "The linesearch iteration did not converge" ) );
+
+                }
+
+                Rp = std::fabs( *get_gammaRHS( ) );
+
+                x0 += lambda * dx;
 
                 niter++;
 
@@ -615,8 +652,9 @@ namespace tardigradeStressTools{
                                                                   const floatType &rhot,   const floatType &rhotp1,     const floatType &gammat,
                                                                   const vector3d  &vt,     const vector3d &vtp1,
                                                                   const std::array< floatType, 1 > &parameters,
-                                                                  const floatType alpha, const floatType tolr, const floatType tola, const unsigned int maxiter ) : 
-                                                                  massChangeDeformationBase( dt, At, ct, ctp1, rhot, rhotp1, gammat, parameters, alpha, tolr, tola, maxiter ),
+                                                                  const floatType alpha, const floatType tolr, const floatType tola, const unsigned int maxiter,
+                                                                  const floatType lsalpha, const unsigned int maxlsiter ) : 
+                                                                  massChangeDeformationBase( dt, At, ct, ctp1, rhot, rhotp1, gammat, parameters, alpha, tolr, tola, maxiter, lsalpha, maxlsiter ),
                                                                   _d( parameters[ 0 ] ), _vt( vt ), _vtp1( vtp1 ){
             /*!
              * The constructor for the class which defines mass change in a weighted direction
@@ -856,8 +894,34 @@ namespace tardigradeStressTools{
 
         }
 
-        void massChangeWeightedDirection::setdAtp1dVtp1( ){}
+        void massChangeWeightedDirection::setdAtp1dVtp1( ){
+            /*!
+             * Set the derivative of the mass-change deformation gradient w.r.t. the direction vector
+             */
 
+            const fourthOrderTensor *dAtp1dNtp1 = get_dAtp1dNtp1( );
+            const thirdOrderTensor *dNtp1dVtp1 = get_dNtp1dVtp1( );
+
+            thirdOrderTensor dAtp1dVtp1;
+            std::fill( std::begin( dAtp1dVtp1 ), std::end( dAtp1dVtp1 ), 0 );
+
+            for ( unsigned int i = 0; i < sot_dimension; i++ ){
+
+                for ( unsigned int j = 0; j < sot_dimension; j++ ){
+
+                    for ( unsigned int k = 0; j < spatial_dimension; j++ ){
+
+                        dAtp1dVtp1[ spatial_dimension * i + k ] += ( *dAtp1dNtp1 )[ sot_dimension * i + j ] * ( *dNtp1dVtp1 )[ spatial_dimension * j + k ];
+
+                    }
+
+                }
+
+            }
+
+            set_dAtp1dVtp1( dAtp1dVtp1 );
+
+        }
 
     }
 
