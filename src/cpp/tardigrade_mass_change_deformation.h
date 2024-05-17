@@ -174,6 +174,7 @@ namespace tardigradeStressTools{
         typedef double floatType;
         typedef std::array< floatType, spatial_dimension > vector3d;
         typedef std::array< floatType, sot_dimension > secondOrderTensor;
+        typedef std::array< floatType, tot_dimension > thirdOrderTensor;
         typedef std::array< floatType, fot_dimension > fourthOrderTensor;
 
         /*!
@@ -274,7 +275,8 @@ namespace tardigradeStressTools{
                 massChangeDeformationBase( const floatType &dt,     const secondOrderTensor &At, const floatType &ct,     const floatType &ctp1,
                                            const floatType &rhot,   const floatType &rhotp1,     const floatType &gammat,
                                            const std::array< floatType, num_params > &parameters,
-                                           const floatType alpha=0.5, const floatType tolr=1e-9, const floatType tola=1e-9, const unsigned int maxiter=20 );
+                                           const floatType alpha=0.5, const floatType tolr=1e-9, const floatType tola=1e-9, const unsigned int maxiter=20,
+                                           const floatType lsalpha=1e-4, const unsigned int maxlsiter=5 );
 
                 const floatType *get_dt( ){ return &_dt; } //!< Get a reference to the value of dt
 
@@ -296,7 +298,7 @@ namespace tardigradeStressTools{
 
                 void set_gammatp1( const floatType &val ){ _gammatp1.second = val; _gammatp1.first = true; } //!< Set the value of gammatp1
 
-                const floatType *get_gammatp1( ){ if ( !_gammatp1.first ){ set_gammatp1( 0. ); } return &_gammatp1.second; } //!< Get a reference to the value of gammatp1
+                const floatType *get_gammatp1( ){ if ( !_gammatp1.first ){ set_gammatp1( 0 ); } return &_gammatp1.second; } //!< Get a reference to the value of gammatp1
 
                 template<class T>
                 void setIterationData( const T &data, dataStorage<T> &storage ){
@@ -373,6 +375,10 @@ namespace tardigradeStressTools{
                 const floatType _tola; //!< The absolute tolerance
 
                 const unsigned int _maxiter; //!< The maximuim number of iterations
+
+                const floatType _lsalpha; //!< The alpha parameter for the line search algorithm describing the minimum allowable reduction in the residual
+
+                const unsigned int _maxlsiter; //!< The maximum iterations allowed in the line search
 
                 virtual void setJAt( );
 
@@ -479,6 +485,70 @@ namespace tardigradeStressTools{
                 static constexpr unsigned int _num_iteration_storage = 6;
 
                 std::array< dataBase*, _num_iteration_storage > _iterationData; //!< A vector of pointers to data which should be cleared at each iteration. This must be the same as the number of times itertion storage is defined
+
+        };
+
+        //! Class for the calculation of the deformation associated with a change in mass where the volume change is weighted between a volumetric expansion and 
+        class massChangeWeightedDirection : public massChangeDeformationBase<1>{
+
+            public:
+
+                massChangeWeightedDirection( const floatType &dt,     const secondOrderTensor &At, const floatType &ct,     const floatType &ctp1,
+                                             const floatType &rhot,   const floatType &rhotp1,     const floatType &gammat,
+                                             const vector3d  &vt,     const vector3d &vtp1,
+                                             const std::array< floatType, 1 > &parameters,
+                                             const floatType alpha=0.5, const floatType tolr=1e-9, const floatType tola=1e-9, const unsigned int maxiter=20,
+                                             const floatType lsalpha=1e-4, const unsigned int maxlsiter=5 );
+
+            public:
+
+                const floatType *get_d( ){ return &_d; }
+
+                const vector3d *get_vt( ){ return &_vt; }
+
+                const vector3d *get_vtp1( ){ return &_vtp1; }
+
+            protected:
+
+                const floatType _d;
+
+                const vector3d _vt; //!< A vector which defines the evolution direction in the previous timestep
+
+                const vector3d _vtp1; //!< A vector which defines the evolution direction in the current timestep
+
+                virtual void setNormvt( );
+
+                virtual void setNormvtp1( );
+
+                virtual void setDirt( );
+
+                virtual void setDirtp1( );
+
+                virtual void setdDirtp1dVtp1( );
+
+                virtual void setNt( ) override;
+
+                virtual void setNtp1( ) override;
+
+                virtual void setdNtp1dVtp1( );
+
+                virtual void setdAtp1dVtp1( );
+
+            private:
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, normvt,       floatType,         setNormvt       )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, normvtp1,     floatType,         setNormvtp1     )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dirt,         vector3d,          setDirt         )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dirtp1,       vector3d,          setDirtp1       )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dDirtp1dVtp1, secondOrderTensor, setdDirtp1dVtp1 )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dNtp1dVtp1,   thirdOrderTensor,  setdNtp1dVtp1   )
+
+                TARDIGRADE_MASS_CHANGE_DECLARE_CONSTANT_STORAGE( private, dAtp1dVtp1,   thirdOrderTensor,  setdAtp1dVtp1   )
 
         };
 

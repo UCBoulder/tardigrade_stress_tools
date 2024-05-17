@@ -19,10 +19,12 @@ namespace tardigradeStressTools{
         massChangeDeformationBase<num_params>::massChangeDeformationBase( const floatType &dt,     const secondOrderTensor &At, const floatType &ct,     const floatType &ctp1,
                                                                           const floatType &rhot,   const floatType &rhotp1,
                                                                           const floatType &gammat, const std::array< floatType, num_params > &parameters,
-                                                                          const floatType alpha,   const floatType tolr, const floatType tola, const unsigned int maxiter )
+                                                                          const floatType alpha,   const floatType tolr, const floatType tola, const unsigned int maxiter,
+                                                                          const floatType lsalpha, const unsigned int maxlsiter )
                                                                           : _dt( dt ), _At( At ), _ct( ct ), _ctp1( ctp1 ), _rhot( rhot ), _rhotp1( rhotp1 ),
                                                                             _gammat( gammat ),
-                                                                            _parameters( parameters ), _alpha( alpha ), _tolr( tolr ), _tola( tola ), _maxiter( maxiter ){
+                                                                            _parameters( parameters ), _alpha( alpha ), _tolr( tolr ), _tola( tola ), _maxiter( maxiter ),
+                                                                            _lsalpha( lsalpha ), _maxlsiter( maxlsiter ){
             /*!
              * The base class for the mass change deformation family of material models where the 
              * evolution of the mass-change deformation is described by the form
@@ -158,6 +160,7 @@ namespace tardigradeStressTools{
                 for ( unsigned int j = 0; j < spatial_dimension; j++ ){
 
                     term1[ spatial_dimension * i + j ] -= _alpha * _dt * ( *gammatp1 ) * ( *ntp1 )[ spatial_dimension * i + j ];
+
                     term2[ spatial_dimension * i + j ] += ( 1. - _alpha ) * _dt * _gammat * ( *nt )[ spatial_dimension * i + j ];
 
                 }
@@ -256,10 +259,15 @@ namespace tardigradeStressTools{
             std::fill( std::begin( dGammaRHSdNtp1 ), std::end( dGammaRHSdNtp1 ), 0 );
 
             for ( unsigned int i = 0; i < spatial_dimension; i++ ){
+
                 for ( unsigned int j = 0; j < spatial_dimension; j++ ){
+
                     gammaLHS += -detTerm1 * invterm1[ spatial_dimension * j + i ] * _alpha * _dt * ( *ntp1 )[ spatial_dimension * i + j ];
+
                     dGammaRHSdNtp1[ spatial_dimension * i + j ] += -detTerm1 * invterm1[ spatial_dimension * j + i ] * _alpha * _dt * ( *gammatp1 );
+
                 }
+
             }
 
             set_gammaLHS( gammaLHS );
@@ -279,16 +287,45 @@ namespace tardigradeStressTools{
             set_gammatp1( x0 );
 
             // Set the tolerance
-            floatType tol = _tolr * std::fabs( *get_gammaRHS( ) ) + _tola;
+            floatType Rp = std::fabs( *get_gammaRHS( ) );
+
+            floatType tol = _tolr * Rp + _tola;
 
             unsigned int niter = 0;
 
-            while ( ( niter < _maxiter ) && ( std::fabs( *get_gammaRHS( ) ) > tol ) ){
+            while ( ( niter < _maxiter ) && ( Rp > tol ) ){
 
-                x0 -= ( *get_gammaRHS( ) ) / ( *get_gammaLHS( ) );
-                set_gammatp1( x0 );
+                floatType dx = -( *get_gammaRHS( ) ) / ( *get_gammaLHS( ) );
+
+                floatType lambda = 1.0;
+
+                unsigned int nlsiter = 0;
+
+                set_gammatp1( x0 + lambda * dx );
 
                 resetIterationData( );
+
+                while ( ( std::fabs( *get_gammaRHS( ) ) > ( 1 - _lsalpha ) * Rp ) && ( nlsiter < _maxlsiter ) ){
+
+                    lambda *= 0.5;
+
+                    resetIterationData( );
+
+                    set_gammatp1( x0 + lambda * dx );
+
+                    nlsiter++;
+
+                }
+
+                if ( std::fabs( *get_gammaRHS( ) ) > ( 1 - _lsalpha ) * Rp ){
+
+                    TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "The linesearch iteration did not converge" ) );
+
+                }
+
+                Rp = std::fabs( *get_gammaRHS( ) );
+
+                x0 += lambda * dx;
 
                 niter++;
 
@@ -474,7 +511,7 @@ namespace tardigradeStressTools{
 
                         for ( unsigned int b = 0; b < spatial_dimension; b++ ){
 
-                            dAtp1dLtp1[ spatial_dimension * spatial_dimension * spatial_dimension * i + spatial_dimension * spatial_dimension * k + spatial_dimension * a + b ]
+                            dAtp1dLtp1[ sot_dimension * spatial_dimension * i + sot_dimension * k + spatial_dimension * a + b ]
                                 += invLHS[ spatial_dimension * i + a ] * TERM2[ spatial_dimension * b + k ];
 
                         }
@@ -489,13 +526,13 @@ namespace tardigradeStressTools{
             std::fill( std::begin( dAtp1dCtp1 ), std::end( dAtp1dCtp1 ), 0 );
             std::fill( std::begin( dAtp1dRhotp1 ), std::end( dAtp1dRhotp1 ), 0 );
 
-            for ( unsigned int i = 0; i < spatial_dimension * spatial_dimension; i++ ){
+            for ( unsigned int i = 0; i < sot_dimension; i++ ){
 
-                for ( unsigned int j = 0; j < spatial_dimension * spatial_dimension; j++ ){
+                for ( unsigned int j = 0; j < sot_dimension; j++ ){
 
-                    dAtp1dCtp1[ i ] += dAtp1dLtp1[ spatial_dimension * spatial_dimension * i + j ] * ( *ntp1 )[ j ] * ( *dGammatp1dCtp1 );
+                    dAtp1dCtp1[ i ] += dAtp1dLtp1[ sot_dimension * i + j ] * ( *ntp1 )[ j ] * ( *dGammatp1dCtp1 );
 
-                    dAtp1dRhotp1[ i ] += dAtp1dLtp1[ spatial_dimension * spatial_dimension * i + j ] * ( *ntp1 )[ j ] * ( *dGammatp1dRhotp1 );
+                    dAtp1dRhotp1[ i ] += dAtp1dLtp1[ sot_dimension * i + j ] * ( *ntp1 )[ j ] * ( *dGammatp1dRhotp1 );
 
                 }
 
@@ -504,13 +541,13 @@ namespace tardigradeStressTools{
             fourthOrderTensor dLtp1dNtp1;
             std::fill( std::begin( dLtp1dNtp1 ), std::end( dLtp1dNtp1 ), 0 );
 
-            for ( unsigned int i = 0; i < spatial_dimension * spatial_dimension; i++ ){
+            for ( unsigned int i = 0; i < sot_dimension; i++ ){
 
-                dLtp1dNtp1[ spatial_dimension * spatial_dimension * i + i ] += *gammatp1;
+                dLtp1dNtp1[ sot_dimension * i + i ] += *gammatp1;
 
-                for ( unsigned int j = 0; j < spatial_dimension * spatial_dimension; j++ ){
+                for ( unsigned int j = 0; j < sot_dimension; j++ ){
 
-                    dLtp1dNtp1[ spatial_dimension * spatial_dimension * i + j ] += ( *ntp1 )[ i ] * ( *dGammatp1dNtp1 )[ j ];
+                    dLtp1dNtp1[ sot_dimension * i + j ] += ( *ntp1 )[ i ] * ( *dGammatp1dNtp1 )[ j ];
 
                 }
 
@@ -519,13 +556,13 @@ namespace tardigradeStressTools{
             fourthOrderTensor dAtp1dNtp1;
             std::fill( std::begin( dAtp1dNtp1 ), std::end( dAtp1dNtp1 ), 0 );
 
-            for ( unsigned int i = 0; i < spatial_dimension * spatial_dimension; i++ ){
+            for ( unsigned int i = 0; i < sot_dimension; i++ ){
 
-                for ( unsigned int j = 0; j < spatial_dimension * spatial_dimension; j++ ){
+                for ( unsigned int j = 0; j < sot_dimension; j++ ){
 
-                    for ( unsigned int k = 0; k < spatial_dimension * spatial_dimension; k++ ){
+                    for ( unsigned int k = 0; k < sot_dimension; k++ ){
 
-                        dAtp1dNtp1[ spatial_dimension * spatial_dimension * i + k ] += dAtp1dLtp1[ spatial_dimension * spatial_dimension * i + j ] * dLtp1dNtp1[ spatial_dimension * spatial_dimension * j + k ];
+                        dAtp1dNtp1[ sot_dimension * i + k ] += dAtp1dLtp1[ sot_dimension * i + j ] * dLtp1dNtp1[ sot_dimension * j + k ];
 
                     }
 
@@ -608,6 +645,281 @@ namespace tardigradeStressTools{
             }
 
             _data_index = 0;
+
+        }
+
+        massChangeWeightedDirection::massChangeWeightedDirection( const floatType &dt,     const secondOrderTensor &At, const floatType &ct,     const floatType &ctp1,
+                                                                  const floatType &rhot,   const floatType &rhotp1,     const floatType &gammat,
+                                                                  const vector3d  &vt,     const vector3d &vtp1,
+                                                                  const std::array< floatType, 1 > &parameters,
+                                                                  const floatType alpha, const floatType tolr, const floatType tola, const unsigned int maxiter,
+                                                                  const floatType lsalpha, const unsigned int maxlsiter ) : 
+                                                                  massChangeDeformationBase( dt, At, ct, ctp1, rhot, rhotp1, gammat, parameters, alpha, tolr, tola, maxiter, lsalpha, maxlsiter ),
+                                                                  _d( parameters[ 0 ] ), _vt( vt ), _vtp1( vtp1 ){
+            /*!
+             * The constructor for the class which defines mass change in a weighted direction
+             * 
+             * Expects to perform calculations in 3d
+             *
+             * \param &dt: The change in time (units: \f$\frac{m}{dv}\f$ )
+             * \param &At: The previous value of the mass change deformation gradient (units: None, size=9)
+             * \param &ct: The previous value of the mass density rate of change (units: \f$\frac{m}{dv t}\f$)
+             * \param &ctp1: The current value of the mass density rate of change (units: \f$\frac{m}{dv t}\f$)
+             * \param &rhot: The previous value of the mass density (units: \f$ \frac{m}{dv} \f$)
+             * \param &rhotp1: The current value of the mass density (units: \f$ \frac{m}{dv} \f$)
+             * \param &gammat: The previous rate multiplier for the evolution of the mass-change deformation (units: None)
+             * \param &parameters: The parameter vector
+             *     d The weighting factor for whether the flow is volumetric (0) or in a direction with an eigen-vector in the
+             *       direction of \f$ \bf{v}^t \f$ and \f$ \bf{v}^{t+1} \f$ (1)
+             * \param &alpha: The integration parameter (0 for explicit 1 for implicit). Defaults to the second-order
+             *    accurate value of 0.5
+             */
+
+        }
+
+        void massChangeWeightedDirection::setDirt( ){
+            /*!
+             * Set the previous growth direction
+             */
+
+            floatType norm_v = 0;
+            for ( auto v = std::begin( *get_vt( ) ); v != std::end( *get_vt( ) ); v++ ){
+
+                norm_v += ( *v ) * ( *v );
+
+            }
+
+            norm_v = std::sqrt( norm_v );
+            set_normvt( norm_v );
+
+            vector3d dir;
+            std::fill( std::begin( dir ), std::end( dir ), 0 );
+
+            if ( !std::isfinite( 1. / norm_v ) ){ set_dirtp1( dir ); return; }
+
+            for ( auto v = std::begin( *get_vt( ) ); v != std::end( *get_vt( ) ); v++ ){
+
+                dir[ ( unsigned int )( v - std::begin( *get_vt( ) ) ) ] = ( *v ) / norm_v;
+
+            }
+
+            set_dirt( dir );
+
+        }
+
+        void massChangeWeightedDirection::setNormvt( ){
+            /*!
+             * Set the norm of the previous direction vector
+             */
+
+            setDirt( );
+
+        }
+
+        void massChangeWeightedDirection::setNormvtp1( ){
+            /*!
+             * Set the norm of the current direction vector
+             */
+
+            setDirtp1( );
+
+        }
+
+        void massChangeWeightedDirection::setDirtp1( ){
+            /*!
+             * Set the current growth direction
+             */
+
+            floatType norm_v = 0;
+
+            for ( auto v = std::begin( *get_vtp1( ) ); v != std::end( *get_vtp1( ) ); v++ ){
+
+                norm_v += ( *v ) * ( *v );
+
+            }
+
+            norm_v = std::sqrt( norm_v );
+            set_normvtp1( norm_v );
+
+            vector3d dir;
+            std::fill( std::begin( dir ), std::end( dir ), 0 );
+
+            secondOrderTensor dDirtp1dVtp1;
+            std::fill( std::begin( dDirtp1dVtp1 ), std::end( dDirtp1dVtp1 ), 0 );
+
+
+            if ( !std::isfinite( 1 / norm_v ) ){ set_dirtp1( dir ); set_dDirtp1dVtp1( dDirtp1dVtp1 ); return; }
+
+            for ( auto v = std::begin( *get_vtp1( ) ); v != std::end( *get_vtp1( ) ); v++ ){
+
+                dir[ ( unsigned int )( v - std::begin( *get_vtp1( ) ) ) ] = ( *v ) / norm_v;
+
+            }
+
+            set_dirtp1( dir );
+
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){
+
+                  dDirtp1dVtp1[ spatial_dimension * i + i ] += 1. / norm_v;
+
+                for ( unsigned int j = 0; j < spatial_dimension; j++ ){
+
+                    dDirtp1dVtp1[ spatial_dimension * i + j ] -= dir[ i ] * dir[ j ] / norm_v;
+
+                }
+
+            }
+
+            set_dDirtp1dVtp1( dDirtp1dVtp1 );
+
+        }
+
+        void massChangeWeightedDirection::setdDirtp1dVtp1( ){
+            /*!
+             * Compute the derivative w.r.t. the incoming vector
+             */
+
+            setDirtp1( );
+
+        }
+
+        void massChangeWeightedDirection::setNt( ){
+            /*!
+             * Set the direction tensor for the current timestep
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( ( 1 >= _d ) && ( _d >= 0 ), "The d parameter must be between 0 and 1.\n  value: " + std::to_string( _d ) );
+
+            secondOrderTensor nt;
+
+            if ( !std::isfinite( 1 / ( *get_normvt( ) ) ) ){
+
+                nt = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+
+                set_nt( nt );
+
+                return;
+
+            }
+
+            std::fill( std::begin( nt ), std::end( nt ), 0 );
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){ nt[ spatial_dimension * i + i ] += ( 1 - _d ); }
+
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){
+
+                for ( unsigned int j = 0; j < spatial_dimension; j++ ){
+
+                    nt[ spatial_dimension * i + j ] += _d * ( *get_dirt( ) )[ i ] * ( *get_dirt( ) )[ j ];
+
+                }
+
+            }
+
+            set_nt( nt );
+
+        }
+
+        void massChangeWeightedDirection::setNtp1( ){
+            /*!
+             * Set the direction tensor for the current timestep
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( ( 1 >= _d ) && ( _d >= 0 ), "The d parameter must be between 0 and 1.\n  value: " + std::to_string( _d ) );
+
+            secondOrderTensor ntp1;
+
+            if ( !std::isfinite( 1 / ( *get_normvtp1( ) ) ) ){
+
+                ntp1 = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+
+                set_ntp1( ntp1 );
+
+                thirdOrderTensor dNtp1dVtp1;
+                std::fill( std::begin( dNtp1dVtp1 ), std::end( dNtp1dVtp1 ), 0 );
+
+                set_dNtp1dVtp1( dNtp1dVtp1 );
+
+                return;
+
+            }
+
+            std::fill( std::begin( ntp1 ), std::end( ntp1 ), 0 );
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){ ntp1[ spatial_dimension * i + i ] += ( 1 - _d ); }
+
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){
+
+                for ( unsigned int j = 0; j < spatial_dimension; j++ ){
+
+                    ntp1[ spatial_dimension * i + j ] += _d * ( *get_dirtp1( ) )[ i ] * ( *get_dirtp1( ) )[ j ];
+
+                }
+
+            }
+
+            set_ntp1( ntp1 );
+
+        }
+
+        void massChangeWeightedDirection::setdNtp1dVtp1( ){
+            /*!
+             * Set the derivative of the flow direction tensor w.r.t. the direction vector
+             */
+
+            if ( !std::isfinite( 1 / ( *get_normvtp1( ) ) ) ){
+
+                setNtp1( );
+
+            }
+
+            thirdOrderTensor dNtp1dVtp1;
+            std::fill( std::begin( dNtp1dVtp1 ), std::end( dNtp1dVtp1 ), 0 );
+
+            for ( unsigned int i = 0; i < spatial_dimension; i++ ){
+
+                for ( unsigned int j = 0; j < spatial_dimension; j++ ){
+
+                    for ( unsigned int k = 0; k < spatial_dimension; k++ ){
+
+                        dNtp1dVtp1[ spatial_dimension * spatial_dimension * i + spatial_dimension * j + k ] += _d * ( *get_dirtp1( ) )[ j ] * ( *get_dDirtp1dVtp1( ) )[ spatial_dimension * i + k ];
+
+                        dNtp1dVtp1[ spatial_dimension * spatial_dimension * i + spatial_dimension * j + k ] += _d * ( *get_dirtp1( ) )[ i ] * ( *get_dDirtp1dVtp1( ) )[ spatial_dimension * j + k ];
+
+                    }
+
+                }
+
+            }
+
+            set_dNtp1dVtp1( dNtp1dVtp1 );
+
+        }
+
+        void massChangeWeightedDirection::setdAtp1dVtp1( ){
+            /*!
+             * Set the derivative of the mass-change deformation gradient w.r.t. the direction vector
+             */
+
+            const fourthOrderTensor *dAtp1dNtp1 = get_dAtp1dNtp1( );
+            const thirdOrderTensor *dNtp1dVtp1 = get_dNtp1dVtp1( );
+
+            thirdOrderTensor dAtp1dVtp1;
+            std::fill( std::begin( dAtp1dVtp1 ), std::end( dAtp1dVtp1 ), 0 );
+
+            for ( unsigned int i = 0; i < sot_dimension; i++ ){
+
+                for ( unsigned int j = 0; j < sot_dimension; j++ ){
+
+                    for ( unsigned int k = 0; j < spatial_dimension; j++ ){
+
+                        dAtp1dVtp1[ spatial_dimension * i + k ] += ( *dAtp1dNtp1 )[ sot_dimension * i + j ] * ( *dNtp1dVtp1 )[ spatial_dimension * j + k ];
+
+                    }
+
+                }
+
+            }
+
+            set_dAtp1dVtp1( dAtp1dVtp1 );
 
         }
 

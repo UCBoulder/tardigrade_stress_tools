@@ -16,6 +16,7 @@ Internal Changes
 New Features
 ============
 - Added a mass-change deformation modeling framework (:pull:`5`). By `Nathan Miller`_.
+- Added a directional mass-change deformation model (:pull:`6`). By `Nathan Miller`_.
 
 ******************
 0.5.3 (2023-10-05)
