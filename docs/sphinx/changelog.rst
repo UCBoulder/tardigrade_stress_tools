@@ -18,6 +18,10 @@ New Features
 - Added a mass-change deformation modeling framework (:pull:`5`). By `Nathan Miller`_.
 - Added a directional mass-change deformation model (:pull:`6`). By `Nathan Miller`_.
 
+Bug Fixes
+=========
+- Removed leading whitespace before add_library in CMakeLists file (:pull:`7`). By `Nathan Miller`_.
+
 ******************
 0.5.3 (2023-10-05)
 ******************
