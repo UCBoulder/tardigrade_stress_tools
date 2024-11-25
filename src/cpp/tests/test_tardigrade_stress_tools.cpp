@@ -15,7 +15,6 @@
 #define DEFAULT_TEST_TOLERANCE 1e-6
 #define CHECK_PER_ELEMENT boost::test_tools::per_element( )
 
-typedef tardigradeConstitutiveTools::errorOut errorOut;
 typedef tardigradeConstitutiveTools::floatType floatType;
 typedef tardigradeConstitutiveTools::floatVector floatVector;
 typedef tardigradeConstitutiveTools::floatMatrix floatMatrix;
@@ -69,8 +68,8 @@ BOOST_AUTO_TEST_CASE( testCalculateMeanStress, * boost::unit_test::tolerance( DE
 
     //Test for correct mean stress calculation from stressVector with pointer output
     meanStress = 0.;
-    errorOut result = tardigradeStressTools::calculateMeanStress( stressVector, meanStress );
-    BOOST_CHECK( ! result );
+    tardigradeStressTools::calculateMeanStress( stressVector, meanStress );
+    
 
     BOOST_TEST( meanStress == meanStressExpected );
 
@@ -81,7 +80,7 @@ BOOST_AUTO_TEST_CASE( testCalculateMeanStress, * boost::unit_test::tolerance( DE
 
     //Test for correct mean stress calculation from stressMatrix with pointer output
     meanStress = 0.;
-    result = tardigradeStressTools::calculateMeanStress( stressMatrix, meanStress );
+    tardigradeStressTools::calculateMeanStress( stressMatrix, meanStress );
     BOOST_TEST( meanStress == meanStressExpected );
 
     //Test for correct mean stress calculation from stressMatrix without pointer output
@@ -92,7 +91,7 @@ BOOST_AUTO_TEST_CASE( testCalculateMeanStress, * boost::unit_test::tolerance( DE
     //Test for correct mean stress and jacobian calculation
     meanStress = 0.;
     std::fill( jacobianVector.begin( ), jacobianVector.end( ), 0. );
-    result = tardigradeStressTools::calculateMeanStress( stressVector, meanStress, jacobianVector );
+    tardigradeStressTools::calculateMeanStress( stressVector, meanStress, jacobianVector );
     BOOST_TEST( meanStress == meanStressExpected );
     BOOST_TEST( jacobianVector == jacobianVectorExpected, CHECK_PER_ELEMENT );
 
@@ -111,13 +110,13 @@ BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress, * boost::unit_test::toleran
     floatVector deviatoricVector( stressVector.size( ), 0. ), deviatoricVectorJ;
     floatMatrix jacobian, jacobian2;
     floatType eps = 1e-6;
-    errorOut result;
+    
 
     //Test computation of deviatoric tensor in row major format
     std::fill( deviatoricVector.begin( ), deviatoricVector.end( ), 0. );
-    result = tardigradeStressTools::calculateDeviatoricStress( stressVector, deviatoricVector );
+    tardigradeStressTools::calculateDeviatoricStress( stressVector, deviatoricVector );
 
-    BOOST_CHECK( ! result );
+    
 
     BOOST_TEST( expectedVector == deviatoricVector, CHECK_PER_ELEMENT );
 
@@ -128,9 +127,9 @@ BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress, * boost::unit_test::toleran
     BOOST_TEST( expectedVector == deviatoricVector, CHECK_PER_ELEMENT );
 
     //Test the computation of the jacobian
-    result = tardigradeStressTools::calculateDeviatoricStress( stressVector, deviatoricVectorJ, jacobian );
+    tardigradeStressTools::calculateDeviatoricStress( stressVector, deviatoricVectorJ, jacobian );
 
-    BOOST_CHECK( ! result );
+    
 
     BOOST_TEST( expectedVector == deviatoricVectorJ, CHECK_PER_ELEMENT );
 
@@ -141,13 +140,13 @@ BOOST_AUTO_TEST_CASE( testCalculateDeviatoricStress, * boost::unit_test::toleran
 
         floatVector Rp( 9, 0 ), Rm( 9, 0 );
 
-        result = tardigradeStressTools::calculateDeviatoricStress( stressVector + delta, Rp );
+        tardigradeStressTools::calculateDeviatoricStress( stressVector + delta, Rp );
 
-        BOOST_CHECK( ! result );
+        
 
-        result = tardigradeStressTools::calculateDeviatoricStress( stressVector - delta, Rm );
+        tardigradeStressTools::calculateDeviatoricStress( stressVector - delta, Rm );
 
-        BOOST_CHECK( ! result );
+        
 
         floatVector grad = ( Rp - Rm ) / ( 2 * delta[ i ] );
 
@@ -226,7 +225,7 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface, * boost::unit_test::tolerance( D
     unitDirectionVectorExpected /= sqrt( 1.5 + 1./3 );
 
     //Declare internal testing variables
-    errorOut error;
+    
     floatType eps;
     floatVector delta( stressVector.size( ), 0. );
     floatVector gradCol( stressVector.size( ), 0 );
@@ -313,9 +312,9 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface, * boost::unit_test::tolerance( D
         std::fill( djacobiandstress[ i ].begin( ), djacobiandstress[ i ].end( ), 0. );
     }
 
-    error = tardigradeStressTools::druckerPragerSurface( stressVector, A, B, dpYield, jacobianVector, djacobiandstress );
+    tardigradeStressTools::druckerPragerSurface( stressVector, A, B, dpYield, jacobianVector, djacobiandstress );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( dpYield == dpYieldExpected );
     BOOST_TEST( jacobianVector == jacobianVectorExpected, CHECK_PER_ELEMENT );
@@ -327,13 +326,13 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface, * boost::unit_test::tolerance( D
 
         floatVector jvp(9,0), jvm(9,0);
 
-        error = tardigradeStressTools::druckerPragerSurface( stressVector + delta, A, B, dpYield, jvp );
+        tardigradeStressTools::druckerPragerSurface( stressVector + delta, A, B, dpYield, jvp );
 
-        BOOST_CHECK( ! error );
+        
 
-        error = tardigradeStressTools::druckerPragerSurface( stressVector - delta, A, B, dpYield, jvm );
+        tardigradeStressTools::druckerPragerSurface( stressVector - delta, A, B, dpYield, jvm );
 
-        BOOST_CHECK( ! error );
+        
 
         std::fill( gradCol.begin( ), gradCol.end( ), 0. );
         gradCol = ( jvp - jvm )/(2*delta[ i ]);
@@ -352,9 +351,9 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface, * boost::unit_test::tolerance( D
         std::fill( djacobiandstress[ i ].begin( ), djacobiandstress[ i ].end( ), 0. );
     }
 
-    error = tardigradeStressTools::druckerPragerSurface( stressVector, dpParam, dpYield, jacobianVector, djacobiandstress );
+    tardigradeStressTools::druckerPragerSurface( stressVector, dpParam, dpYield, jacobianVector, djacobiandstress );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( dpYield == dpYieldExpected );
     BOOST_TEST( jacobianVector == jacobianVectorExpected );
@@ -366,13 +365,13 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface, * boost::unit_test::tolerance( D
 
         floatVector jvp(9,0), jvm(9,0);
 
-        error = tardigradeStressTools::druckerPragerSurface( stressVector + delta, dpParam, dpYield, jvp );
+        tardigradeStressTools::druckerPragerSurface( stressVector + delta, dpParam, dpYield, jvp );
 
-        BOOST_CHECK( ! error );
+        
 
-        error = tardigradeStressTools::druckerPragerSurface( stressVector - delta, dpParam, dpYield, jvm );
+        tardigradeStressTools::druckerPragerSurface( stressVector - delta, dpParam, dpYield, jvm );
 
-        BOOST_CHECK( ! error );
+        
 
         std::fill( gradCol.begin( ), gradCol.end( ), 0. );
         gradCol = ( jvp - jvm )/(2*delta[ i ]);
@@ -390,9 +389,9 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface, * boost::unit_test::tolerance( D
         std::fill( unitDirectionJacobian[ i ].begin( ), unitDirectionJacobian[ i ].end( ), 0. );
     }
     std::fill( unitDirectionVectorJ.begin( ), unitDirectionVectorJ.end( ), 0. );
-    error = tardigradeStressTools::druckerPragerSurface( stressVector, A, B, dpYield, jacobianVector, unitDirectionVector, unitDirectionJacobian );
+    tardigradeStressTools::druckerPragerSurface( stressVector, A, B, dpYield, jacobianVector, unitDirectionVector, unitDirectionJacobian );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( dpYield == dpYieldExpected );
     BOOST_TEST( jacobianVector == jacobianVectorExpected );
@@ -404,13 +403,13 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface, * boost::unit_test::tolerance( D
 
         floatVector uvp(9,0), uvm(9,0);
 
-        error = tardigradeStressTools::druckerPragerSurface( stressVector + delta, A, B, dpYield, jacobianVector, uvp );
+        tardigradeStressTools::druckerPragerSurface( stressVector + delta, A, B, dpYield, jacobianVector, uvp );
 
-        BOOST_CHECK( ! error );
+        
 
-        error = tardigradeStressTools::druckerPragerSurface( stressVector - delta, A, B, dpYield, jacobianVector, uvm );
+        tardigradeStressTools::druckerPragerSurface( stressVector - delta, A, B, dpYield, jacobianVector, uvm );
 
-        BOOST_CHECK( ! error );
+        
 
         std::fill( gradCol.begin( ), gradCol.end( ), 0. );
         gradCol = ( uvp - uvm ) / ( 2 * delta[ i ] );
@@ -428,9 +427,9 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface, * boost::unit_test::tolerance( D
         std::fill( unitDirectionJacobian[ i ].begin( ), unitDirectionJacobian[ i ].end( ), 0. );
     }
     std::fill( unitDirectionVectorJ.begin( ), unitDirectionVectorJ.end( ), 0. );
-    error = tardigradeStressTools::druckerPragerSurface( stressVector, dpParam, dpYield, jacobianVector, unitDirectionVector, unitDirectionJacobian );
+    tardigradeStressTools::druckerPragerSurface( stressVector, dpParam, dpYield, jacobianVector, unitDirectionVector, unitDirectionJacobian );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( dpYield == dpYieldExpected );
     BOOST_TEST( jacobianVector == jacobianVectorExpected, CHECK_PER_ELEMENT );
@@ -442,13 +441,13 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface, * boost::unit_test::tolerance( D
 
         floatVector uvp(9,0), uvm(9,0);
 
-        error = tardigradeStressTools::druckerPragerSurface( stressVector + delta, dpParam, dpYield, jacobianVector, uvp );
+        tardigradeStressTools::druckerPragerSurface( stressVector + delta, dpParam, dpYield, jacobianVector, uvp );
 
-        BOOST_CHECK( ! error );
+        
 
-        error = tardigradeStressTools::druckerPragerSurface( stressVector - delta, dpParam, dpYield, jacobianVector, uvm );
+        tardigradeStressTools::druckerPragerSurface( stressVector - delta, dpParam, dpYield, jacobianVector, uvm );
 
-        BOOST_CHECK( ! error );
+        
 
         std::fill( gradCol.begin( ), gradCol.end( ), 0. );
         gradCol = ( uvp - uvm ) / ( 2 * delta[ i ] );
@@ -527,14 +526,12 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
     //!Test for passing the state variables through properly
     currentTime = previousTime;
 
-    errorOut res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
-                                                       previousTime, previousStrain,
-                                                       currentRateModifier, previousRateModifier,
-                                                       previousStateVariables,
-                                                       materialParameters, alpha,
-                                                       stress, currentStateVariables );
-
-    BOOST_CHECK( ! res );
+    tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
+                                        previousTime, previousStrain,
+                                        currentRateModifier, previousRateModifier,
+                                        previousStateVariables,
+                                        materialParameters, alpha,
+                                        stress, currentStateVariables );
 
     BOOST_TEST( previousStateVariables == currentStateVariables, CHECK_PER_ELEMENT );
 
@@ -543,14 +540,14 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
 
     currentTime = 1e10;
 
-    res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
+    tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                               previousTime, previousStrain,
                                               currentRateModifier, previousRateModifier,
                                               previousStateVariables,
                                               materialParameters, 0.,
                                               stress, currentStateVariables );
 
-    BOOST_CHECK( ! res );
+    
 
     BOOST_TEST( ( currentStrain * materialParameters[ 0 ] ) == stress, CHECK_PER_ELEMENT );
 
@@ -582,15 +579,15 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
 
     //!Rotate the previous strain
     floatVector rotatedPreviousStrain( currentStrain.size( ), 0 );
-    res = tardigradeConstitutiveTools::rotateMatrix( previousStrain, Q, rotatedPreviousStrain );
+    tardigradeConstitutiveTools::rotateMatrix( previousStrain, Q, rotatedPreviousStrain );
 
-    BOOST_CHECK( ! res );
+    
 
     //!Rotate the current strain
     floatVector rotatedCurrentStrain( currentStrain.size( ), 0 );
-    res = tardigradeConstitutiveTools::rotateMatrix( currentStrain, Q, rotatedCurrentStrain );
+    tardigradeConstitutiveTools::rotateMatrix( currentStrain, Q, rotatedCurrentStrain );
 
-    BOOST_CHECK( ! res );
+    
 
     //!Rotate the previous state variables
     floatVector rotatedPreviousStateVariables;
@@ -603,8 +600,8 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
         }
 
         tardigradeVectorTools::getValuesByIndex( previousStateVariables, indices, subv );
-        res = tardigradeConstitutiveTools::rotateMatrix( subv, Q, rotatedSubv );
-        BOOST_CHECK( ! res );
+        tardigradeConstitutiveTools::rotateMatrix( subv, Q, rotatedSubv );
+        
         rotatedPreviousStateVariables = tardigradeVectorTools::appendVectors( {rotatedPreviousStateVariables, rotatedSubv } );
     }
 
@@ -614,28 +611,28 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
     floatVector rotatedCurrentStateVariables;
 
     //Calculate the rotated stress
-    res = tardigradeStressTools::linearViscoelasticity( currentTime,  rotatedCurrentStrain,
+    tardigradeStressTools::linearViscoelasticity( currentTime,  rotatedCurrentStrain,
                                               previousTime, rotatedPreviousStrain,
                                               currentRateModifier, previousRateModifier,
                                               rotatedPreviousStateVariables,
                                               materialParameters, alpha,
                                               rotatedStress, rotatedCurrentStateVariables );
 
-    BOOST_CHECK( ! res );
+    
 
     //Re-calculate the initial values
-    res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
+    tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                               previousTime, previousStrain,
                                               currentRateModifier, previousRateModifier,
                                               previousStateVariables,
                                               materialParameters, alpha,
                                               stress, currentStateVariables );
 
-    BOOST_CHECK( ! res );
+    
 
     floatVector stresspp;
-    res = tardigradeConstitutiveTools::rotateMatrix( rotatedStress, QT, stresspp );
-    BOOST_CHECK( ! res );
+    tardigradeConstitutiveTools::rotateMatrix( rotatedStress, QT, stresspp );
+    
 
     BOOST_TEST( stress == stresspp, CHECK_PER_ELEMENT );
 
@@ -650,8 +647,8 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
         tardigradeVectorTools::getValuesByIndex( rotatedCurrentStateVariables, indices, rCSV );
         tardigradeVectorTools::getValuesByIndex( currentStateVariables, indices, CSV );
 
-        res = tardigradeConstitutiveTools::rotateMatrix( rCSV, QT, CSVpp );
-        BOOST_CHECK( ! res );
+        tardigradeConstitutiveTools::rotateMatrix( rCSV, QT, CSVpp );
+        
         BOOST_TEST( CSVpp == CSV, CHECK_PER_ELEMENT );
     }
 
@@ -663,17 +660,17 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
     floatVector dstressdrateModifier;
 
     //Compute the jacobian
-    res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
+    tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                               previousTime, previousStrain,
                                               currentRateModifier, previousRateModifier,
                                               previousStateVariables,
                                               materialParameters, alpha,
                                               stress, currentStateVariables );
 
-    BOOST_CHECK( !res );
+    
 
     floatVector stressJ, dStressJ, currentStateVariablesJ;
-    res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
+    tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                               previousTime, previousStrain,
                                               currentRateModifier, previousRateModifier,
                                               previousStateVariables,
@@ -681,7 +678,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
                                               stressJ, currentStateVariablesJ, jacobian,
                                               dstressdrateModifier );
 
-    BOOST_CHECK( !res );
+    
     BOOST_TEST( stressJ == stress, CHECK_PER_ELEMENT );
 
     BOOST_TEST( currentStateVariables == currentStateVariablesJ, CHECK_PER_ELEMENT );
@@ -689,7 +686,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
     floatVector stress_2, dStress_2, currentStateVariables_2, dstressdrateModifier_2;
     floatMatrix jacobian_2;
 
-    res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
+    tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                               previousTime, previousStrain,
                                               currentRateModifier, previousRateModifier,
                                               previousStateVariables,
@@ -697,7 +694,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
                                               dStress_2, stress_2, currentStateVariables_2, jacobian_2,
                                               dstressdrateModifier_2 );
 
-    BOOST_CHECK( !res );
+    
 
     BOOST_TEST( stress == stress_2, CHECK_PER_ELEMENT );
     BOOST_TEST( dStress == dStress_2, CHECK_PER_ELEMENT );
@@ -711,7 +708,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
     floatMatrix jacobian_3, dstressdPreviousStrain, dstressdPreviousStateVariables,
                 dStateVariablesdStrain, dStateVariablesdPreviousStrain, dStateVariablesdPreviousStateVariables;
 
-    res = tardigradeStressTools::linearViscoelasticity( currentTime, currentStrain,
+    tardigradeStressTools::linearViscoelasticity( currentTime, currentStrain,
                                               previousTime, previousStrain,
                                               currentRateModifier, previousRateModifier,
                                               previousStateVariables, materialParameters,
@@ -724,7 +721,7 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
                                               dStateVariablesdPreviousStrain, dStateVariablesdPreviousRateModifier,
                                               dStateVariablesdPreviousStateVariables );
 
-    BOOST_CHECK( !res );
+    
     BOOST_TEST( stress_3 == stress, CHECK_PER_ELEMENT );
 
     BOOST_TEST( currentStateVariables_3 == currentStateVariables, CHECK_PER_ELEMENT );
@@ -752,23 +749,23 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
 
         floatVector s_p, s_m, xi_p, xi_m;
 
-        res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain + delta,
+        tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain + delta,
                                                   previousTime, previousStrain,
                                                   currentRateModifier, previousRateModifier,
                                                   previousStateVariables,
                                                   materialParameters, alpha,
                                                   s_p, xi_p );
 
-        BOOST_CHECK( ! res );
+        
 
-        res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain - delta,
+        tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain - delta,
                                                   previousTime, previousStrain,
                                                   currentRateModifier, previousRateModifier,
                                                   previousStateVariables,
                                                   materialParameters, alpha,
                                                   s_m, xi_m );
 
-        BOOST_CHECK( ! res );
+        
 
         //Compare the values in the column to the jacobian's values
         for ( unsigned int j=0; j<stress.size( ); j++ ){
@@ -797,23 +794,23 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
         floatVector s_p, s_m;
         floatVector xi_p, xi_m;
     
-        res = tardigradeStressTools::linearViscoelasticity( currentTime, currentStrain,
+        tardigradeStressTools::linearViscoelasticity( currentTime, currentStrain,
                                                   previousTime, previousStrain,
                                                   currentRateModifier + delta, previousRateModifier,
                                                   previousStateVariables,
                                                   materialParameters, alpha,
                                                   s_p, xi_p );
 
-        BOOST_CHECK( !res );
+        
 
-        res = tardigradeStressTools::linearViscoelasticity( currentTime, currentStrain,
+        tardigradeStressTools::linearViscoelasticity( currentTime, currentStrain,
                                                   previousTime, previousStrain,
                                                   currentRateModifier - delta, previousRateModifier,
                                                   previousStateVariables,
                                                   materialParameters, alpha,
                                                   s_m, xi_m );
 
-        BOOST_CHECK( !res );
+        
 
         dstressdrateModifier_answer = ( s_p - s_m ) / ( 2 * delta );
 
@@ -833,23 +830,23 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
 
         floatVector s_p, s_m, xi_p, xi_m;
 
-        res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
+        tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                                   previousTime, previousStrain + delta,
                                                   currentRateModifier, previousRateModifier,
                                                   previousStateVariables,
                                                   materialParameters, alpha,
                                                   s_p, xi_p );
 
-        BOOST_CHECK( ! res );
+        
 
-        res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
+        tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                                   previousTime, previousStrain - delta,
                                                   currentRateModifier, previousRateModifier,
                                                   previousStateVariables,
                                                   materialParameters, alpha,
                                                   s_m, xi_m );
 
-        BOOST_CHECK( ! res );
+        
 
         //Compare the values in the column to the jacobian's values
         for ( unsigned int j=0; j<stress.size( ); j++ ){
@@ -878,23 +875,23 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
         floatVector s_p, s_m;
         floatVector xi_p, xi_m;
     
-        res = tardigradeStressTools::linearViscoelasticity( currentTime, currentStrain,
+        tardigradeStressTools::linearViscoelasticity( currentTime, currentStrain,
                                                   previousTime, previousStrain,
                                                   currentRateModifier, previousRateModifier + delta,
                                                   previousStateVariables,
                                                   materialParameters, alpha,
                                                   s_p, xi_p );
 
-        BOOST_CHECK( !res );
+        
 
-        res = tardigradeStressTools::linearViscoelasticity( currentTime, currentStrain,
+        tardigradeStressTools::linearViscoelasticity( currentTime, currentStrain,
                                                   previousTime, previousStrain,
                                                   currentRateModifier, previousRateModifier - delta,
                                                   previousStateVariables,
                                                   materialParameters, alpha,
                                                   s_m, xi_m );
 
-        BOOST_CHECK( !res );
+        
 
         dstressdPreviousRateModifier_answer = ( s_p - s_m ) / ( 2 * delta );
 
@@ -914,23 +911,23 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
 
         floatVector s_p, s_m, xi_p, xi_m;
 
-        res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
+        tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                                   previousTime, previousStrain,
                                                   currentRateModifier, previousRateModifier,
                                                   previousStateVariables + delta,
                                                   materialParameters, alpha,
                                                   s_p, xi_p );
 
-        BOOST_CHECK( ! res );
+        
 
-        res = tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
+        tardigradeStressTools::linearViscoelasticity( currentTime,  currentStrain,
                                                   previousTime, previousStrain,
                                                   currentRateModifier, previousRateModifier,
                                                   previousStateVariables - delta,
                                                   materialParameters, alpha,
                                                   s_m, xi_m );
 
-        BOOST_CHECK( ! res );
+        
 
         //Compare the values in the column to the jacobian's values
         for ( unsigned int j=0; j<stress.size( ); j++ ){
@@ -955,14 +952,14 @@ BOOST_AUTO_TEST_CASE( testLinearViscoelasticity, * boost::unit_test::tolerance( 
     floatVector materialParametersOdd = { materialParameters[ 1 ], 1, 10, 100, 400, 300, 200 };
     floatVector previousStateVariablesOdd( 3 * 9, 0 );
 
-    res = tardigradeStressTools::linearViscoelasticity(  currentTime, currentStrain,
+    tardigradeStressTools::linearViscoelasticity(  currentTime, currentStrain,
                                                previousTime, previousStrain,
                                                currentRateModifier, previousRateModifier,
                                                previousStateVariablesOdd,
                                                materialParametersOdd, alpha,
                                                stress, currentStateVariables );
 
-    BOOST_CHECK( ! res );
+    
 
 
 }
@@ -981,8 +978,8 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean, * boost::unit_test::tolerance( D
     //Run the test when there is no deformation
     floatType meanStress;
 
-    errorOut res = tardigradeStressTools::volumetricNeoHookean( deformationGradient, bulkModulus, meanStress );
-    BOOST_CHECK( ! res );
+    tardigradeStressTools::volumetricNeoHookean( deformationGradient, bulkModulus, meanStress );
+    
 
     BOOST_TEST( meanStress == 0. );
 
@@ -993,8 +990,8 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean, * boost::unit_test::tolerance( D
 
     floatType J = 0.25430054895115856;
 
-    res = tardigradeStressTools::volumetricNeoHookean( deformationGradient, bulkModulus, meanStress );
-    BOOST_CHECK( ! res );
+    tardigradeStressTools::volumetricNeoHookean( deformationGradient, bulkModulus, meanStress );
+    
 
     BOOST_TEST( meanStress == 0.5 * bulkModulus * ( J - 1/J ) );
 
@@ -1003,16 +1000,16 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean, * boost::unit_test::tolerance( D
                              0.1296644 , -0.22975865, -1.03460443,
                             -0.4188584 , -0.16322821,  0.31618178 };
 
-    res = tardigradeStressTools::volumetricNeoHookean( deformationGradient, bulkModulus, meanStress );
-    BOOST_CHECK( ! res );
+    tardigradeStressTools::volumetricNeoHookean( deformationGradient, bulkModulus, meanStress );
+    
 
     BOOST_TEST( meanStress == 0.5 * bulkModulus * ( J - 1/J ) );
 
     //Test the computation of the derivative of the mean stress w.r.t. J
     floatType jacobianMeanStress;
     floatType dmeanStressdJ;
-    res = tardigradeStressTools::volumetricNeoHookean( deformationGradient, bulkModulus, jacobianMeanStress, dmeanStressdJ );
-    BOOST_CHECK( ! res );
+    tardigradeStressTools::volumetricNeoHookean( deformationGradient, bulkModulus, jacobianMeanStress, dmeanStressdJ );
+    
 
     //Make sure the mean stress is identical
     BOOST_TEST( jacobianMeanStress == meanStress );
@@ -1051,109 +1048,109 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel, * boost::unit_test::tolerance( DEFAULT_T
     floatVector parameters = { n };
 
     floatType p;
-    errorOut error = tardigradeStressTools::peryznaModel( f, q, A, n, p );
+    tardigradeStressTools::peryznaModel( f, q, A, n, p );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( p == A*pow( (f/q ), n ) );
 
-    error = tardigradeStressTools::peryznaModel( f, q, A, parameters, p );
+    tardigradeStressTools::peryznaModel( f, q, A, parameters, p );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( p == A*pow( (f/q ), n ) );
 
     floatType pJ;
     floatType dpdf, dpdq, dpdA;
-    error = tardigradeStressTools::peryznaModel( f, q, A, n, pJ, dpdf, dpdq, dpdA );
+    tardigradeStressTools::peryznaModel( f, q, A, n, pJ, dpdf, dpdq, dpdA );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( p == pJ );
 
     floatType eps = 1e-6;
     floatType delta = eps*fabs( f ) + eps;
     floatType pp, pm;
-    error = tardigradeStressTools::peryznaModel( f + delta, q, A, n, pp );
+    tardigradeStressTools::peryznaModel( f + delta, q, A, n, pp );
 
-    BOOST_CHECK( ! error );
+    
 
-    error = tardigradeStressTools::peryznaModel( f - delta, q, A, n, pm );
+    tardigradeStressTools::peryznaModel( f - delta, q, A, n, pm );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( ( pp - pm ) / ( 2 * delta ) == dpdf );
 
     delta = eps*fabs( q ) + eps;
-    error = tardigradeStressTools::peryznaModel( f, q + delta, A, n, pp );
+    tardigradeStressTools::peryznaModel( f, q + delta, A, n, pp );
 
-    BOOST_CHECK( ! error );
+    
 
-    error = tardigradeStressTools::peryznaModel( f, q - delta, A, n, pm );
+    tardigradeStressTools::peryznaModel( f, q - delta, A, n, pm );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( ( pp - pm ) / ( 2 * delta ) == dpdq );
 
     delta = eps*fabs( A ) + eps;
-    error = tardigradeStressTools::peryznaModel( f, q, A + delta, n, pp );
+    tardigradeStressTools::peryznaModel( f, q, A + delta, n, pp );
 
-    BOOST_CHECK( ! error );
+    
 
-    error = tardigradeStressTools::peryznaModel( f, q, A - delta, n, pm );
+    tardigradeStressTools::peryznaModel( f, q, A - delta, n, pm );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( ( pp - pm ) / ( 2 * delta ) == dpdA );
 
     f = -1;
-    error = tardigradeStressTools::peryznaModel( f, q, A, n, p );
+    tardigradeStressTools::peryznaModel( f, q, A, n, p );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( p == 0. );
 
-    error = tardigradeStressTools::peryznaModel( f, q, A, n, pJ, dpdf, dpdq, dpdA );
+    tardigradeStressTools::peryznaModel( f, q, A, n, pJ, dpdf, dpdq, dpdA );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( p == pJ );
 
     delta = eps*fabs( f ) + eps;
-    error = tardigradeStressTools::peryznaModel( f + delta, q, A, n, pp );
+    tardigradeStressTools::peryznaModel( f + delta, q, A, n, pp );
 
-    BOOST_CHECK( ! error );
+    
 
-    error = tardigradeStressTools::peryznaModel( f - delta, q, A, n, pm );
+    tardigradeStressTools::peryznaModel( f - delta, q, A, n, pm );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( ( pp - pm ) / ( 2 * delta ) == dpdf );
 
     delta = eps*fabs( q ) + eps;
-    error = tardigradeStressTools::peryznaModel( f, q + delta, A, n, pp );
+    tardigradeStressTools::peryznaModel( f, q + delta, A, n, pp );
 
-    BOOST_CHECK( ! error );
+    
 
-    error = tardigradeStressTools::peryznaModel( f, q - delta, A, n, pm );
+    tardigradeStressTools::peryznaModel( f, q - delta, A, n, pm );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( ( pp - pm ) / ( 2 * delta ) == dpdq );
 
     delta = eps*fabs( A ) + eps;
-    error = tardigradeStressTools::peryznaModel( f, q, A + delta, n, pp );
+    tardigradeStressTools::peryznaModel( f, q, A + delta, n, pp );
 
-    BOOST_CHECK( ! error );
+    
 
-    error = tardigradeStressTools::peryznaModel( f, q, A - delta, n, pm );
+    tardigradeStressTools::peryznaModel( f, q, A - delta, n, pm );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( ( pp - pm ) / ( 2 * delta ) == dpdA );
 
     floatType pJv, dpdfv, dpdqv, dpdAv;
-    error = tardigradeStressTools::peryznaModel( f, q, A, parameters, pJv, dpdfv, dpdqv, dpdAv );
+    tardigradeStressTools::peryznaModel( f, q, A, parameters, pJv, dpdfv, dpdqv, dpdAv );
 
     BOOST_TEST( pJv == p );
     BOOST_TEST( dpdfv == dpdf );
@@ -1172,18 +1169,18 @@ BOOST_AUTO_TEST_CASE( testLinearHardening, * boost::unit_test::tolerance( DEFAUL
     floatType shiftFactor = 3.7;
     floatType value;
 
-    errorOut error = tardigradeStressTools::linearHardening( stateVariables, linearModuli, shiftFactor, value );
+    tardigradeStressTools::linearHardening( stateVariables, linearModuli, shiftFactor, value );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( value = 133.7 );
 
     floatType valueJ;
     floatVector valueJacobian;
 
-    error = tardigradeStressTools::linearHardening( stateVariables, linearModuli, shiftFactor, valueJ, valueJacobian );
+    tardigradeStressTools::linearHardening( stateVariables, linearModuli, shiftFactor, valueJ, valueJacobian );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_CHECK( value == valueJ );
 
@@ -1194,13 +1191,13 @@ BOOST_AUTO_TEST_CASE( testLinearHardening, * boost::unit_test::tolerance( DEFAUL
 
         floatType vp, vm;
 
-        error = tardigradeStressTools::linearHardening( stateVariables + delta, linearModuli, shiftFactor, vp );
+        tardigradeStressTools::linearHardening( stateVariables + delta, linearModuli, shiftFactor, vp );
 
-        BOOST_CHECK( ! error );
+        
 
-        error = tardigradeStressTools::linearHardening( stateVariables - delta, linearModuli, shiftFactor, vm );
+        tardigradeStressTools::linearHardening( stateVariables - delta, linearModuli, shiftFactor, vm );
 
-        BOOST_CHECK( ! error );
+        
 
         BOOST_TEST( ( vp - vm ) / ( 2 * delta[ i ] ) == valueJacobian[ i ] );
 
@@ -1249,9 +1246,9 @@ BOOST_AUTO_TEST_CASE( testComputeJaumannStiffnessTensor, * boost::unit_test::tol
 
     floatMatrix CResult;
 
-    errorOut error = tardigradeStressTools::computeJaumannStiffnessTensor( cauchyStress, currentDeformationGradient, dCauchydF, CResult );
+    tardigradeStressTools::computeJaumannStiffnessTensor( cauchyStress, currentDeformationGradient, dCauchydF, CResult );
 
-    BOOST_CHECK( ! error );
+    
 
     BOOST_TEST( tardigradeVectorTools::appendVectors( CResult ) == tardigradeVectorTools::appendVectors( CAnswer ), CHECK_PER_ELEMENT );
 

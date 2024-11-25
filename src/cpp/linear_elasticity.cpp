@@ -7,7 +7,7 @@ namespace linearElasticity{
     /** Define the expected number of spatial dimensions */
     unsigned int spatialDimensions = 3;
 
-    errorOut formReferenceStiffnessTensor( const floatVector &parameters, floatMatrix &stiffnessTensor ){
+    void formReferenceStiffnessTensor( const floatVector &parameters, floatMatrix &stiffnessTensor ){
         /*!
          * Form the stiffness tensor in the reference configuration.
          *
@@ -64,7 +64,7 @@ namespace linearElasticity{
 
             unsigned int length = 9;
             stiffnessTensor = tardigradeVectorTools::inflate( parameters, length, length );
-            return NULL;
+            return;
 
         }
         else if ( parameters.size( ) == 21 ){
@@ -165,11 +165,11 @@ namespace linearElasticity{
             { C1133, C1233, C1333, C1233, C2233, C2333, C1333, C2333, C3333 }
         };
 
-        return NULL;
+        return;
 
     }
 
-    errorOut formReferenceStiffnessTensor( const floatMatrix &directionCosines, const floatVector &parameters,
+    void formReferenceStiffnessTensor( const floatMatrix &directionCosines, const floatVector &parameters,
                                            floatMatrix &stiffnessTensor ){
         /*!
          * Rotate the full 81 component stiffness tensor as
@@ -223,10 +223,10 @@ namespace linearElasticity{
             }
         }
 
-        return NULL;
+        return;
     }
 
-    errorOut formReferenceStiffnessTensor( const floatVector &bungeEulerAngles, const floatVector &parameters,
+    void formReferenceStiffnessTensor( const floatVector &bungeEulerAngles, const floatVector &parameters,
                                            floatMatrix &stiffnessTensor ){
         /*!
          * Rotate the full 81 component stiffness tensor as
@@ -260,10 +260,10 @@ namespace linearElasticity{
 
         TARDIGRADE_ERROR_TOOLS_CATCH( formReferenceStiffnessTensor( directionCosines, parameters, stiffnessTensor ) )
 
-        return NULL;
+        return;
     }
 
-    errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy ){
+    void evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy ){
         /*!
          * Compute the value of the linear elastic energy which we define via
          *
@@ -312,10 +312,10 @@ namespace linearElasticity{
 
         energy = 0.5 * tardigradeVectorTools::dot( tardigradeVectorTools::dot( C, E ), E ) / detChi;
 
-        return NULL;
+        return;
     }
 
-    errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress ){
+    void evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress ){
         /*!
          * Compute the value of the linear elastic energy which we define via
          *
@@ -390,10 +390,10 @@ namespace linearElasticity{
         }
 
 
-        return NULL;
+        return;
     }
 
-    errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress,
+    void evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress,
                              floatVector &dEnergydChi, floatMatrix &dCauchyStressdChi ){
         /*!
          * Compute the value of the linear elastic energy which we define via
@@ -514,11 +514,11 @@ namespace linearElasticity{
 
         }
 
-        return NULL;
+        return;
 
     }
 
-    errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress,
+    void evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress,
                              floatVector &dEnergydChi, floatMatrix &dCauchyStressdChi,
                              floatVector &d2EnergydChi2, floatMatrix &d2CauchyStressdChi2 ){
         /*!
@@ -700,11 +700,11 @@ namespace linearElasticity{
 
         }
 
-        return NULL;
+        return;
 
     }
 
-    errorOut evaluateEnergy( const floatVector &bungeEulerAngles,
+    void evaluateEnergy( const floatVector &bungeEulerAngles,
                              const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress,
                              floatVector &dEnergydChi, floatMatrix &dCauchyStressdChi,
                              floatVector &d2EnergydChi2, floatMatrix &d2CauchyStressdChi2 ){
@@ -751,7 +751,7 @@ namespace linearElasticity{
                                                       dEnergydChi, dCauchyStressdChi,
                                                       d2EnergydChi2, d2CauchyStressdChi2 ) )
 
-        return NULL;
+        return;
 
     }
 
