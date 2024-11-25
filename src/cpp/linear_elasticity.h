@@ -18,35 +18,33 @@
 namespace tardigradeStressTools{
 namespace linearElasticity{
 
-    typedef tardigradeConstitutiveTools::errorNode errorNode; //!< Redefinition for the error node
-    typedef tardigradeConstitutiveTools::errorOut errorOut; //!< Redefinition for a pointer to the error node
     typedef tardigradeConstitutiveTools::floatType floatType; //!< Define the float values type.
     typedef tardigradeConstitutiveTools::floatVector floatVector; //!< Define a vector of floats
     typedef tardigradeConstitutiveTools::floatMatrix floatMatrix; //!< Define a matrix of floats
 
-    errorOut formReferenceStiffnessTensor( const floatVector &parameters, floatMatrix &stiffnessTensor );
+    void formReferenceStiffnessTensor( const floatVector &parameters, floatMatrix &stiffnessTensor );
 
-    errorOut formReferenceStiffnessTensor( const floatMatrix &directionCosines, const floatVector &parameters,
+    void formReferenceStiffnessTensor( const floatMatrix &directionCosines, const floatVector &parameters,
                                            floatMatrix &stiffnessTensor );
 
-    errorOut formReferenceStiffnessTensor( const floatVector &bungeEulerAngles, const floatVector &parameters,
+    void formReferenceStiffnessTensor( const floatVector &bungeEulerAngles, const floatVector &parameters,
                                            floatMatrix &stiffnessTensor );
 
-    errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy );
+    void evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy );
 
-    errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress );
+    void evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress );
 
-    errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress,
-                             floatVector &dEnergydChi, floatMatrix &dCauchyStressdChi );
+    void evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress,
+                         floatVector &dEnergydChi, floatMatrix &dCauchyStressdChi );
 
-    errorOut evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress,
-                             floatVector &dEnergydChi, floatMatrix &dCauchyStressdChi,
-                             floatVector &d2EnergydChi2, floatMatrix &d2CauchyStressdChi2 );
+    void evaluateEnergy( const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress,
+                         floatVector &dEnergydChi, floatMatrix &dCauchyStressdChi,
+                         floatVector &d2EnergydChi2, floatMatrix &d2CauchyStressdChi2 );
 
-    errorOut evaluateEnergy( const floatVector &bungeEulerAngles,
-                             const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress,
-                             floatVector &dEnergydChi, floatMatrix &dCauchyStressdChi,
-                             floatVector &d2EnergydChi2, floatMatrix &d2CauchyStressdChi2 );
+    void evaluateEnergy( const floatVector &bungeEulerAngles,
+                         const floatVector &chi, const floatVector &parameters, floatType &energy, floatVector &cauchyStress,
+                         floatVector &dEnergydChi, floatMatrix &dCauchyStressdChi,
+                         floatVector &d2EnergydChi2, floatMatrix &d2CauchyStressdChi2 );
 
 }  // linearElasticity
 }  // tardigradeStressTools

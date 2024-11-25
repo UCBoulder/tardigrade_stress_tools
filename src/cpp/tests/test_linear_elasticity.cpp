@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
                                      { 55., 56., 57., 58., 59., 60., 61., 62., 63. },
                                      { 64., 65., 66., 67., 68., 69., 70., 71., 72. },
                                      { 73., 74., 75., 76., 77., 78., 79., 80., 81. } };
-    BOOST_CHECK( !tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( eightyone_parameters, stiffness_tensor ) );
+    tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( eightyone_parameters, stiffness_tensor );
     BOOST_TEST( tardigradeVectorTools::appendVectors( stiffness_tensor ) == tardigradeVectorTools::appendVectors( eightyone_answer ),
                 boost::test_tools::per_element() );
 
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
         { C1123, C1223, C1323, C1223, C2223, C2323, C1323, C2323, C2333 },
         { C1133, C1233, C1333, C1233, C2233, C2333, C1333, C2333, C3333 }
     };
-    BOOST_CHECK( !tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( anisotropic_parameters, stiffness_tensor ) );
+    tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( anisotropic_parameters, stiffness_tensor );
     BOOST_TEST( tardigradeVectorTools::appendVectors( stiffness_tensor ) == tardigradeVectorTools::appendVectors( anisotropic_answer ),
                 boost::test_tools::per_element() );
 
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
         {    0.,    0.,    0.,    0.,    0., C2323,    0., C2323,    0. },
         { C1133,    0.,    0.,    0., C2233,    0.,    0.,    0., C3333 }
     };
-    BOOST_CHECK( !tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( orthotropic_parameters, stiffness_tensor ) );
+    tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( orthotropic_parameters, stiffness_tensor );
     BOOST_TEST( tardigradeVectorTools::appendVectors( stiffness_tensor ) == tardigradeVectorTools::appendVectors( orthotropic_answer ),
                 boost::test_tools::per_element() );
 
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
         {    0.,    0.,    0.,    0.,    0., C1313,    0., C1313,    0. },
         { C1133,    0.,    0.,    0., C1133,    0.,    0.,    0., C3333 }
     };
-    BOOST_CHECK( !tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( hexagonal_parameters, stiffness_tensor ) );
+    tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( hexagonal_parameters, stiffness_tensor );
     BOOST_TEST( tardigradeVectorTools::appendVectors( stiffness_tensor ) == tardigradeVectorTools::appendVectors( hexagonal_answer ),
                 boost::test_tools::per_element() );
     C1212 = 6;  // Reset to match fully anisotropic index
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
         {    0.,    0.,    0.,    0.,    0., C1212,    0., C1212,    0. },
         { C1122,    0.,    0.,    0., C1122,    0.,    0.,    0., C1111 }
     };
-    BOOST_CHECK( !tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( cubic_parameters, stiffness_tensor ) );
+    tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( cubic_parameters, stiffness_tensor );
     BOOST_TEST( tardigradeVectorTools::appendVectors( stiffness_tensor ) == tardigradeVectorTools::appendVectors( cubic_answer ),
                 boost::test_tools::per_element() );
 
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE( formReferenceStiffnessTensor ){
             {    0.0,  0.0,  0.0,  0.0,    0.0,   mu,  0.0,   mu,    0.0 },
             { lambda,  0.0,  0.0,  0.0, lambda,  0.0,  0.0,  0.0,   calc }
         };
-    BOOST_CHECK( !tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( isotropic_parameters, stiffness_tensor ) );
+    tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( isotropic_parameters, stiffness_tensor );
     BOOST_TEST( tardigradeVectorTools::appendVectors( stiffness_tensor ) == tardigradeVectorTools::appendVectors( isotropic_answer ),
                 boost::test_tools::per_element() );
 
@@ -312,16 +312,16 @@ BOOST_AUTO_TEST_CASE( test_rotations_formReferenceStiffnessTensor, * boost::unit
 
         //Test directionCosines interface
         stiffnessTensor = floatMatrix( stiffnessEdgeLength, floatVector( stiffnessEdgeLength, 0 ) );
-        BOOST_CHECK( !tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( directionCosines, parameters[ i ],
-                                                                                   stiffnessTensor ) );
+        tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( directionCosines, parameters[ i ],
+                                                                                   stiffnessTensor );
         BOOST_TEST( tardigradeVectorTools::appendVectors( stiffnessTensor ) ==
                         tardigradeVectorTools::appendVectors( expected_stiffnessTensor[ i ] ),
                     boost::test_tools::per_element() );
 
         //Test bungeEulerAngles interface
         stiffnessTensor = floatMatrix( stiffnessEdgeLength, floatVector( stiffnessEdgeLength, 0 ) );
-        BOOST_CHECK( !tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( bungeEulerAngles[ i ], parameters[ i ],
-                                                                                   stiffnessTensor ) );
+        tardigradeStressTools::linearElasticity::formReferenceStiffnessTensor( bungeEulerAngles[ i ], parameters[ i ],
+                                                                                   stiffnessTensor );
         BOOST_TEST( tardigradeVectorTools::appendVectors( stiffnessTensor ) ==
                         tardigradeVectorTools::appendVectors( expected_stiffnessTensor[ i ] ),
                     boost::test_tools::per_element() );
@@ -343,7 +343,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy, * boost::unit_test::tolerance( DEFAUL
 
     floatType energy;
 
-    BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( chi, parameters, energy ) );
+    tardigradeStressTools::linearElasticity::evaluateEnergy( chi, parameters, energy );
 
     BOOST_TEST( energy == energy_answer );
 
@@ -356,7 +356,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy, * boost::unit_test::tolerance( DEFAUL
 
     energy = 0;
 
-    BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( chi, parameters, energy, cauchyStress ) );
+    tardigradeStressTools::linearElasticity::evaluateEnergy( chi, parameters, energy, cauchyStress );
 
     BOOST_TEST( energy == energy_answer );
 
@@ -370,7 +370,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy, * boost::unit_test::tolerance( DEFAUL
 
     floatMatrix dCauchyStressdChi;
 
-    BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi ) );
+    tardigradeStressTools::linearElasticity::evaluateEnergy( chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi );
 
     BOOST_TEST( energy == energy_answer );
 
@@ -393,15 +393,15 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy, * boost::unit_test::tolerance( DEFAUL
 
         floatVector cauchyStressp, cauchyStressm;
 
-        BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( chi + delta, parameters, ep ) );
+        tardigradeStressTools::linearElasticity::evaluateEnergy( chi + delta, parameters, ep );
 
-        BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em ) );
+        tardigradeStressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em );
 
         dEnergydChi_answer[ i ] = ( ep - em ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( chi + delta, parameters, ep, cauchyStressp ) );
+        tardigradeStressTools::linearElasticity::evaluateEnergy( chi + delta, parameters, ep, cauchyStressp );
 
-        BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em, cauchyStressm ) );
+        tardigradeStressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em, cauchyStressm );
 
         BOOST_TEST( ( ep - em ) / ( 2 * delta[ i ] ) == dEnergydChi_answer[ i ] );
 
@@ -433,7 +433,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy, * boost::unit_test::tolerance( DEFAUL
 
     floatMatrix d2CauchyStressdChi2_answer( chi.size( ), floatVector( chi.size( ) * chi.size( ), 0 ) );
 
-    BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi, d2EnergydChi2, d2CauchyStressdChi2 ) );
+    tardigradeStressTools::linearElasticity::evaluateEnergy( chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi, d2EnergydChi2, d2CauchyStressdChi2 );
 
     BOOST_TEST( energy == energy_answer );
 
@@ -449,15 +449,15 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy, * boost::unit_test::tolerance( DEFAUL
 
         floatVector cauchyStressp, cauchyStressm;
 
-        BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( chi + delta, parameters, ep ) );
+        tardigradeStressTools::linearElasticity::evaluateEnergy( chi + delta, parameters, ep );
 
-        BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em ) );
+        tardigradeStressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em );
 
         dEnergydChi_answer[ i ] = ( ep - em ) / ( 2 * delta[ i ] );
 
-        BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( chi + delta, parameters, ep, cauchyStressp ) );
+        tardigradeStressTools::linearElasticity::evaluateEnergy( chi + delta, parameters, ep, cauchyStressp );
 
-        BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em, cauchyStressm ) );
+        tardigradeStressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em, cauchyStressm );
 
         BOOST_TEST( ( ep - em ) / ( 2 * delta[ i ] ) == dEnergydChi_answer[ i ] );
 
@@ -471,9 +471,9 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy, * boost::unit_test::tolerance( DEFAUL
 
         floatMatrix dCauchydChip, dCauchydChim;
 
-        BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( chi + delta, parameters, ep, cauchyStressp, dedChip, dCauchydChip ) );
+        tardigradeStressTools::linearElasticity::evaluateEnergy( chi + delta, parameters, ep, cauchyStressp, dedChip, dCauchydChip );
 
-        BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em, cauchyStressm, dedChim, dCauchydChim ) );
+        tardigradeStressTools::linearElasticity::evaluateEnergy( chi - delta, parameters, em, cauchyStressm, dedChim, dCauchydChim );
 
         BOOST_TEST( ( ep - em ) / ( 2 * delta[ i ] ) == dEnergydChi_answer[ i ] );
 
@@ -526,7 +526,7 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy, * boost::unit_test::tolerance( DEFAUL
     d2CauchyStressdChi2 = floatMatrix( chi.size( ), floatVector( chi.size( ) * chi.size( ), 0 ) );
     bungeEulerAngles = { 0., 0., 0. };
 
-    BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( bungeEulerAngles, chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi, d2EnergydChi2, d2CauchyStressdChi2 ) );
+    tardigradeStressTools::linearElasticity::evaluateEnergy( bungeEulerAngles, chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi, d2EnergydChi2, d2CauchyStressdChi2 );
     BOOST_TEST( energy == energy_answer );
     BOOST_TEST( cauchyStress == cauchyStress_answer, boost::test_tools::per_element() );
     BOOST_TEST( dEnergydChi == dEnergydChi_answer, boost::test_tools::per_element( ) );
@@ -543,6 +543,6 @@ BOOST_AUTO_TEST_CASE( test_evaluateEnergy, * boost::unit_test::tolerance( DEFAUL
     dCauchyStressdChi = floatMatrix( chi.size( ), floatVector( chi.size( ), 0 ) );
     d2EnergydChi2 = floatVector( chi.size( ) * chi.size( ), 0 );
     d2CauchyStressdChi2 = floatMatrix( chi.size( ), floatVector( chi.size( ) * chi.size( ), 0 ) );
-    BOOST_CHECK( !tardigradeStressTools::linearElasticity::evaluateEnergy( bungeEulerAngles, chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi, d2EnergydChi2, d2CauchyStressdChi2 ) );
+    tardigradeStressTools::linearElasticity::evaluateEnergy( bungeEulerAngles, chi, parameters, energy, cauchyStress, dEnergydChi, dCauchyStressdChi, d2EnergydChi2, d2CauchyStressdChi2 );
 
 }
