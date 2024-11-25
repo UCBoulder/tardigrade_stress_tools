@@ -11,11 +11,15 @@ set(DOXYGEN_SRC_PATH "docs/doxygen")
 set(SPHINX_SRC_PATH "docs/sphinx")
 # Set the internal support libraries
 set(INTERNAL_SUPPORT_LIBRARIES "linear_elasticity")
+set(ADDITIONAL_HEADER_ONLY_LIBRARIES "tardigrade_mass_change_deformation")
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
 set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
     set(PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES} ${package}.cpp ${package}.h)
     set(PROJECT_PRIVATE_HEADERS ${PROJECT_PRIVATE_HEADERS} ${package}.h)
+endforeach(package)
+foreach(package ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
+    add_library(${package} INTERFACE "${CPP_SRC_PATH}/${package}.cpp" "${CPP_SRC_PATH}/${package}.h")
 endforeach(package)
 set(PROJECT_LINK_LIBRARIES tardigrade_error_tools tardigrade_constitutive_tools)
 
@@ -66,7 +70,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic")
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lrt")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lrt -O3")
 endif()
 
 # Enable CTest
@@ -88,18 +92,21 @@ include(FetchContent)
 set(upstream_packages "tardigrade_error_tools" "tardigrade_vector_tools" "tardigrade_constitutive_tools")
 foreach(package ${upstream_packages})
     string(TOUPPER "${package}" package_upper)
-    set(${package_upper}_BUILD_PYTHON_BINDINGS ${TARDIGRADE_STRESS_TOOLS_BUILD_PYTHON_BINDINGS})
+    set(${package_upper}_BUILD_PYTHON_BINDINGS ${TARDIGRADE_STRESS_TOOLS_BUILD_PYTHON_BINDINGS} CACHE INTERNAL "Setting ${package}'s python binding flag to the global value")
     find_package(${package} ${upstream_required} CONFIG)
     if(${package}_FOUND)
         message(STATUS "Found ${package}: ${${package}_DIR}")
     else()
         # Find related, but external, projects using FetchContent and building locally
         message(WARNING "Did not find an installed ${package} package. Attempting local build with FetchContent.")
-        # TODO: Decide how to handle main/dev build differences. bash env variables for GIT TAG?
+        if(NOT DEFINED ${package_upper}_FETCHCONTENT_VERSION)
+            set(${package_upper}_FETCHCONTENT_VERSION "origin/dev")
+        endif()
+        message("${package_upper} is being built with version ${${package_upper}_FETCHCONTENT_VERSION}")
         FetchContent_Declare(
             ${package}
-            GIT_REPOSITORY ssh://git@re-git.lanl.gov:10022/aea/material-models/${package}.git
-            GIT_TAG        origin/dev
+            GIT_REPOSITORY http://github.com/UCBoulder/${package}.git
+            GIT_TAG        ${${package_upper}_FETCHCONTENT_VERSION}
         )
         FetchContent_MakeAvailable(${package})
     endif()
@@ -127,24 +134,26 @@ endif()
 
 #==================================================================================== SETUP INSTALLATION CMAKE FILES ===
 if(${not_conda_test} STREQUAL "true")
-    include(CMakePackageConfigHelpers)
-    write_basic_package_version_file("${PROJECT_NAME}ConfigVersion.cmake"
-                                     VERSION ${PROJECT_VERSION}
-                                     COMPATIBILITY SameMajorVersion)
-    configure_package_config_file(
-      "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}/Config.cmake.in"
-      "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-      INSTALL_DESTINATION
-      ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+    foreach(package ${PROJECT_NAME} ${UMAT})
+        include(CMakePackageConfigHelpers)
+        write_basic_package_version_file("${package}ConfigVersion.cmake"
+                                         VERSION ${PROJECT_VERSION}
+                                         COMPATIBILITY SameMajorVersion)
+        configure_package_config_file(
+          "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}/Config.cmake.in"
+          "${PROJECT_BINARY_DIR}/${package}Config.cmake"
+          INSTALL_DESTINATION
+          ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
 
-    # CMake won't build the targets for local builds of upstream projects
-    if(cmake_build_type_lower STREQUAL release)
-        install(EXPORT ${PROJECT_NAME}_Targets
-                FILE ${PROJECT_NAME}Targets.cmake
-                DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
-    endif()
+        # CMake won't build the targets for local builds of upstream projects
+        if(cmake_build_type_lower STREQUAL release)
+            install(EXPORT ${package}_Targets
+                    FILE ${package}Targets.cmake
+                    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
+        endif()
 
-    install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-                  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-            DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
+        install(FILES "${PROJECT_BINARY_DIR}/${package}Config.cmake"
+                      "${PROJECT_BINARY_DIR}/${package}ConfigVersion.cmake"
+                DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
+    endforeach(package)
 endif()

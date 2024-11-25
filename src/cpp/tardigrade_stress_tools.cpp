@@ -13,7 +13,7 @@
 
 namespace tardigradeStressTools{
 
-    errorOut calculateMeanStress( const floatVector &stress, floatType &meanStress ){
+    void calculateMeanStress( const floatVector &stress, floatType &meanStress ){
         /*!
          * Compute the mean stress from a 2nd rank stress tensor stored in row major format
          *
@@ -27,7 +27,7 @@ namespace tardigradeStressTools{
         tardigradeVectorTools::trace( stress, trace );
         meanStress = 1./3.*trace;
 
-        return NULL;
+        return;
     }
 
     floatType calculateMeanStress( const floatVector &stress ){
@@ -41,12 +41,12 @@ namespace tardigradeStressTools{
          */
 
         floatType meanStress;
-        calculateMeanStress( stress, meanStress );
+        TARDIGRADE_ERROR_TOOLS_CATCH( calculateMeanStress( stress, meanStress ) )
 
         return meanStress;
     }
 
-    errorOut calculateMeanStress( const floatMatrix &stress, floatType &meanStress ){
+    void calculateMeanStress( const floatMatrix &stress, floatType &meanStress ){
         /*!
          * Compute the mean stress from a 2nd rank stress tensor stored in matrix format
          *
@@ -60,7 +60,7 @@ namespace tardigradeStressTools{
         tardigradeVectorTools::trace( stress, trace );
         meanStress = 1./3.*trace;
 
-        return NULL;
+        return;
     }
 
     floatType calculateMeanStress( const floatMatrix &stress ){
@@ -74,12 +74,12 @@ namespace tardigradeStressTools{
          */
 
         floatType meanStress;
-        calculateMeanStress( stress, meanStress );
+        TARDIGRADE_ERROR_TOOLS_CATCH( calculateMeanStress( stress, meanStress ) )
 
         return meanStress;
     }
 
-    errorOut calculateMeanStress( const floatVector &stress, floatType &meanStress, floatVector &jacobian ){
+    void calculateMeanStress( const floatVector &stress, floatType &meanStress, floatVector &jacobian ){
         /*!
          * Compute the mean stress from a 2nd rank stress tensor stored in row major format
          *
@@ -91,15 +91,13 @@ namespace tardigradeStressTools{
          */
 
         //Check vector lengths
-        unsigned int length = stress.size( );
-        if ( length != jacobian.size( ) ){
-            return new errorNode( "calculateMeanStress", "The stress tensor and jacobian tensor sizes must match." );
-        }
+        const unsigned int length = stress.size( );
+        TARDIGRADE_ERROR_TOOLS_CHECK( length == jacobian.size( ), "The stress tensor and jacobian tensor sizes must match." );
 
         //Calculate the mean stress
         meanStress = 0.;
         std::fill( jacobian.begin( ), jacobian.end( ), 0. );
-        calculateMeanStress( stress, meanStress );
+        TARDIGRADE_ERROR_TOOLS_CATCH( calculateMeanStress( stress, meanStress ) )
 
         //Initialize the identity matrix
         floatVector I( length, 0. );
@@ -108,10 +106,10 @@ namespace tardigradeStressTools{
         //Calculate the jacobian
         jacobian = 1./3.*I;
 
-        return NULL;
+        return;
     }
 
-    errorOut calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric ){
+    void calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric ){
         /*!
          * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
          *
@@ -123,9 +121,7 @@ namespace tardigradeStressTools{
 
         //Check vector lengths
         unsigned int length = stress.size( );
-        if ( length != deviatoric.size( ) ){
-            return new errorNode( "calculateDeviatoric", "The tensor and deviatoric tensor sizes must match." );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( length == deviatoric.size( ), "The tensor and deviatoric tensor sizes must match." );
 
         //Initialize the identity matrix
         floatVector I( length, 0. );
@@ -135,10 +131,10 @@ namespace tardigradeStressTools{
         floatType meanStress = calculateMeanStress( stress );
         deviatoric = stress - meanStress*I;
 
-        return NULL;
+        return;
     }
 
-    errorOut calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric, floatMatrix &jacobian ){
+    void calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric, floatMatrix &jacobian ){
         /*!
          * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
          *
@@ -156,13 +152,7 @@ namespace tardigradeStressTools{
 
         //Compute the deviatoric stress.
         deviatoric.resize( stress.size( ) );
-        errorOut error = calculateDeviatoricStress( stress, deviatoric );
-
-        if ( error ){
-            errorOut result = new errorNode( "calculateDeviatoricStress ( jacobian ) ", "Error in calculation of deviatoric stress" );
-            result->addNext( error );
-            return result;
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( calculateDeviatoricStress( stress, deviatoric ) )
 
         //Compute the jacobian
         floatVector eye( stress.size( ), 0 );
@@ -170,7 +160,7 @@ namespace tardigradeStressTools{
 
         jacobian = tardigradeVectorTools::eye<floatType>( stress.size( ) ) - 1./3 * tardigradeVectorTools::dyadic( eye, eye );
 
-        return NULL;
+        return;
     }
 
     floatVector calculateDeviatoricStress( const floatVector &stress ){
@@ -184,11 +174,7 @@ namespace tardigradeStressTools{
          */
 
         floatVector deviatoric( stress.size( ) );
-        errorOut result = calculateDeviatoricStress( stress, deviatoric );
-        if ( result ){
-            result->print( );
-            throw std::runtime_error( "Error in calculation of deviatoric stress" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( calculateDeviatoricStress( stress, deviatoric ) )
 
         return deviatoric;
     }
@@ -210,16 +196,12 @@ namespace tardigradeStressTools{
          */
 
         floatVector deviatoric( stress.size( ) );
-        errorOut result = calculateDeviatoricStress( stress, deviatoric, jacobian );
-        if ( result ){
-            result->print( );
-            throw std::runtime_error( "Error in calculation of deviatoric stress" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( calculateDeviatoricStress( stress, deviatoric, jacobian ) )
 
         return deviatoric;
     }
 
-    errorOut calculateVonMisesStress( const floatVector &stress, floatType &vonMises ){
+    void calculateVonMisesStress( const floatVector &stress, floatType &vonMises ){
         /*!
          * Compute the von Mises stress from a 2nd rank stress tensor stored in row major format
          *
@@ -234,7 +216,7 @@ namespace tardigradeStressTools{
         floatVector deviatoric = calculateDeviatoricStress( stress );
         vonMises = std::sqrt( 3./2.*tardigradeVectorTools::inner( deviatoric, deviatoric ) );
 
-        return NULL;
+        return;
     }
 
     floatType calculateVonMisesStress( const floatVector &stress ){
@@ -250,16 +232,12 @@ namespace tardigradeStressTools{
          */
 
         floatType vonMises = 0.;
-        errorOut result = calculateVonMisesStress( stress, vonMises );
-        if ( result ){
-            result->print( );
-            throw std::runtime_error( "Error in calculation of deviatoric stress" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( calculateVonMisesStress( stress, vonMises ) )
 
         return vonMises;
     }
 
-    errorOut calculateVonMisesStress( const floatVector &stress, floatType &vonMises, floatVector &jacobian ){
+    void calculateVonMisesStress( const floatVector &stress, floatType &vonMises, floatVector &jacobian ){
         /*!
          * Compute the von Mises stress from a 2nd rank stress tensor stored in row major format
          *
@@ -274,9 +252,7 @@ namespace tardigradeStressTools{
 
         //Check vector lengths
         unsigned int length = stress.size( );
-        if ( length != jacobian.size( ) ){
-            return new errorNode( "calculateVonMisesStress", "The stress tensor and jacobian tensor sizes must match." );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( length == jacobian.size( ), "The stress tensor and jacobian tensor sizes must match." );
 
         //Calculate the vonMises stress
         calculateVonMisesStress( stress, vonMises );
@@ -288,10 +264,10 @@ namespace tardigradeStressTools{
         //Calculate the jacobian
         jacobian = 3./( 2.*vonMises ) * deviatoric;
 
-        return NULL;
+        return;
     }
 
-    errorOut druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatType &A, const floatType &B, floatType &dpYield ){
+    void druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatType &A, const floatType &B, floatType &dpYield ){
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
          *
@@ -309,10 +285,10 @@ namespace tardigradeStressTools{
 
         dpYield = vonMises + A*meanStress - B;
 
-        return NULL;
+        return;
     }
 
-    errorOut druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatVector &dpParam, floatType &dpYield ){
+    void druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatVector &dpParam, floatType &dpYield ){
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
          *
@@ -325,16 +301,11 @@ namespace tardigradeStressTools{
          */
 
         //Check Drucker-Prager parameter vector length
-        if ( dpParam.size( ) != 2 ){
-            return new errorNode( "druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface." );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( dpParam.size( ) == 2, "Two parameters are required for the Drucker-Prager surface." );
 
-        errorOut error = druckerPragerSurface( vonMises, meanStress, dpParam[ 0 ], dpParam[ 1 ], dpYield );
-        if ( error ){
-            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( vonMises, meanStress, dpParam[ 0 ], dpParam[ 1 ], dpYield ) )
 
-        return NULL;
+        return;
     }
 
     floatType druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatType &A, const floatType &B ){
@@ -356,7 +327,7 @@ namespace tardigradeStressTools{
         floatType dpYield = 0;
 
         //Calculate DP yield criterion
-        TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( druckerPragerSurface( vonMises, meanStress, A, B, dpYield ) );
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( vonMises, meanStress, A, B, dpYield ) );
 
         return dpYield;
     }
@@ -374,12 +345,12 @@ namespace tardigradeStressTools{
          */
 
         floatType dpYield = 0;
-        TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( druckerPragerSurface( vonMises, meanStress, dpParam, dpYield ) );
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( vonMises, meanStress, dpParam, dpYield ) );
 
         return dpYield;
     }
 
-    errorOut druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield ){
+    void druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield ){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
@@ -401,15 +372,12 @@ namespace tardigradeStressTools{
         calculateMeanStress( stress, meanStress );
 
         //Calculate DP yield criterion
-        errorOut error = druckerPragerSurface( vonMises, meanStress, A, B, dpYield );
-        if ( error ){
-            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( vonMises, meanStress, A, B, dpYield ) )
 
-        return NULL;
+        return;
     }
 
-    errorOut druckerPragerSurface( const floatVector &stress, const floatVector &dpParam, floatType &dpYield ){
+    void druckerPragerSurface( const floatVector &stress, const floatVector &dpParam, floatType &dpYield ){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
@@ -421,17 +389,12 @@ namespace tardigradeStressTools{
          */
 
         //Check Drucker-Prager parameter vector length
-        if ( dpParam.size( ) != 2 ){
-            return new errorNode( "druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface." );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( dpParam.size( ) == 2, "Two parameters are required for the Drucker-Prager surface." )
 
         //Calculate DP yield criterion
-        errorOut error = druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield );
-        if ( error ){
-            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield ) )
 
-        return NULL;
+        return;
     }
 
     floatType druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B ){
@@ -452,7 +415,7 @@ namespace tardigradeStressTools{
         floatType dpYield = 0.;
 
         //Calculate DP yield criterion
-        TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( druckerPragerSurface( stress, A, B, dpYield ) );
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, A, B, dpYield ) );
 
         return dpYield;
     }
@@ -471,12 +434,12 @@ namespace tardigradeStressTools{
         floatType dpYield = 0.;
 
         //Calculate DP yield criterion
-        TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( druckerPragerSurface( stress, dpParam, dpYield ) );
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, dpParam, dpYield ) );
 
         return dpYield;
     }
 
-    errorOut druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian ){
+    void druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian ){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
@@ -494,9 +457,7 @@ namespace tardigradeStressTools{
 
         //Check vector lengths
         unsigned int length = stress.size( );
-        if ( length != jacobian.size( ) ){
-            return new errorNode( "druckerPragerSurface", "The stress tensor and jacobian tensor sizes must match." );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( length == jacobian.size( ), "The stress tensor and jacobian tensor sizes must match." );
 
         //Calculate von Mises and mean stresses with jacobians
         floatType vonMises, meanStress;
@@ -507,18 +468,15 @@ namespace tardigradeStressTools{
         calculateMeanStress( stress, meanStress, meanStressJacobian );
 
         //Calculate the Drucker-Prager yield criterion
-        errorOut error = druckerPragerSurface( stress, A, B, dpYield );
-        if ( error ){
-            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, A, B, dpYield ) )
 
         //Calculate the Drucker-Prager jacobian
         jacobian = vonMisesJacobian + A * meanStressJacobian;
 
-        return NULL;
+        return;
     }
 
-    errorOut druckerPragerSurface( const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian ){
+    void druckerPragerSurface( const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian ){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
@@ -534,19 +492,14 @@ namespace tardigradeStressTools{
          */
 
         //Check Drucker-Prager parameter vector length
-        if ( dpParam.size( ) != 2 ){
-            return new errorNode( "druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface." );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( dpParam.size( ) == 2, "Two parameters are required for the Drucker-Prager surface." );
 
-        errorOut error = druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield, jacobian );
-        if ( error ){
-            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield, jacobian ) )
 
-        return NULL;
+        return;
     }
 
-    errorOut druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatMatrix &djacobiandstress ){
+    void druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatMatrix &djacobiandstress ){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
@@ -565,9 +518,7 @@ namespace tardigradeStressTools{
 
         //Check vector lengths
         unsigned int length = stress.size( );
-        if ( length != jacobian.size( ) ){
-            return new errorNode( "druckerPragerSurface", "The stress tensor and jacobian tensor sizes must match." );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( length == jacobian.size( ), "The stress tensor and jacobian tensor sizes must match." );
 
         //Calculate von Mises and mean stresses with jacobians
         floatType vonMises, meanStress;
@@ -578,10 +529,7 @@ namespace tardigradeStressTools{
         calculateMeanStress( stress, meanStress, meanStressJacobian );
 
         //Calculate the Drucker-Prager yield criterion
-        errorOut error = druckerPragerSurface( stress, A, B, dpYield );
-        if ( error ){
-            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, A, B, dpYield ) );
 
         //Calculate the Drucker-Prager jacobian
         jacobian = vonMisesJacobian + A * meanStressJacobian;
@@ -596,10 +544,10 @@ namespace tardigradeStressTools{
         djacobiandstress = ( 3/( 2*vonMises ) )*( EYE - tardigradeVectorTools::dyadic( eye, meanStressJacobian )
                                                  - tardigradeVectorTools::dyadic( deviatoric, vonMisesJacobian )/vonMises );
 
-        return NULL;
+        return;
     }
 
-    errorOut druckerPragerSurface( const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatMatrix &djacobiandstress ){
+    void druckerPragerSurface( const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatMatrix &djacobiandstress ){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
@@ -616,19 +564,14 @@ namespace tardigradeStressTools{
          */
 
         //Check Drucker-Prager parameter vector length
-        if ( dpParam.size( ) != 2 ){
-            return new errorNode( "druckerPragerSurface", "Two parameters are required for the Drucker-Prager surface." );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( dpParam.size( ) == 2, "Two parameters are required for the Drucker-Prager surface." )
 
-        errorOut error = druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield, jacobian, djacobiandstress );
-        if ( error ){
-            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield, jacobian, djacobiandstress ) )
 
-        return NULL;
+        return;
     }
 
-    errorOut druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection ){
+    void druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection ){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
@@ -646,18 +589,15 @@ namespace tardigradeStressTools{
          */
 
         //Calculate the Drucker-Prager yield criterion and jacobian
-        errorOut error = druckerPragerSurface( stress, A, B, dpYield, jacobian );
-        if ( error ){
-            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, A, B, dpYield, jacobian ) )
 
         //Calculate the Drucker-Prager unit normal flow direction as the normalized jacobian
         unitDirection = jacobian / std::sqrt( 3./2. + pow( A, 2. )/3. );
 
-        return NULL;
+        return;
     }
 
-    errorOut druckerPragerSurface( const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection ){
+    void druckerPragerSurface( const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection ){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
@@ -671,18 +611,15 @@ namespace tardigradeStressTools{
          */
 
         //Calculate the Drucker-Prager yield criterion and jacobian
-        errorOut error = druckerPragerSurface( stress, dpParam, dpYield, jacobian );
-        if ( error ){
-            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, dpParam, dpYield, jacobian ) )
 
         //Calculate the Drucker-Prager unit normal flow direction as the normalized jacobian
         unitDirection = jacobian / std::sqrt( 3./2. + pow( dpParam[ 0 ], 2. )/3. );
 
-        return NULL;
+        return;
     }
 
-    errorOut druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection, floatMatrix &unitDirectionJacobian ){
+    void druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection, floatMatrix &unitDirectionJacobian ){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
@@ -702,10 +639,7 @@ namespace tardigradeStressTools{
 
         //Calculate the Drucker-Prager yield criterion and jacobian
         floatMatrix djacobiandstress;
-        errorOut error = druckerPragerSurface( stress, A, B, dpYield, jacobian, djacobiandstress );
-        if ( error ){
-            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, A, B, dpYield, jacobian, djacobiandstress ) )
 
         //Compute the unit normal flow direction and the jacobian of the unit normal flow direction
         //w.r.t. stress
@@ -714,10 +648,10 @@ namespace tardigradeStressTools{
 
         unitDirectionJacobian = tardigradeVectorTools::dot( duDdjacobian, djacobiandstress );
 
-        return NULL;
+        return;
     }
 
-    errorOut druckerPragerSurface( const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection, floatMatrix &unitDirectionJacobian ){
+    void druckerPragerSurface( const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection, floatMatrix &unitDirectionJacobian ){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
@@ -733,10 +667,7 @@ namespace tardigradeStressTools{
 
         //Calculate the Drucker-Prager yield criterion and jacobian
         floatMatrix djacobiandstress;
-        errorOut error = druckerPragerSurface( stress, dpParam, dpYield, jacobian, djacobiandstress );
-        if ( error ){
-            return new errorNode( __func__, "Error when calculating the Drucker-Prager yield surface" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, dpParam, dpYield, jacobian, djacobiandstress ) )
 
         //Compute the unit normal flow direction and the jacobian of the unit normal flow direction
         //w.r.t. stress
@@ -745,10 +676,10 @@ namespace tardigradeStressTools{
 
         unitDirectionJacobian = tardigradeVectorTools::dot( duDdjacobian, djacobiandstress );
 
-        return NULL;
+        return;
     }
 
-    errorOut linearViscoelasticity( const floatType &currentTime, const floatVector &currentStrain,
+    void linearViscoelasticity( const floatType &currentTime, const floatVector &currentStrain,
                                    const floatType &previousTime, const floatVector &previousStrain,
                                    const floatType &currentRateModifier, const floatType &previousRateModifier,
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
@@ -782,22 +713,17 @@ namespace tardigradeStressTools{
         floatType dt = currentTime - previousTime;
 
         //Check the material parameters
-        if ( materialParameters.size( ) == 0 ){
-            return new errorNode( __func__, "At least one material parameter must be provided." );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( materialParameters.size( ) != 0, "At least one material parameter must be provided." );
 
         //Set the number of Prony-Series terms
-        if ( ( materialParameters.size( ) - 1 ) % 2 != 0 ){
-            return new errorNode( __func__, "An equal number of taus and Gs must be provided." );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( ( materialParameters.size( ) - 1 ) % 2 == 0, "An equal number of taus and Gs must be provided." );
+
         unsigned int nTerms = ( materialParameters.size( ) - 1 )/2;
 
         //Set the dimension of the strain
         unsigned int dim = currentStrain.size( );
         //Check the state variables
-        if ( previousStateVariables.size( ) != nTerms*dim ){
-            return new errorNode( __func__, "The number of previous state variables is not consistent with the strain size." );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( previousStateVariables.size( ) == nTerms*dim, "The number of previous state variables is not consistent with the strain size." );
 
         //Compute the infinite stress
         floatVector dStrain = currentStrain - previousStrain;
@@ -845,10 +771,10 @@ namespace tardigradeStressTools{
             currentStateVariables = tardigradeVectorTools::appendVectors( { currentStateVariables, Xic } );
         }
 
-        return NULL;
+        return;
     }
 
-    errorOut linearViscoelasticity( const floatType &currentTime, const floatVector &currentStrain,
+    void linearViscoelasticity( const floatType &currentTime, const floatVector &currentStrain,
                                    const floatType &previousTime, const floatVector &previousStrain,
                                    const floatType &currentRateModifier, const floatType &previousRateModifier,
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
@@ -886,7 +812,7 @@ namespace tardigradeStressTools{
                                       alpha, dStress, stress, currentStateVariables );
     }
 
-    errorOut linearViscoelasticity( const floatType &currentTime, const floatVector &currentStrain,
+    void linearViscoelasticity( const floatType &currentTime, const floatVector &currentStrain,
                                    const floatType &previousTime, const floatVector &previousStrain,
                                    const floatType &currentRateModifier, const floatType &previousRateModifier,
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
@@ -920,16 +846,9 @@ namespace tardigradeStressTools{
          * \param &dstressdrateModifier: The derivative of the stress w.r.t. the rate modifier
          */
 
-        errorOut lVresult = linearViscoelasticity( currentTime, currentStrain, previousTime, previousStrain,
-                                                  currentRateModifier, previousRateModifier, previousStateVariables,
-                                                  materialParameters, alpha, dStress, stress, currentStateVariables );
-
-        //Error handling
-        if ( lVresult ){
-            errorOut result = new errorNode( __func__, "error in computation of stress" );
-            result->addNext( lVresult );
-            return result;
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( linearViscoelasticity( currentTime, currentStrain, previousTime, previousStrain,
+                                                             currentRateModifier, previousRateModifier, previousStateVariables,
+                                                             materialParameters, alpha, dStress, stress, currentStateVariables ) )
 
         //Compute the change in time
         float dt = currentTime - previousTime;
@@ -971,10 +890,10 @@ namespace tardigradeStressTools{
         //Assemble the full gradient
         dstressdstrain = scalarTerm*tardigradeVectorTools::eye<floatType>( currentStrain.size( ) );
 
-        return NULL;
+        return;
     }
 
-    errorOut linearViscoelasticity( const floatType &currentTime, const floatVector &currentStrain,
+    void linearViscoelasticity( const floatType &currentTime, const floatVector &currentStrain,
                                    const floatType &previousTime, const floatVector &previousStrain,
                                    const floatType &currentRateModifier, const floatType &previousRateModifier,
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
@@ -1016,7 +935,7 @@ namespace tardigradeStressTools{
 
     }
 
-    errorOut linearViscoelasticity( const floatType &currentTime, const floatVector &currentStrain,
+    void linearViscoelasticity( const floatType &currentTime, const floatVector &currentStrain,
                                    const floatType &previousTime, const floatVector &previousStrain,
                                    const floatType &currentRateModifier, const floatType &previousRateModifier,
                                    const floatVector &previousStateVariables, const floatVector &materialParameters,
@@ -1076,7 +995,7 @@ namespace tardigradeStressTools{
 
     }
 
-    errorOut linearViscoelasticity( const floatType &currentTime, const floatVector &currentStrain,
+    void linearViscoelasticity( const floatType &currentTime, const floatVector &currentStrain,
                                     const floatType &previousTime, const floatVector &previousStrain,
                                     const floatType &currentRateModifier, const floatType &previousRateModifier,
                                     const floatVector &previousStateVariables, const floatVector &materialParameters,
@@ -1124,26 +1043,17 @@ namespace tardigradeStressTools{
         floatType dt = currentTime - previousTime;
 
         //Check the material parameters
-        if ( materialParameters.size( ) == 0 ){
-
-            return new errorNode( __func__, "At least one material parameter must be provided." );
-
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( materialParameters.size( ) != 0, "At least one material parameter must be provided." )
 
         //Set the number of Prony-Series terms
-        if ( ( materialParameters.size( ) - 1 ) % 2 != 0 ){
+        TARDIGRADE_ERROR_TOOLS_CHECK( ( materialParameters.size( ) - 1 ) % 2 == 0, "An equal number of taus and Gs must be provided." )
 
-            return new errorNode( __func__, "An equal number of taus and Gs must be provided." );
-
-        }
         unsigned int nTerms = ( materialParameters.size( ) - 1 ) / 2;
 
         //Set the dimension of the strain
         unsigned int dim = currentStrain.size( );
         //Check the state variables
-        if ( previousStateVariables.size( ) != nTerms * dim ){
-            return new errorNode( __func__, "The number of previous state variables is not consistent with the strain size." );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( previousStateVariables.size( ) == nTerms * dim, "The number of previous state variables is not consistent with the strain size." )
 
         //Compute the infinite stress
         floatVector dStrain = currentStrain - previousStrain;
@@ -1257,11 +1167,11 @@ namespace tardigradeStressTools{
 
         dStateVariablesdPreviousRateModifier = tardigradeVectorTools::appendVectors( dStateVariablesdPreviousRateModifier_matrix );
 
-        return NULL;
+        return;
 
     }
 
-    errorOut volumetricNeoHookean( const floatType &jacobian, const floatType &bulkModulus,
+    void volumetricNeoHookean( const floatType &jacobian, const floatType &bulkModulus,
                                   floatType &meanStress ){
         /*!
          * Compute the volumetric part of a Neo-Hookean material model response of the form
@@ -1279,17 +1189,15 @@ namespace tardigradeStressTools{
          */
 
         //Error handling
-        if ( jacobian<=0 ){
-             return new errorNode( "volumetricNeoHookean", "determinant is less than or equal zero" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( jacobian>0, "determinant is less than or equal zero" );
 
         //Compute the meanStress
         meanStress = 0.5*bulkModulus*( jacobian - 1/jacobian );
 
-        return NULL;
+        return;
     }
 
-    errorOut volumetricNeoHookean( const floatType &jacobian, const floatType &bulkModulus,
+    void volumetricNeoHookean( const floatType &jacobian, const floatType &bulkModulus,
                                   floatType &meanStress, floatType &dmeanStressdJ ){
         /*!
          * Compute the volumetric part of a Neo-Hookean material model response of the form
@@ -1308,9 +1216,7 @@ namespace tardigradeStressTools{
          */
 
         //Error handling
-        if ( jacobian<=0 ){
-             return new errorNode( "volumetricNeoHookean", "determinant is less than or equal zero" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( jacobian>0, "determinant is less than or equal zero" )
 
         //Compute the meanStress
         meanStress = 0.5*bulkModulus*( jacobian - 1/jacobian );
@@ -1318,11 +1224,11 @@ namespace tardigradeStressTools{
         //Compute the derivative of the meanStress w.r.t. jacobian
         dmeanStressdJ = 0.5*bulkModulus*( 1 + 1/( jacobian*jacobian ) );
 
-        return NULL;
+        return;
     }
 
 
-    errorOut volumetricNeoHookean( const floatVector &deformationGradient, const floatType &bulkModulus,
+    void volumetricNeoHookean( const floatVector &deformationGradient, const floatType &bulkModulus,
                                   floatType &meanStress ){
         /*!
          * Compute the volumetric part of a Neo-Hookean material model response of the form
@@ -1339,20 +1245,21 @@ namespace tardigradeStressTools{
          *
          */
 
+        constexpr unsigned int dim = 3;
+        constexpr unsigned int sot_dim = dim * dim;
+
         //Check the size of the deformation gradient
-        if ( deformationGradient.size( ) != 9 ){
-            return new errorNode( "volumetricNeoHookean", "deformation gradient must have nine terms" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( deformationGradient.size( ) == sot_dim, "deformation gradient must have nine terms" )
 
         //Compute the determinant of the deformation gradient
         floatType J;
-        J = tardigradeVectorTools::determinant( deformationGradient, 3, 3 );
+        J = tardigradeVectorTools::determinant( deformationGradient, dim, dim );
 
         return volumetricNeoHookean( J, bulkModulus, meanStress );
 
     }
 
-    errorOut volumetricNeoHookean( const floatVector &deformationGradient, const floatType &bulkModulus,
+    void volumetricNeoHookean( const floatVector &deformationGradient, const floatType &bulkModulus,
                                   floatType &meanStress, floatType &dmeanStressdJ ){
         /*!
          * Compute the volumetric part of a Neo-Hookean material model response of the form
@@ -1370,10 +1277,11 @@ namespace tardigradeStressTools{
          *     of deformation.
          */
 
+        constexpr unsigned int dim = 3;
+        constexpr unsigned int sot_dim = dim * dim;
+
         //Check the size of the deformation gradient
-        if ( deformationGradient.size( ) != 9 ){
-            return new errorNode( "volumetricNeoHookean", "deformation gradient must have nine terms" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( deformationGradient.size( ) == sot_dim, "deformation gradient must have nine terms" )
 
         //Compute the determinant of the deformation gradient
         floatType J;
@@ -1383,7 +1291,7 @@ namespace tardigradeStressTools{
 
     }
 
-    errorOut peryznaModel( const floatType f, const floatType q, const floatType A, const floatType n, floatType &p ){
+    void peryznaModel( const floatType f, const floatType q, const floatType A, const floatType n, floatType &p ){
         /*!
          * Implementation of the Peryzna type model of the form
          *
@@ -1398,19 +1306,15 @@ namespace tardigradeStressTools{
          * \param &p: The value of the model.
          */
 
-        if ( tardigradeVectorTools::fuzzyEquals( q, 0. ) ){
-            return new errorNode( "peryznaModel", "The denominator term is zero" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( !tardigradeVectorTools::fuzzyEquals( q, 0. ), "The denominator term is zero" )
 
-        if ( n < 1 ){
-            return new errorNode( "peryznaModel ( jacobian )", "n must be >= 1" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( n >= 1, "n must be >= 1" )
 
         p = A*pow( tardigradeConstitutiveTools::mac( f/q ), n );
-        return NULL;
+        return;
     }
 
-    errorOut peryznaModel( const floatType f, const floatType q, const floatType A, const floatVector &parameters, floatType &p ){
+    void peryznaModel( const floatType f, const floatType q, const floatType A, const floatVector &parameters, floatType &p ){
         /*!
          * Implementation of the Peryzna type model of the form
          *
@@ -1424,13 +1328,12 @@ namespace tardigradeStressTools{
          * \param &parameters: The parameters ( currently just n )
          * \param &p: The value of the model.
          */
-        if ( parameters.size( ) != 1 ){
-            return new errorNode( "peryznaModel", "The parameters vector is one value long" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( parameters.size( ) == 1, "The parameters vector is one value long" )
+
         return peryznaModel( f, q, A, parameters[ 0 ], p );
     }
 
-    errorOut peryznaModel( const floatType f, const floatType q, const floatType A, const floatType n, floatType &p,
+    void peryznaModel( const floatType f, const floatType q, const floatType A, const floatType n, floatType &p,
                           floatType &dpdf, floatType &dpdq, floatType &dpdA ){
 
         /*!
@@ -1450,13 +1353,9 @@ namespace tardigradeStressTools{
          * \param &dpdA: The derivative of the value w.r.t. A.
          */
 
-        if ( tardigradeVectorTools::fuzzyEquals( q, 0. ) ){
-            return new errorNode( "peryznaModel ( jacobian )", "The denominator term is zero" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( !tardigradeVectorTools::fuzzyEquals( q, 0. ), "The denominator term is zero" )
 
-        if ( n < 1 ){
-            return new errorNode( "peryznaModel ( jacobian )", "n must be >= 1" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( n >= 1, "n must be >= 1" )
 
         //Compute the value
         floatType mac, dmacdx;
@@ -1468,10 +1367,10 @@ namespace tardigradeStressTools{
         dpdq = -A*n*pow( mac, n-1 )*dmacdx*f/( q*q );
         dpdA = pow( tardigradeConstitutiveTools::mac( f/q ), n );
 
-        return NULL;
+        return;
     }
 
-    errorOut peryznaModel( const floatType f, const floatType q, const floatType A, const floatVector &parameters, floatType &p,
+    void peryznaModel( const floatType f, const floatType q, const floatType A, const floatVector &parameters, floatType &p,
                           floatType &dpdf, floatType &dpdq, floatType &dpdA ){
         /*!
          * Implementation of the Peryzna type model of the form
@@ -1489,13 +1388,12 @@ namespace tardigradeStressTools{
          * \param &dpdq: The derivative of the value w.r.t. q.
          * \param &dpdA: The derivative of the value w.r.t. A.
          */
-        if ( parameters.size( ) != 1 ){
-            return new errorNode( "peryznaModel", "The parameters vector is one value long" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( parameters.size( ) == 1, "The parameters vector is one value long" )
+
         return peryznaModel( f, q, A, parameters[ 0 ], p, dpdf, dpdq, dpdA );
     }
 
-    errorOut linearHardening( const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift,
+    void linearHardening( const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift,
                              floatType &value ){
         /*!
          * Compute the linear hardening curve value.
@@ -1508,15 +1406,13 @@ namespace tardigradeStressTools{
          * \param &value: The value of the linear hardening curve.
          */
 
-        if ( stateVariables.size( ) != linearModuli.size( ) ){
-            return new errorNode( "linearHardening", "The state variables and the moduli must have the same size" );
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( stateVariables.size( ) == linearModuli.size( ), "The state variables and the moduli must have the same size" );
 
         value = tardigradeVectorTools::dot( stateVariables, linearModuli ) + scalarShift;
-        return NULL;
+        return;
     }
 
-    errorOut linearHardening( const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift,
+    void linearHardening( const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift,
                              floatType &value, floatVector &valueJacobian ){
         /*!
          * Compute the linear hardening curve value.
@@ -1530,19 +1426,13 @@ namespace tardigradeStressTools{
          * \param &valueJacobian: The jacobian of value w.r.t. the state variables.
          */
 
-        errorOut error = linearHardening( stateVariables, linearModuli, scalarShift, value );
-
-        if ( error ){
-            errorOut result = new errorNode( "linearHardening ( jacobian )", "Error in computation of hardening value" );
-            result->addNext( error );
-            return result;
-        }
+        TARDIGRADE_ERROR_TOOLS_CATCH( linearHardening( stateVariables, linearModuli, scalarShift, value ) )
 
         valueJacobian = linearModuli;
-        return NULL;
+        return;
     }
 
-    errorOut computeJaumannStiffnessTensor( const floatVector &cauchyStress, const floatVector &currentDeformationGradient,
+    void computeJaumannStiffnessTensor( const floatVector &cauchyStress, const floatVector &currentDeformationGradient,
                                             const floatMatrix &dCauchydF, floatMatrix &C ){
         /*!
          * Compute the Jaumann stiffness tensor from the cauchy stress, the current deformation gradient,
@@ -1584,40 +1474,13 @@ namespace tardigradeStressTools{
          */
 
         // Perform error handling
-        if ( cauchyStress.size( ) != currentDeformationGradient.size( ) ){
+        TARDIGRADE_ERROR_TOOLS_CHECK( cauchyStress.size( ) == currentDeformationGradient.size( ), "The cauchy stress ( length " + std::to_string( cauchyStress.size( ) ) + " ) and the deformation gradient ( length " + std::to_string( currentDeformationGradient.size( ) ) + " ) must have the same size" )
 
-            std::string message = "The cauchy stress ( length " + std::to_string( cauchyStress.size( ) ) +
-                                  " ) and the deformation gradient ( length " +
-                                  std::to_string( currentDeformationGradient.size( ) ) +
-                                  " ) must have the same size";
-
-            return new errorNode( __func__, message );
-
-        }
-
-        if ( cauchyStress.size( ) != dCauchydF.size( ) ){
-
-            std::string message = "The derivative of the Cauchy stress w.r.t. the deformation gradient has "
-                                + std::to_string( dCauchydF.size( ) ) + " rows. It needs to have "
-                                + std::to_string( cauchyStress.size( ) ) +
-                                " to be consistent with the provided Cauchy stress";
-
-            return new errorNode( __func__, message );
-
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( cauchyStress.size( ) == dCauchydF.size( ), "The derivative of the Cauchy stress w.r.t. the deformation gradient has " + std::to_string( dCauchydF.size( ) ) + " rows. It needs to have " + std::to_string( cauchyStress.size( ) ) + " to be consistent with the provided Cauchy stress" );
 
         for ( unsigned int i = 0; i < dCauchydF.size( ); i++ ){
 
-            if ( dCauchydF[ i ].size( ) != currentDeformationGradient.size( ) ){
-
-                std::string message = "Row " + std::to_string( i ) + " of dCauchydF is of length " +
-                                      std::to_string( dCauchydF[ i ].size( ) ) +
-                                      " and it should have a length of " +
-                                      std::to_string( currentDeformationGradient.size( ) );
-
-                return new errorNode( __func__, message );
-
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( dCauchydF[ i ].size( ) == currentDeformationGradient.size( ), "Row " + std::to_string( i ) + " of dCauchydF is of length " + std::to_string( dCauchydF[ i ].size( ) ) + " and it should have a length of " + std::to_string( currentDeformationGradient.size( ) ) )
 
         }
 
@@ -1681,7 +1544,7 @@ namespace tardigradeStressTools{
         // Get the symmetric part
         C = tardigradeVectorTools::dot( C, Psymm );
 
-        return NULL;
+        return;
 
     }
 

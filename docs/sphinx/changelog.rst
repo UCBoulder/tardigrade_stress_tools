@@ -9,6 +9,20 @@ Changelog
 0.5.4 (unreleased)
 ******************
 
+Internal Changes
+================
+- Changed the way errors are handled to the new error_tools approach. Will need to remove errorOut returns to complete task. (:pull:`4`). By `Nathan Miller`_.
+- Allow for version numbers to be specified when using FetchContent (:pull:`8`). By `Nathan Miller`_.
+
+New Features
+============
+- Added a mass-change deformation modeling framework (:pull:`5`). By `Nathan Miller`_.
+- Added a directional mass-change deformation model (:pull:`6`). By `Nathan Miller`_.
+
+Bug Fixes
+=========
+- Removed leading whitespace before add_library in CMakeLists file (:pull:`7`). By `Nathan Miller`_.
+
 ******************
 0.5.3 (2023-10-05)
 ******************
