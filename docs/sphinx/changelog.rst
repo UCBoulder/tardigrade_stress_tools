@@ -18,6 +18,7 @@ New Features
 ============
 - Added a mass-change deformation modeling framework (:pull:`5`). By `Nathan Miller`_.
 - Added a directional mass-change deformation model (:pull:`6`). By `Nathan Miller`_.
+- Allow the user to specify a full build of the tardigrade stack (:pull:`9`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
