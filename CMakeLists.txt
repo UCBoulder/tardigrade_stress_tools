@@ -17,8 +17,6 @@ set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
     set(PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES} ${package}.cpp ${package}.h)
     set(PROJECT_PRIVATE_HEADERS ${PROJECT_PRIVATE_HEADERS} ${package}.h)
-    install(FILES ${package}.cpp
-            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endforeach(package)
 set(PROJECT_LINK_LIBRARIES tardigrade_error_tools tardigrade_constitutive_tools)
 
@@ -168,5 +166,11 @@ if(${not_conda_test} STREQUAL "true")
         install(FILES "${PROJECT_BINARY_DIR}/${package}Config.cmake"
                       "${PROJECT_BINARY_DIR}/${package}ConfigVersion.cmake"
                 DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
+
+
+    endforeach(package)
+    foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
+        install(FILES ${CPP_SRC_PATH}/${package}.cpp
+                DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     endforeach(package)
 endif()
