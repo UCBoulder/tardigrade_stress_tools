@@ -4,15 +4,14 @@ package:
   version: {{ VERSION }}
 
 about:
-  home: https://github.com/lanl/tardigrade-stress-tools
+  home: https://github.com/UCBoulder/tardigrade_stress_tools
   license: BSD-3-Clause
   license_file: LICENSE
   summary:  'Tools for computing stress-strain behaviors'
   description: |
-    tardigrade-stress-tools (C20048 Tardigrade) Tools for computing stress-strain behaviors. The stress functions should
+    tardigrade_stress_tools Tools for computing stress-strain behaviors. The stress functions should
     be able to return the stress and the jacobian w.r.t. the strain metric of interest.
-  doc_url: https://lanl.github.io/tardigrade-stress-tools
-  dev_url: https://github.com/lanl/tardigrade-stress-tools
+  dev_url: https://github.com/UCBoulder/tardigrade_stress_tools
 
 source:
   path: '..'

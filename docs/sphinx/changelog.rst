@@ -6,7 +6,19 @@ Changelog
 #########
 
 ******************
-0.5.4 (unreleased)
+0.7.0 (unreleased)
+******************
+
+******************
+0.6.2 (2025-05-14)
+******************
+
+Documentation
+=============
+- Updated the documentation to remove LANL links for the development (:pull:`16`). By `Nathan Miller`_.
+
+******************
+0.6.1 (2025-05-14)
 ******************
 
 Internal Changes
