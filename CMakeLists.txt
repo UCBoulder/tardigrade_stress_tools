@@ -18,13 +18,13 @@ foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
     set(PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES} ${package}.cpp ${package}.h)
     set(PROJECT_PRIVATE_HEADERS ${PROJECT_PRIVATE_HEADERS} ${package}.h)
 endforeach(package)
-foreach(package ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
-    add_library(${package} INTERFACE "${CPP_SRC_PATH}/${package}.cpp" "${CPP_SRC_PATH}/${package}.h")
-endforeach(package)
 set(PROJECT_LINK_LIBRARIES tardigrade_error_tools tardigrade_constitutive_tools)
 
 # Added a flag for whether the python bindings for stress tools get built
 set(TARDIGRADE_STRESS_TOOLS_BUILD_PYTHON_BINDINGS ON CACHE BOOL "Flag for whether the python bindings should be built")
+
+# Add a flag for if a full build of all tardigrade repositories should be performed
+set(TARDIGRADE_FULL_BUILD OFF CACHE BOOL "Flag for whether a full build of Tardigrade should be performed (i.e., all repos pulled from git and built)")
 
 # Add the cmake folder to locate project CMake module(s)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_PATH})
@@ -43,6 +43,12 @@ elseif(cmake_build_type_lower STREQUAL "conda-test")
     # Find the installed project umat
 endif()
 
+if(${not_conda_test} STREQUAL "true")
+    foreach(package ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
+        add_library(${package} INTERFACE "${CPP_SRC_PATH}/${package}.cpp" "${CPP_SRC_PATH}/${package}.h")
+    endforeach(package)
+endif()
+
 # Get version number from Git
 set(VERSION_UPDATE_FROM_GIT True)
 if(${not_conda_test} STREQUAL "true")
@@ -51,6 +57,7 @@ if(${not_conda_test} STREQUAL "true")
     if (DEFINED ENV{PREFIX})
         set(Python_ROOT_DIR "$ENV{PREFIX}/bin")
     endif()
+    set(Python_FIND_STRATEGY LOCATION)
     find_package(Python COMPONENTS Interpreter REQUIRED)
     execute_process(COMMAND ${Python_EXECUTABLE} -m setuptools_scm
                             OUTPUT_VARIABLE ${PROJECT_NAME}_VERSION_STRING_FULL
@@ -93,7 +100,11 @@ set(upstream_packages "tardigrade_error_tools" "tardigrade_vector_tools" "tardig
 foreach(package ${upstream_packages})
     string(TOUPPER "${package}" package_upper)
     set(${package_upper}_BUILD_PYTHON_BINDINGS ${TARDIGRADE_STRESS_TOOLS_BUILD_PYTHON_BINDINGS} CACHE INTERNAL "Setting ${package}'s python binding flag to the global value")
-    find_package(${package} ${upstream_required} CONFIG)
+    if(TARDIGRADE_FULL_BUILD)
+        message("Not attempting to find ${package}")
+    else()
+        find_package(${package} ${upstream_required} CONFIG)
+    endif()
     if(${package}_FOUND)
         message(STATUS "Found ${package}: ${${package}_DIR}")
     else()
@@ -155,5 +166,11 @@ if(${not_conda_test} STREQUAL "true")
         install(FILES "${PROJECT_BINARY_DIR}/${package}Config.cmake"
                       "${PROJECT_BINARY_DIR}/${package}ConfigVersion.cmake"
                 DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
+
+
+    endforeach(package)
+    foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
+        install(FILES ${CPP_SRC_PATH}/${package}.cpp
+                DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     endforeach(package)
 endif()
