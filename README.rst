@@ -20,13 +20,12 @@ interest.
 Information
 ===========
 
-* Documentation: https://aea.re-pages.lanl.gov/material-models/tardigrade_stress_tools
-* Wiki: https://re-git.lanl.gov/aea/material-models/tardigrade_stress_tools/-/wikis/home
+TODO
 
 Developers
 ==========
 
-* Nathan Miller nathanm@lanl.gov
+* Nathan Miller Nathan.A.Miller@colorado.edu
 * Kyle Brindley kbrindley@lanl.gov
 
 ************
@@ -74,9 +73,9 @@ C++ Libraries
 
 * [Eigen](https://eigen.tuxfamily.org/dox/) >= 3.3.7
 * [BOOST](https://www.boost.org/doc/libs/1_53_0/) >= 1.53.0
-* error\_tools: https://re-git.lanl.gov/aea/material-models/tardigrade_error_tools
-* vector\_tools: https://re-git.lanl.gov/aea/material-models/tardigrade_vector_tools
-* constitutive\_tools: https://re-git.lanl.gov/aea/material-models/tardigrade_constitutive_tools
+* error\_tools: https://github.com/UCBoulder/tardigrade_error_tools
+* vector\_tools: https://github.com/UCBoulder/tardigrade_vector_tools
+* constitutive\_tools: https://github.com/UCBoulder/tardigrade_constitutive_tools
 
 If not found on the current system or active Conda environment, all of the
 ``*_tools`` libraries are pulled from their git repos by branch name and built
