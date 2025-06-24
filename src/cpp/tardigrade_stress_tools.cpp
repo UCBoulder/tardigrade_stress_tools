@@ -1291,9 +1291,9 @@ namespace tardigradeStressTools{
 
     }
 
-    void peryznaModel( const floatType f, const floatType q, const floatType A, const floatType n, floatType &p ){
+    void perzynaModel( const floatType f, const floatType q, const floatType A, const floatType n, floatType &p ){
         /*!
-         * Implementation of the Peryzna type model of the form
+         * Implementation of the Perzyna type model of the form
          *
          * \f$p = A \left \langle \frac{ f }{ q } \right \rangle^n\f$
          *
@@ -1314,9 +1314,9 @@ namespace tardigradeStressTools{
         return;
     }
 
-    void peryznaModel( const floatType f, const floatType q, const floatType A, const floatVector &parameters, floatType &p ){
+    void perzynaModel( const floatType f, const floatType q, const floatType A, const floatVector &parameters, floatType &p ){
         /*!
-         * Implementation of the Peryzna type model of the form
+         * Implementation of the Perzyna type model of the form
          *
          * \f$p = A \left \langle \frac{ f }{ q } \right \rangle^n\f$
          *
@@ -1330,14 +1330,14 @@ namespace tardigradeStressTools{
          */
         TARDIGRADE_ERROR_TOOLS_CHECK( parameters.size( ) == 1, "The parameters vector is one value long" )
 
-        return peryznaModel( f, q, A, parameters[ 0 ], p );
+        return perzynaModel( f, q, A, parameters[ 0 ], p );
     }
 
-    void peryznaModel( const floatType f, const floatType q, const floatType A, const floatType n, floatType &p,
+    void perzynaModel( const floatType f, const floatType q, const floatType A, const floatType n, floatType &p,
                           floatType &dpdf, floatType &dpdq, floatType &dpdA ){
 
         /*!
-         * Implementation of the Peryzna type model of the form
+         * Implementation of the Perzyna type model of the form
          *
          * \f$p = A \left \langle \frac{ f }{ q } \right \rangle^n\f$
          *
@@ -1370,10 +1370,10 @@ namespace tardigradeStressTools{
         return;
     }
 
-    void peryznaModel( const floatType f, const floatType q, const floatType A, const floatVector &parameters, floatType &p,
+    void perzynaModel( const floatType f, const floatType q, const floatType A, const floatVector &parameters, floatType &p,
                           floatType &dpdf, floatType &dpdq, floatType &dpdA ){
         /*!
-         * Implementation of the Peryzna type model of the form
+         * Implementation of the Perzyna type model of the form
          *
          * \f$p = A \left \langle \frac{ f }{ q } \right \rangle^n\f$
          *
@@ -1390,7 +1390,7 @@ namespace tardigradeStressTools{
          */
         TARDIGRADE_ERROR_TOOLS_CHECK( parameters.size( ) == 1, "The parameters vector is one value long" )
 
-        return peryznaModel( f, q, A, parameters[ 0 ], p, dpdf, dpdq, dpdA );
+        return perzynaModel( f, q, A, parameters[ 0 ], p, dpdf, dpdq, dpdA );
     }
 
     void linearHardening( const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift,

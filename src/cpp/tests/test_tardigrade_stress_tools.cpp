@@ -1036,9 +1036,9 @@ BOOST_AUTO_TEST_CASE( testVolumetricNeoHookean, * boost::unit_test::tolerance( D
 
 }
 
-BOOST_AUTO_TEST_CASE( testPeryznaModel, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( testPerzynaModel, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
-     * Test the implementation of the Peryzna style model
+     * Test the implementation of the Perzyna style model
      */
 
     floatType f = 2.;
@@ -1048,13 +1048,13 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel, * boost::unit_test::tolerance( DEFAULT_T
     floatVector parameters = { n };
 
     floatType p;
-    tardigradeStressTools::peryznaModel( f, q, A, n, p );
+    tardigradeStressTools::perzynaModel( f, q, A, n, p );
 
     
 
     BOOST_TEST( p == A*pow( (f/q ), n ) );
 
-    tardigradeStressTools::peryznaModel( f, q, A, parameters, p );
+    tardigradeStressTools::perzynaModel( f, q, A, parameters, p );
 
     
 
@@ -1062,7 +1062,7 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel, * boost::unit_test::tolerance( DEFAULT_T
 
     floatType pJ;
     floatType dpdf, dpdq, dpdA;
-    tardigradeStressTools::peryznaModel( f, q, A, n, pJ, dpdf, dpdq, dpdA );
+    tardigradeStressTools::perzynaModel( f, q, A, n, pJ, dpdf, dpdq, dpdA );
 
     
 
@@ -1071,86 +1071,86 @@ BOOST_AUTO_TEST_CASE( testPeryznaModel, * boost::unit_test::tolerance( DEFAULT_T
     floatType eps = 1e-6;
     floatType delta = eps*fabs( f ) + eps;
     floatType pp, pm;
-    tardigradeStressTools::peryznaModel( f + delta, q, A, n, pp );
+    tardigradeStressTools::perzynaModel( f + delta, q, A, n, pp );
 
     
 
-    tardigradeStressTools::peryznaModel( f - delta, q, A, n, pm );
+    tardigradeStressTools::perzynaModel( f - delta, q, A, n, pm );
 
     
 
     BOOST_TEST( ( pp - pm ) / ( 2 * delta ) == dpdf );
 
     delta = eps*fabs( q ) + eps;
-    tardigradeStressTools::peryznaModel( f, q + delta, A, n, pp );
+    tardigradeStressTools::perzynaModel( f, q + delta, A, n, pp );
 
     
 
-    tardigradeStressTools::peryznaModel( f, q - delta, A, n, pm );
+    tardigradeStressTools::perzynaModel( f, q - delta, A, n, pm );
 
     
 
     BOOST_TEST( ( pp - pm ) / ( 2 * delta ) == dpdq );
 
     delta = eps*fabs( A ) + eps;
-    tardigradeStressTools::peryznaModel( f, q, A + delta, n, pp );
+    tardigradeStressTools::perzynaModel( f, q, A + delta, n, pp );
 
     
 
-    tardigradeStressTools::peryznaModel( f, q, A - delta, n, pm );
+    tardigradeStressTools::perzynaModel( f, q, A - delta, n, pm );
 
     
 
     BOOST_TEST( ( pp - pm ) / ( 2 * delta ) == dpdA );
 
     f = -1;
-    tardigradeStressTools::peryznaModel( f, q, A, n, p );
+    tardigradeStressTools::perzynaModel( f, q, A, n, p );
 
     
 
     BOOST_TEST( p == 0. );
 
-    tardigradeStressTools::peryznaModel( f, q, A, n, pJ, dpdf, dpdq, dpdA );
+    tardigradeStressTools::perzynaModel( f, q, A, n, pJ, dpdf, dpdq, dpdA );
 
     
 
     BOOST_TEST( p == pJ );
 
     delta = eps*fabs( f ) + eps;
-    tardigradeStressTools::peryznaModel( f + delta, q, A, n, pp );
+    tardigradeStressTools::perzynaModel( f + delta, q, A, n, pp );
 
     
 
-    tardigradeStressTools::peryznaModel( f - delta, q, A, n, pm );
+    tardigradeStressTools::perzynaModel( f - delta, q, A, n, pm );
 
     
 
     BOOST_TEST( ( pp - pm ) / ( 2 * delta ) == dpdf );
 
     delta = eps*fabs( q ) + eps;
-    tardigradeStressTools::peryznaModel( f, q + delta, A, n, pp );
+    tardigradeStressTools::perzynaModel( f, q + delta, A, n, pp );
 
     
 
-    tardigradeStressTools::peryznaModel( f, q - delta, A, n, pm );
+    tardigradeStressTools::perzynaModel( f, q - delta, A, n, pm );
 
     
 
     BOOST_TEST( ( pp - pm ) / ( 2 * delta ) == dpdq );
 
     delta = eps*fabs( A ) + eps;
-    tardigradeStressTools::peryznaModel( f, q, A + delta, n, pp );
+    tardigradeStressTools::perzynaModel( f, q, A + delta, n, pp );
 
     
 
-    tardigradeStressTools::peryznaModel( f, q, A - delta, n, pm );
+    tardigradeStressTools::perzynaModel( f, q, A - delta, n, pm );
 
     
 
     BOOST_TEST( ( pp - pm ) / ( 2 * delta ) == dpdA );
 
     floatType pJv, dpdfv, dpdqv, dpdAv;
-    tardigradeStressTools::peryznaModel( f, q, A, parameters, pJv, dpdfv, dpdqv, dpdAv );
+    tardigradeStressTools::perzynaModel( f, q, A, parameters, pJv, dpdfv, dpdqv, dpdAv );
 
     BOOST_TEST( pJv == p );
     BOOST_TEST( dpdfv == dpdf );
