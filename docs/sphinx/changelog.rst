@@ -11,7 +11,7 @@ Changelog
 
 Breaking Changes
 ================
-- Corrected spelling of peryzna (:pull:`17`). By `Nathan Miller`_.
+- Corrected spelling of perzyna (:pull:`17`). By `Nathan Miller`_.
 
 ******************
 0.6.2 (2025-05-14)
