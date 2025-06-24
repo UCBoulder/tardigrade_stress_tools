@@ -165,14 +165,14 @@ namespace tardigradeStressTools{
     void volumetricNeoHookean( const floatVector &deformationGradient, const floatType &bulkModulus,
                                   floatType &meanStress, floatType &dmeanStressdJ );
 
-    void peryznaModel( const floatType f, const floatType q, const floatType A, const floatType n, floatType &p );
+    void perzynaModel( const floatType f, const floatType q, const floatType A, const floatType n, floatType &p );
 
-    void peryznaModel( const floatType f, const floatType q, const floatType A, const floatVector &parameters, floatType &p );
+    void perzynaModel( const floatType f, const floatType q, const floatType A, const floatVector &parameters, floatType &p );
 
-    void peryznaModel( const floatType f, const floatType q, const floatType A, const floatType n, floatType &p,
+    void perzynaModel( const floatType f, const floatType q, const floatType A, const floatType n, floatType &p,
                           floatType &dpdf, floatType &dpdq, floatType &dpdA );
 
-    void peryznaModel( const floatType f, const floatType q, const floatType A, const floatVector &parameters, floatType &p,
+    void perzynaModel( const floatType f, const floatType q, const floatType A, const floatVector &parameters, floatType &p,
                           floatType &dpdf, floatType &dpdq, floatType &dpdA );
 
     void linearHardening( const floatVector &stateVariables, const floatVector &linearModuli, const floatType &scalarShift,

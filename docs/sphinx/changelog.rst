@@ -9,6 +9,10 @@ Changelog
 0.7.0 (unreleased)
 ******************
 
+Breaking Changes
+================
+- Corrected spelling of peryzna (:pull:`17`). By `Nathan Miller`_.
+
 ******************
 0.6.2 (2025-05-14)
 ******************
