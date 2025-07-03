@@ -31,7 +31,7 @@ namespace tardigradeStressTools{
              *
              * \f$ \ell_{ij}^{A} = \gamma n_{ij} \f$
              *
-             * where $\bf{\ell}^A \f$ is the mass-change velocity gradient, \f$ \gamma \f$ is the 
+             * where \f$\bf{\ell}^A \f$ is the mass-change velocity gradient, \f$ \gamma \f$ is the 
              * rate multiplier, and \f$ n_{ij} \f$ is the direction tensor. This can be used to define
              * the ODE for the evolution of the mass-change deformation via
              *
@@ -49,6 +49,11 @@ namespace tardigradeStressTools{
              * \param &parameters: The parameter vector
              * \param &alpha: The integration parameter (0 for explicit 1 for implicit). Defaults to the second-order
              *    accurate value of 0.5
+             * \param tolr: The relative tolerance
+             * \param tola: The absolute tolerance
+             * \param maxiter: The maximum number of iterations
+             * \param lsalpha: The line search alpha parameter (minimum expected relative residual improvement)
+             * \param maxlsiter: The maximum number of line search iterations
              */
 
         }
@@ -665,6 +670,8 @@ namespace tardigradeStressTools{
              * \param &At: The previous value of the mass change deformation gradient (units: None, size=9)
              * \param &ct: The previous value of the mass density rate of change (units: \f$\frac{m}{dv t}\f$)
              * \param &ctp1: The current value of the mass density rate of change (units: \f$\frac{m}{dv t}\f$)
+             * \param &vt: The previous value of the mass change direction
+             * \param &vtp1: The current value of the mass change direction
              * \param &rhot: The previous value of the mass density (units: \f$ \frac{m}{dv} \f$)
              * \param &rhotp1: The current value of the mass density (units: \f$ \frac{m}{dv} \f$)
              * \param &gammat: The previous rate multiplier for the evolution of the mass-change deformation (units: None)
@@ -673,6 +680,11 @@ namespace tardigradeStressTools{
              *       direction of \f$ \bf{v}^t \f$ and \f$ \bf{v}^{t+1} \f$ (1)
              * \param &alpha: The integration parameter (0 for explicit 1 for implicit). Defaults to the second-order
              *    accurate value of 0.5
+             * \param tolr: The relative tolerance
+             * \param tola: The absolute tolerance
+             * \param maxiter: The maximum number of iterations
+             * \param lsalpha: The line search alpha parameter (minimum expected relative residual improvement)
+             * \param maxlsiter: The maximum number of line search iterations
              */
 
         }

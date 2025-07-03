@@ -248,7 +248,6 @@ namespace tardigradeStressTools{
          * \param &stress: The row major stress tensor
          * \param &vonMises: The von mises stress
          * \param &jacobian: The row major mean stress jacobian tensor w.r.t. the stress tensor
-         * \param tol: A tolerance for the Jacobian to make sure we don't return nan (defaults to 1e-9)
          */
 
         //Check vector lengths

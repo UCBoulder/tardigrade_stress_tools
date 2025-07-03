@@ -166,16 +166,16 @@ namespace tardigradeStressTools{
 
     namespace massChangeDeformation{
 
-        constexpr unsigned int spatial_dimension = 3;
-        constexpr unsigned int sot_dimension = spatial_dimension * spatial_dimension;
-        constexpr unsigned int tot_dimension = sot_dimension * spatial_dimension;
-        constexpr unsigned int fot_dimension = tot_dimension * spatial_dimension;
+        constexpr unsigned int spatial_dimension = 3; //!< The spatial dimension
+        constexpr unsigned int sot_dimension = spatial_dimension * spatial_dimension; //!< The dimension of a spatial second order tensor
+        constexpr unsigned int tot_dimension = sot_dimension * spatial_dimension; //!< The dimension of a spatial third order tensor
+        constexpr unsigned int fot_dimension = tot_dimension * spatial_dimension; //!< The dimension of a spatial fourth order tensor
 
-        typedef double floatType;
-        typedef std::array< floatType, spatial_dimension > vector3d;
-        typedef std::array< floatType, sot_dimension > secondOrderTensor;
-        typedef std::array< floatType, tot_dimension > thirdOrderTensor;
-        typedef std::array< floatType, fot_dimension > fourthOrderTensor;
+        typedef double floatType; //!< A standard floating point variable
+        typedef std::array< floatType, spatial_dimension > vector3d; //!< A spatial vector
+        typedef std::array< floatType, sot_dimension > secondOrderTensor; //!< A spatial second order tensor
+        typedef std::array< floatType, tot_dimension > thirdOrderTensor; //!< A spatial third order tensor
+        typedef std::array< floatType, fot_dimension > fourthOrderTensor; //!< A spatial fourth order tensor
 
         /*!
          * Base class for data objects which defines the clear command
@@ -502,15 +502,15 @@ namespace tardigradeStressTools{
 
             public:
 
-                const floatType *get_d( ){ return &_d; }
+                const floatType *get_d( ){ return &_d; } //!< Get the value of d
 
-                const vector3d *get_vt( ){ return &_vt; }
+                const vector3d *get_vt( ){ return &_vt; } //!< Get the previous value of v
 
-                const vector3d *get_vtp1( ){ return &_vtp1; }
+                const vector3d *get_vtp1( ){ return &_vtp1; } //!< Get the current value of v
 
             protected:
 
-                const floatType _d;
+                const floatType _d; //!< The directionality parameter
 
                 const vector3d _vt; //!< A vector which defines the evolution direction in the previous timestep
 
