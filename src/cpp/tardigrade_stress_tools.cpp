@@ -248,6 +248,7 @@ namespace tardigradeStressTools{
          * \param &stress: The row major stress tensor
          * \param &vonMises: The von mises stress
          * \param &jacobian: The row major mean stress jacobian tensor w.r.t. the stress tensor
+         * \param tol: A tolerance for the Jacobian to make sure we don't return nan (defaults to 1e-9)
          */
 
         //Check vector lengths
@@ -261,8 +262,11 @@ namespace tardigradeStressTools{
         floatVector deviatoric( stress.size( ), 0. );
         calculateDeviatoricStress( stress, deviatoric );
 
+        floatVector normal;
+        tardigradeConstitutiveTools::computeUnitNormal( deviatoric, normal );
+
         //Calculate the jacobian
-        jacobian = 3./( 2.*vonMises ) * deviatoric;
+        jacobian = std::sqrt( 3./2. ) * normal;
 
         return;
     }
@@ -499,7 +503,7 @@ namespace tardigradeStressTools{
         return;
     }
 
-    void druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatMatrix &djacobiandstress ){
+    void druckerPragerSurfaceFlatJ( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatVector &djacobiandstress, const floatType tol ){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
@@ -514,6 +518,8 @@ namespace tardigradeStressTools{
          * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
          * \param &jacobian: The row major jacobian tensor w.r.t. the stress
          * \param &djacobiandstress: The gradient of the jacobian w.r.t. the stress
+         * \param tol: The tolerance on the von-mises stress to prevent nan when the
+         *     incoming stress is very small (defaults to 1e-9)
          */
 
         //Check vector lengths
@@ -537,12 +543,81 @@ namespace tardigradeStressTools{
         //Compute the gradient of the jacobian w.r.t. the stress
         floatVector eye( stress.size( ), 0 );
         tardigradeVectorTools::eye<floatType>( eye );
-        floatMatrix EYE = tardigradeVectorTools::eye<floatType>( stress.size( ) );
 
         floatVector deviatoric = calculateDeviatoricStress( stress );
 
-        djacobiandstress = ( 3/( 2*vonMises ) )*( EYE - tardigradeVectorTools::dyadic( eye, meanStressJacobian )
-                                                 - tardigradeVectorTools::dyadic( deviatoric, vonMisesJacobian )/vonMises );
+        const unsigned int rows = jacobian.size( );
+        const unsigned int cols = stress.size( );
+        djacobiandstress = floatVector( jacobian.size( ) * stress.size( ), 0 );
+
+        if ( tardigradeVectorTools::l2norm<floatType>(std::begin( vonMisesJacobian ), std::end( vonMisesJacobian ) ) < tol ){
+            return;
+        }
+        for ( unsigned int ij = 0; ij < rows; ++ij ){
+
+            djacobiandstress[ cols * ij + ij ] += ( 3 / ( 2 * ( vonMises + tol ) ) );
+
+            for ( unsigned int ab = 0; ab < cols; ++ab ){
+
+                djacobiandstress[ cols * ij + ab ] -= ( 3 / ( 2 * ( vonMises + tol ) ) ) * ( eye[ ij ] * meanStressJacobian[ ab ] + deviatoric[ ij ] * vonMisesJacobian[ ab ] / ( vonMises + tol ) );
+
+            }
+
+        }
+
+        return;
+    }
+
+    void druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatMatrix &djacobiandstress, const floatType tol ){
+        /*!
+         * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
+         *
+         * \f$f = \sigma^{ vonMises } + A*\sigma^{ mean } - B\f$
+         *
+         * TODO: find the common name for which material parameter, if a common
+         * name exists to distinguish between the two DP parameters.
+         *
+         * \param &stress: The stress tensor
+         * \param &A: The first Drucker-Prager material parameter
+         * \param &B: The second Drucker-Prager material parameter
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &jacobian: The row major jacobian tensor w.r.t. the stress
+         * \param &djacobiandstress: The gradient of the jacobian w.r.t. the stress
+         * \param tol: The tolerance on the von-mises stress to prevent nan when the
+         *     incoming stress is very small (defaults to 1e-9)
+         */
+
+        floatVector _djacobiandstress;
+        TARDIGRADE_ERROR_TOOLS_CATCH(
+            druckerPragerSurfaceFlatJ( stress, A, B, dpYield, jacobian, _djacobiandstress, tol );
+        );
+
+        djacobiandstress = tardigradeVectorTools::inflate(
+            _djacobiandstress, jacobian.size( ), stress.size( )
+        );
+
+    }
+
+    void druckerPragerSurfaceFlatJ( const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatVector &djacobiandstress ){
+        /*!
+         * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
+         *
+         * \f$f = \sigma^{ vonMises } + A*\sigma^{ mean } - B\f$
+         *
+         * TODO: find the common name for which material parameter, if a common
+         * name exists to distinguish between the two DP parameters.
+         *
+         * \param &stress: The stress tensor
+         * \param &dpParam: The two Drucker-Prager material parameters in a vector { A, B }
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &jacobian: The row major jacobian tensor w.r.t. the stress
+         * \param &djacobiandstress: The gradient of the jacobian w.r.t. the stress
+         */
+
+        //Check Drucker-Prager parameter vector length
+        TARDIGRADE_ERROR_TOOLS_CHECK( dpParam.size( ) == 2, "Two parameters are required for the Drucker-Prager surface." )
+
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurfaceFlatJ( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield, jacobian, djacobiandstress ) )
 
         return;
     }
@@ -566,12 +641,15 @@ namespace tardigradeStressTools{
         //Check Drucker-Prager parameter vector length
         TARDIGRADE_ERROR_TOOLS_CHECK( dpParam.size( ) == 2, "Two parameters are required for the Drucker-Prager surface." )
 
-        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield, jacobian, djacobiandstress ) )
+        floatVector _djacobiandstress;
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurfaceFlatJ( stress, dpParam[ 0 ], dpParam[ 1 ], dpYield, jacobian, _djacobiandstress ) )
+
+        djacobiandstress = tardigradeVectorTools::inflate( _djacobiandstress, jacobian.size( ), stress.size( ) );
 
         return;
     }
 
-    void druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection ){
+    void druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection, const floatType tol ){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
@@ -586,18 +664,29 @@ namespace tardigradeStressTools{
          * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
          * \param &jacobian: The row major jacobian tensor w.r.t. the stress
          * \param &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
+         * \param &tol: The tolerance of the unit direction norm to prevent nan
          */
 
         //Calculate the Drucker-Prager yield criterion and jacobian
         TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, A, B, dpYield, jacobian ) )
 
         //Calculate the Drucker-Prager unit normal flow direction as the normalized jacobian
-        unitDirection = jacobian / std::sqrt( 3./2. + pow( A, 2. )/3. );
+        unitDirection = floatVector( jacobian.size( ), 0 );
+        auto norm = tardigradeVectorTools::l2norm<floatType>( std::begin( jacobian ), std::end( jacobian ) );
+        std::transform(
+            std::begin( jacobian ),
+            std::end( jacobian ),
+            std::begin( unitDirection ),
+            std::bind(
+                std::multiplies<floatType>(),
+                std::placeholders::_1, 1./(norm+tol)
+            )
+        );
 
         return;
     }
 
-    void druckerPragerSurface( const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection ){
+    void druckerPragerSurface( const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection, const floatType tol ){
         /*!
          * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
          *
@@ -608,16 +697,74 @@ namespace tardigradeStressTools{
          * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
          * \param &jacobian: The row major jacobian tensor w.r.t. the stress
          * \param &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
+         * \param &tol: The tolerance of the unit direction norm to prevent nan
          */
 
         //Calculate the Drucker-Prager yield criterion and jacobian
         TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, dpParam, dpYield, jacobian ) )
 
         //Calculate the Drucker-Prager unit normal flow direction as the normalized jacobian
-        unitDirection = jacobian / std::sqrt( 3./2. + pow( dpParam[ 0 ], 2. )/3. );
+        auto norm = tardigradeVectorTools::l2norm<floatType>( std::begin( jacobian ), std::end( jacobian ) );
+        std::transform(
+            std::begin( jacobian ),
+            std::end( jacobian ),
+            std::begin( unitDirection ),
+            std::bind(
+                std::multiplies<floatType>(),
+                std::placeholders::_1, 1./(norm+tol)
+            )
+        );
 
         return;
     }
+
+    void druckerPragerSurfaceFlatJ( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection, floatVector &unitDirectionJacobian ){
+        /*!
+         * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
+         *
+         * \f$f = \sigma^{ vonMises } + A*\sigma^{ mean } - B\f$
+         *
+         * TODO: find the common name for which material parameter, if a common
+         * name exists to distinguish between the two DP parameters.
+         *
+         * \param &stress: The stress tensor
+         * \param &A: The first Drucker-Prager material parameter
+         * \param &B: The second Drucker-Prager material parameter
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &jacobian: The row major jacobian tensor w.r.t. the stress
+         * \param &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
+         * \param &unitDirectionJacobian: The jacobian of the unit direction w.r.t. the stress
+         */
+
+        //Calculate the Drucker-Prager yield criterion and jacobian
+        floatVector djacobiandstress;
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurfaceFlatJ( stress, A, B, dpYield, jacobian, djacobiandstress ) )
+
+        //Compute the unit normal flow direction and the jacobian of the unit normal flow direction
+        //w.r.t. stress
+        floatVector duDdjacobian;
+        tardigradeConstitutiveTools::computeUnitNormal( jacobian, unitDirection, duDdjacobian );
+
+        const unsigned int rows = unitDirection.size( );
+        const unsigned int cols = stress.size( );
+        unitDirectionJacobian = floatVector( rows * cols, 0 );
+
+        if ( tardigradeVectorTools::l2norm<floatType>( std::begin( unitDirection ), std::end( unitDirection ) ) < 0.5 ){
+            return;
+        }
+
+        const unsigned int jsize = jacobian.size( );
+        for ( unsigned int i = 0; i < rows; ++i ){
+            for ( unsigned int j = 0; j < jsize; ++j ){
+                for ( unsigned int k = 0; k < cols; ++k ){
+                    unitDirectionJacobian[ cols * i + k ] += duDdjacobian[ jsize * i + j ] * djacobiandstress[ cols * j + k ];
+                }
+            }
+        }
+
+        return;
+    }
+
 
     void druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection, floatMatrix &unitDirectionJacobian ){
         /*!
@@ -637,16 +784,53 @@ namespace tardigradeStressTools{
          * \param &unitDirectionJacobian: The jacobian of the unit direction w.r.t. the stress
          */
 
+        floatVector _unitDirectionJacobian;
+
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurfaceFlatJ( stress, A, B, dpYield, jacobian, unitDirection, _unitDirectionJacobian ) );
+
+        TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionJacobian = tardigradeVectorTools::inflate( _unitDirectionJacobian, unitDirection.size( ), stress.size( ) ) );
+
+        return;
+    }
+
+    void druckerPragerSurfaceFlatJ( const floatVector &stress, const floatVector &dpParam, floatType &dpYield, floatVector &jacobian, floatVector &unitDirection, floatVector &unitDirectionJacobian ){
+        /*!
+         * Compute the Drucker-Prager yield criterion from a 2nd rank stress tensor stored in row major format
+         *
+         * \f$f = \sigma^{ vonMises } + A*\sigma^{ mean } - B\f$
+         *
+         * \param &stress: The stress tensor
+         * \param &dpParam: The two Drucker-Prager material parameters in a vector { A, B }
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
+         * \param &jacobian: The row major jacobian tensor w.r.t. the stress
+         * \param &unitDirection: The normalized row major jacobian tensor w.r.t. the stress
+         * \param &unitDirectionJacobian: The jacobian of the unit direction w.r.t. the stress
+         */
+
         //Calculate the Drucker-Prager yield criterion and jacobian
-        floatMatrix djacobiandstress;
-        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, A, B, dpYield, jacobian, djacobiandstress ) )
+        floatVector djacobiandstress;
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurfaceFlatJ( stress, dpParam, dpYield, jacobian, djacobiandstress ) )
 
         //Compute the unit normal flow direction and the jacobian of the unit normal flow direction
         //w.r.t. stress
-        floatMatrix duDdjacobian;
+        floatVector duDdjacobian;
         tardigradeConstitutiveTools::computeUnitNormal( jacobian, unitDirection, duDdjacobian );
 
-        unitDirectionJacobian = tardigradeVectorTools::dot( duDdjacobian, djacobiandstress );
+        const unsigned int rows = unitDirection.size( );
+        const unsigned int cols = stress.size( );
+        unitDirectionJacobian = floatVector( rows * cols, 0 );
+        if ( tardigradeVectorTools::l2norm<floatType>( std::begin( unitDirection ), std::end( unitDirection ) ) < 0.5 ){
+            return;
+        }
+
+        const unsigned int jsize = jacobian.size( );
+        for ( unsigned int i = 0; i < rows; ++i ){
+            for ( unsigned int j = 0; j < jsize; ++j ){
+                for ( unsigned int k = 0; k < cols; ++k ){
+                    unitDirectionJacobian[ cols * i + k ] += duDdjacobian[ jsize * i + j ] * djacobiandstress[ cols * j + k ];
+                }
+            }
+        }
 
         return;
     }
@@ -665,16 +849,12 @@ namespace tardigradeStressTools{
          * \param &unitDirectionJacobian: The jacobian of the unit direction w.r.t. the stress
          */
 
-        //Calculate the Drucker-Prager yield criterion and jacobian
-        floatMatrix djacobiandstress;
-        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( stress, dpParam, dpYield, jacobian, djacobiandstress ) )
 
-        //Compute the unit normal flow direction and the jacobian of the unit normal flow direction
-        //w.r.t. stress
-        floatMatrix duDdjacobian;
-        tardigradeConstitutiveTools::computeUnitNormal( jacobian, unitDirection, duDdjacobian );
+        floatVector _unitDirectionJacobian;
 
-        unitDirectionJacobian = tardigradeVectorTools::dot( duDdjacobian, djacobiandstress );
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurfaceFlatJ( stress, dpParam, dpYield, jacobian, unitDirection, _unitDirectionJacobian ) );
+
+        TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionJacobian = tardigradeVectorTools::inflate( _unitDirectionJacobian, unitDirection.size( ), stress.size( ) ) );
 
         return;
     }
@@ -974,8 +1154,8 @@ namespace tardigradeStressTools{
          * \param &dstressdPreviousStrain: The derivative of the stress w.r.t. the previous strain
          * \param &dstressdPreviousRateModifier: The derivative of the stress w.r.t. the previous rate modifier
          * \param &dstressdPreviousStateVariables: The derivative of the stress w.r.t. the previous state variables
-         * \param &dStateVariablesdstrain: The derivative of the state variables w.r.t. the strain
-         * \param &dStateVariablesdrateModifier: The derivative of the state variables w.r.t. the rate modifier
+         * \param &dStateVariablesdStrain: The derivative of the state variables w.r.t. the strain
+         * \param &dStateVariablesdRateModifier: The derivative of the state variables w.r.t. the rate modifier
          * \param &dStateVariablesdPreviousStrain: The derivative of the state variables w.r.t. the previous strain
          * \param &dStateVariablesdPreviousRateModifier: The derivative of the state variables w.r.t. the previous rate modifier
          * \param &dStateVariablesdPreviousStateVariables: The derivative of the state variables w.r.t. the previous state variables
@@ -1027,7 +1207,8 @@ namespace tardigradeStressTools{
          *         - \f$\tau\f$ s: The time constants
          *         - \f$G\f$ s: The stiffness values
          * \param &alpha: The integration parameter ( 0 for implicit, 1 for explicit )
-         * \param &stress: The computed stress in the reference configuration ( i.e. the same configuration as the strain )
+         * \param &dStress: The change in stress in the reference configuration ( i.e., the same configuration as the strain )
+         * \param &stress: The computed stress in the reference configuration ( i.e., the same configuration as the strain )
          * \param &currentStateVariables: The current values of the state variables
          * \param &dstressdstrain: The derivative of the stress w.r.t. the strain
          * \param &dstressdrateModifier: The derivative of the stress w.r.t. the rate modifier
@@ -1439,31 +1620,31 @@ namespace tardigradeStressTools{
          * and the total derivative of the Cauchy stress w.r.t. the deformation gradient
          * 
          * From the variation of the Jaumann rate
-         * \f$J \mathbb{ C }_{ ijkl } \delta D_{ kl } = \delta \left( J \sigma_{ ij }\right ) + \delta W_{ ik } \sigma_{ kj } - \sigma_{ ik } \delta W_{ kj }\f$
-         * 
-         * Where \f$J$\f is the Jacobian of deformation, \f$\mathbb{ C }\f$ is the Jaumann stiffness tensor,
+         * \f$J \mathbb{ C }_{ ijkl } \delta D_{ kl } = \delta \left( J \sigma_{ ij }\right) + \delta W_{ ik } \sigma_{ kj } - \sigma_{ ik } \delta W_{ kj }\f$
+         *
+         * Where \f$J$\f$ is the Jacobian of deformation, \f$\mathbb{ C }\f$ is the Jaumann stiffness tensor,
          * \f$\bf{ \sigma }\f$ is the Cauchy stress and \f$\delta \bf{ D }\f$ is the perturbation of the rate of
          * deformation, and \f$\delta \bf{ W }\f$ is the perturbation of the rate of spin.
-         * 
+         *
          * By using the properties that
-         * 
-         * \f$\delta D_{ kl } = \text{ symm }\left( \delta F_{ kK } F_{ Kl }^{ -1 }\right )\f$
-         * 
-         * \f$\delta W_{ kl } = \text{ asymm }\left( \delta F_{ kK } F_{ Kl }^{ -1 }\right )\f$
-         * 
+         *
+         * \f$\delta D_{ kl } = \text{ symm }\left( \delta F_{ kK } F_{ Kl }^{ -1 }\right)\f$
+         *
+         * \f$\delta W_{ kl } = \text{ asymm }\left( \delta F_{ kK } F_{ Kl }^{ -1 }\right)\f$
+         *
          * Where
-         * 
-         * \f$\text{ symm }\left( \bf{ A }\right ) = \frac{ 1 }{ 2 }\left( \bf{ A } + \bf{ A }^T\right )\f$
-         * 
-         * \f$\text{ asymm }\left( \bf{ A }\right ) = \frac{ 1 }{ 2 }\left( \bf{ A } - \bf{ A }^T\right )\f$
-         * 
+         *
+         * \f$\text{ symm }\left( \bf{ A }\right ) = \frac{ 1 }{ 2 }\left( \bf{ A } + \bf{ A }^T\right)\f$
+         *
+         * \f$\text{ asymm }\left( \bf{ A }\right ) = \frac{ 1 }{ 2 }\left( \bf{ A } - \bf{ A }^T\right)\f$
+         *
          * It can be shown that
-         * 
-         * \f$\mathbb{ C }_{ ijkl } = \left( \delta_{ mn } \sigma_{ ij } + \frac{ D \sigma_{ ij } }{ D F_{ mK } } F_{ nK }\right )\mathbb{ P }_{ mnkl }^{ symm }\f$
-         * 
+         *
+         * \f$\mathbb{ C }_{ ijkl } = \left( \delta_{ mn } \sigma_{ ij } + \frac{ D \sigma_{ ij } }{ D F_{ mK } } F_{ nK }\right)\mathbb{ P }_{ mnkl }^{ symm }\f$
+         *
          * Where
-         * 
-         * \f$\mathbb{ P }_{ ijkl }^{ symm } = \frac{ 1 }{ 2 }\left( \delta_{ ik } \delta_{ jl } + \delta_{ jk } \delta_{ il }\right )\f$
+         *
+         * \f$\mathbb{ P }_{ ijkl }^{ symm } = \frac{ 1 }{ 2 }\left( \delta_{ ik } \delta_{ jl } + \delta_{ jk } \delta_{ il }\right)\f$
          * 
          * \param &cauchyStress: The Cauchy stress
          * \param &currentDeformationGradient: The current deformation gradient i.e. the mapping for differential
