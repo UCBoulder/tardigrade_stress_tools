@@ -174,7 +174,7 @@ namespace linearElasticity{
         /*!
          * Rotate the full 81 component stiffness tensor as
          *
-         * \f$ C'_{ijkl} = R_{im} R_{jn} R_{ko} R_{lp} C_{mnop}
+         * \f$ C'_{ijkl} = R_{im} R_{jn} R_{ko} R_{lp} C_{mnop} \f$
          *
          * where \f$C'_{ijkl}\f$ is the rotated stiffness tensor, \f$R_{ij}\f$ is the rotation matrix, and
          * \f$C_{mnop}\f$ is the original stiffness tensor.
@@ -231,7 +231,7 @@ namespace linearElasticity{
         /*!
          * Rotate the full 81 component stiffness tensor as
          *
-         * \f$ C'_{ijkl} = R_{im} R_{jn} R_{ko} R_{lp} C_{mnop}
+         * \f$ C'_{ijkl} = R_{im} R_{jn} R_{ko} R_{lp} C_{mnop} \f$
          *
          * where \f$C'_{ijkl}\f$ is the rotated stiffness tensor, \f$R_{ij}\f$ is the rotation matrix, and
          * \f$C_{mnop}\f$ is the original stiffness tensor.
