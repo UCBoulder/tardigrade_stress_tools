@@ -13,6 +13,10 @@ Breaking Changes
 ================
 - Corrected spelling of perzyna (:pull:`17`). By `Nathan Miller`_.
 
+Bug Fixes
+=========
+- Corrected bug in the calculation of the von Mises stress and the Drucker Prager yield surface jacobians (:pull:`18`). By `Nathan Miller`_.
+
 ******************
 0.6.2 (2025-05-14)
 ******************
