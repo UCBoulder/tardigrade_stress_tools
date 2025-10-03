@@ -49,4 +49,8 @@ namespace linearElasticity{
 }  // linearElasticity
 }  // tardigradeStressTools
 
+#ifdef TARDIGRADE_HEADER_ONLY
+    #include "linear_elasticity.cpp"
+#endif
+
 #endif
