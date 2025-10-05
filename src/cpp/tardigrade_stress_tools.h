@@ -24,15 +24,43 @@ namespace tardigradeStressTools{
     typedef tardigradeConstitutiveTools::floatVector floatVector; //!< Define a vector of floats
     typedef tardigradeConstitutiveTools::floatMatrix floatMatrix; //!< Define a matrix of floats
 
-    void calculateMeanStress( const floatVector &stress, floatType &meanStress );
+    template<
+        unsigned int dim,
+        class stress_iterator, typename stress_type
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateMeanStress(
+        const stress_iterator &stress_begin, const stress_iterator &stress_end,
+        stress_type &meanStress
+    );
 
-    floatType calculateMeanStress( const floatVector &stress );
+    template<
+        unsigned int dim,
+        typename stress_type, class stress_iterator
+    >
+    stress_type TARDIGRADE_OPTIONAL_INLINE calculateMeanStress(
+        const stress_iterator &stress_begin, const stress_iterator &stress_end
+    );
 
-    void calculateMeanStress( const floatMatrix &stress, floatType &meanStress );
+    template<
+        unsigned int dim,
+        class stress_iterator, typename stress_type,
+        class jacobian_iterator
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateMeanStress(
+        const stress_iterator &stress_begin, const stress_iterator &stress_end,
+        stress_type &meanStress,
+        jacobian_iterator jacobian_begin, jacobian_iterator jacobian_end
+    );
 
-    floatType calculateMeanStress( const floatMatrix &stress );
+    void TARDIGRADE_OPTIONAL_INLINE calculateMeanStress( const floatVector &stress, floatType &meanStress );
 
-    void calculateMeanStress( const floatVector &stress, floatType &meanStress, floatVector &jacobian );
+    floatType TARDIGRADE_OPTIONAL_INLINE calculateMeanStress( const floatVector &stress );
+
+    void TARDIGRADE_OPTIONAL_INLINE calculateMeanStress( const floatMatrix &stress, floatType &meanStress );
+
+    floatType TARDIGRADE_OPTIONAL_INLINE calculateMeanStress( const floatMatrix &stress );
+
+    void TARDIGRADE_OPTIONAL_INLINE calculateMeanStress( const floatVector &stress, floatType &meanStress, floatVector &jacobian );
 
     void calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric );
 
