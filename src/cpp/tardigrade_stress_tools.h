@@ -62,15 +62,35 @@ namespace tardigradeStressTools{
 
     void TARDIGRADE_OPTIONAL_INLINE calculateMeanStress( const floatVector &stress, floatType &meanStress, floatVector &jacobian );
 
-    void calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric );
+    template<
+        unsigned int dim,
+        class stress_iterator, class deviatoric_iterator
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress(
+        const stress_iterator &stress_begin,  const stress_iterator &stress_end,
+        deviatoric_iterator deviatoric_begin, deviatoric_iterator deviatoric_end
+    );
 
-    void calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric, floatMatrix &jacobian );
+    template<
+        unsigned int dim,
+        class stress_iterator, class deviatoric_iterator,
+        class jacobian_iterator
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress(
+        const stress_iterator &stress_begin,  const stress_iterator &stress_end,
+        deviatoric_iterator deviatoric_begin, deviatoric_iterator deviatoric_end,
+        jacobian_iterator jacobian_begin,     jacobian_iterator jacobian_end
+    );
 
-    void calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric, floatMatrix &jacobian );
+    void TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric );
 
-    floatVector calculateDeviatoricStress( const floatVector &stress );
+    void TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric, floatVector &jacobian );
 
-    floatVector calculateDeviatoricStress( const floatVector &stress, floatMatrix &jacobian );
+    void TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric, floatMatrix &jacobian );
+
+    floatVector TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress( const floatVector &stress );
+
+    floatVector TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress( const floatVector &stress, floatMatrix &jacobian );
 
     void calculateVonMisesStress( const floatVector &stress, floatType &vonMises );
 
