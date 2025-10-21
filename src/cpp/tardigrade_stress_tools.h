@@ -92,6 +92,26 @@ namespace tardigradeStressTools{
 
     floatVector TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress( const floatVector &stress, floatMatrix &jacobian );
 
+    template<
+        unsigned int dim,
+        class stress_iterator, typename vonMises_type
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateVonMisesStress(
+        const stress_iterator &stress_begin, const stress_iterator &stress_end,
+        vonMises_type &vonMises
+    );
+
+    template<
+        unsigned int dim,
+        class stress_iterator, typename vonMises_type,
+        class jacobian_iterator
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateVonMisesStress(
+        const stress_iterator &stress_begin, const stress_iterator &stress_end,
+        vonMises_type &vonMises,
+        jacobian_iterator jacobian_begin, jacobian_iterator jacobian_end
+    );
+
     void calculateVonMisesStress( const floatVector &stress, floatType &vonMises );
 
     floatType calculateVonMisesStress( const floatVector &stress );
