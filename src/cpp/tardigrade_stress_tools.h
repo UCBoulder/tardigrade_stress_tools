@@ -118,6 +118,46 @@ namespace tardigradeStressTools{
 
     void calculateVonMisesStress( const floatVector &stress, floatType &vonMises, floatVector &jacobian );
 
+    template<
+        typename vonMises_type, typename meanStress_type,
+        typename A_type, typename B_type,
+        typename dpYield_type
+    >
+    void druckerPragerSurface(
+        const vonMises_type &vonMises, const meanStress_type &meanStress,
+        const A_type &A, const B_type &B, dpYield_type &dpYield
+    );
+
+    template<
+        typename vonMises_type, typename meanStress_type,
+        class dpParam_iterator, typename dpYield_type
+    >
+    void druckerPragerSurface(
+        const vonMises_type &vonMises, const meanStress_type &meanStress,
+        const dpParam_iterator &dpParam_begin, const dpParam_iterator &dpParam_end,
+        dpYield_type &dpYield
+    );
+
+//    template<
+//        typename vonMises_type, typename meanStress_type,
+//        typename A_type, typename B_type,
+//        typename dpYield_type
+//    >
+//    dpYield_type druckerPragerSurface(
+//        const vonMises_type &vonMises, const meanStress_type &meanStress,
+//        const A_type &A, const B_type &B, dpYield_type &dpYield
+//    );
+//
+//    template<
+//        typename vonMises_type, typename meanStress_type,
+//        class dpParam_iterator, typename dpYield_type
+//    >
+//    dpYield_type druckerPragerSurface(
+//        const vonMises_type &vonMises, const meanStress_type &meanStress,
+//        const dpParam_iterator &dpParam_begin, const dpParam_iterator &dpParam_end,
+//        dpYield_type &dpYield
+//    );
+
     void druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatType &A, const floatType &B, floatType &dpYield );
 
     void druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatVector &dpParam, floatType &dpYield );
