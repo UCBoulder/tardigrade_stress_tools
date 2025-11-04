@@ -146,16 +146,16 @@ namespace tardigradeStressTools{
 
     }
 
-//    template<
-//        typename vonMises_type, typename meanStress_type,
-//        class dpParam_iterator, typename dpYield_type
-//    >
-//    void druckerPragerSurface(
-//        const vonMises_type &vonMises, const meanStress_type &meanStress,
-//        const dpParam_iterator &dpParam_begin, const dpParam_iterator &dpParam_end,
-//        dpYield_type &dpYield
-//    );
-//
+    template<
+        typename vonMises_type, typename meanStress_type,
+        class dpParam_iterator, typename dpYield_type
+    >
+    void druckerPragerSurface_iter(
+        const vonMises_type &vonMises, const meanStress_type &meanStress,
+        const dpParam_iterator &dpParam_begin, const dpParam_iterator &dpParam_end,
+        dpYield_type &dpYield
+    );
+
 //    template<
 //        typename vonMises_type, typename meanStress_type,
 //        typename A_type, typename B_type,
@@ -175,8 +175,6 @@ namespace tardigradeStressTools{
 //        const dpParam_iterator &dpParam_begin, const dpParam_iterator &dpParam_end,
 //        dpYield_type &dpYield
 //    );
-//
-//    void druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatType &A, const floatType &B, floatType &dpYield );
 
     void druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatVector &dpParam, floatType &dpYield );
 

@@ -746,43 +746,43 @@ namespace tardigradeStressTools{
 
     }
 
-//    template<
-//        typename vonMises_type, typename meanStress_type,
-//        class dpParam_iterator, typename dpYield_type
-//    >
-//    void druckerPragerSurface(
-//        const vonMises_type &vonMises, const meanStress_type &meanStress,
-//        const dpParam_iterator &dpParam_begin, const dpParam_iterator &dpParam_end,
-//        dpYield_type &dpYield
-//    ){
-//        /*!
-//         * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
-//         *
-//         * \f$f = \sigma^{ vonMises } + A*\sigma^{ mean } - B\f$
-//         *
-//         * TODO: find the common name for which material parameter, if a common
-//         * name exists to distinguish between the two DP parameters.
-//         *
-//         * \param &vonMises: The von Mises stress
-//         * \param &meanStress: The mean Stress
-//         * \param &dpParam_begin: The starting iterator of the Drucker-Prager material parameters
-//         * \param &dpParam_end: The stopping iterator of the Drucker-Prager material parameters
-//         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
-//         */
-//
-//        TARDIGRADE_ERROR_TOOLS_CHECK(
-//            ( unsigned int )( dpParam_end - dpParam_begin ) == 2,
-//            "The Drucker-Prager parameter vector has a size of " + std::to_string( ( unsigned int )( dpParam_end - dpParam_begin ) ) + " but must have a size of 2"
-//        );
-//
-//        druckerPragerSurface(
-//            vonMises, meanStress,
-//            *( dpParam_begin + 0 ), *( dpParam_begin + 1 ),
-//            dpYield
-//        );
-//
-//    }
-//
+    template<
+        typename vonMises_type, typename meanStress_type,
+        class dpParam_iterator, typename dpYield_type
+    >
+    void druckerPragerSurface_iter(
+        const vonMises_type &vonMises, const meanStress_type &meanStress,
+        const dpParam_iterator &dpParam_begin, const dpParam_iterator &dpParam_end,
+        dpYield_type &dpYield
+    ){
+        /*!
+         * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
+         *
+         * \f$f = \sigma^{ vonMises } + A*\sigma^{ mean } - B\f$
+         *
+         * TODO: find the common name for which material parameter, if a common
+         * name exists to distinguish between the two DP parameters.
+         *
+         * \param &vonMises: The von Mises stress
+         * \param &meanStress: The mean Stress
+         * \param &dpParam_begin: The starting iterator of the Drucker-Prager material parameters
+         * \param &dpParam_end: The stopping iterator of the Drucker-Prager material parameters
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
+         */
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( dpParam_end - dpParam_begin ) == 2,
+            "The Drucker-Prager parameter vector has a size of " + std::to_string( ( unsigned int )( dpParam_end - dpParam_begin ) ) + " but must have a size of 2"
+        );
+
+        druckerPragerSurface(
+            vonMises, meanStress,
+            *( dpParam_begin + 0 ), *( dpParam_begin + 1 ),
+            dpYield
+        );
+
+    }
+
 //    template<
 //        typename vonMises_type, typename meanStress_type,
 //        typename A_type, typename B_type,
@@ -807,27 +807,6 @@ namespace tardigradeStressTools{
 //
 //    }
 
-//    void druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatType &A, const floatType &B, floatType &dpYield ){
-//        /*!
-//         * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
-//         *
-//         * \f$f = \sigma^{ vonMises } + A*\sigma^{ mean } - B\f$
-//         *
-//         * TODO: find the common name for which material parameter, if a common
-//         * name exists to distinguish between the two DP parameters.
-//         *
-//         * \param &vonMises: The von Mises stress
-//         * \param &meanStress: The mean Stress
-//         * \param &A: The first Drucker-Prager material parameter
-//         * \param &B: The second Drucker-Prager material parameter
-//         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
-//         */
-//
-//        dpYield = vonMises + A*meanStress - B;
-//
-//        return;
-//    }
-
     void druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatVector &dpParam, floatType &dpYield ){
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
@@ -840,10 +819,7 @@ namespace tardigradeStressTools{
          * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
          */
 
-        //Check Drucker-Prager parameter vector length
-        TARDIGRADE_ERROR_TOOLS_CHECK( dpParam.size( ) == 2, "Two parameters are required for the Drucker-Prager surface." );
-
-        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( vonMises, meanStress, dpParam[ 0 ], dpParam[ 1 ], dpYield ) )
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface_iter( vonMises, meanStress, std::begin( dpParam ), std::end( dpParam ), dpYield ) )
 
         return;
     }
