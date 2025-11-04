@@ -123,7 +123,7 @@ namespace tardigradeStressTools{
         typename A_type, typename B_type,
         typename dpYield_type
     >
-    void druckerPragerSurface(
+    void TARDIGRADE_OPTIONAL_INLINE druckerPragerSurface(
         const vonMises_type &vonMises, const meanStress_type &meanStress,
         const A_type &A, const B_type &B, dpYield_type &dpYield
     ){
@@ -150,31 +150,52 @@ namespace tardigradeStressTools{
         typename vonMises_type, typename meanStress_type,
         class dpParam_iterator, typename dpYield_type
     >
-    void druckerPragerSurface_iter(
+    void TARDIGRADE_OPTIONAL_INLINE druckerPragerSurface_iter(
         const vonMises_type &vonMises, const meanStress_type &meanStress,
         const dpParam_iterator &dpParam_begin, const dpParam_iterator &dpParam_end,
         dpYield_type &dpYield
     );
 
-//    template<
-//        typename vonMises_type, typename meanStress_type,
-//        typename A_type, typename B_type,
-//        typename dpYield_type
-//    >
-//    dpYield_type druckerPragerSurface(
-//        const vonMises_type &vonMises, const meanStress_type &meanStress,
-//        const A_type &A, const B_type &B, dpYield_type &dpYield
-//    );
-//
-//    template<
-//        typename vonMises_type, typename meanStress_type,
-//        class dpParam_iterator, typename dpYield_type
-//    >
-//    dpYield_type druckerPragerSurface(
-//        const vonMises_type &vonMises, const meanStress_type &meanStress,
-//        const dpParam_iterator &dpParam_begin, const dpParam_iterator &dpParam_end,
-//        dpYield_type &dpYield
-//    );
+    template<
+        typename vonMises_type, typename meanStress_type,
+        typename A_type, typename B_type,
+        typename dpYield_type
+    >
+    dpYield_type TARDIGRADE_OPTIONAL_INLINE druckerPragerSurface(
+        const vonMises_type &vonMises, const meanStress_type &meanStress,
+        const A_type &A, const B_type &B
+    ){
+        /*!
+         * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
+         *
+         * \f$f = \sigma^{ vonMises } + A*\sigma^{ mean } - B\f$
+         *
+         * TODO: find the common name for which material parameter, if a common
+         * name exists to distinguish between the two DP parameters.
+         *
+         * \param &vonMises: The von Mises stress
+         * \param &meanStress: The mean Stress
+         * \param &A: The first Drucker-Prager material parameter
+         * \param &B: The second Drucker-Prager material parameter
+         * \return dpYield: The Drucker-Prager yield stress/criterion/surface
+         */
+
+        dpYield_type dpYield;
+
+        druckerPragerSurface( vonMises, meanStress, A, B, dpYield );
+
+        return dpYield;
+
+    }
+
+    template<
+        typename vonMises_type, typename meanStress_type,
+        class dpParam_iterator, typename dpYield_type
+    >
+    dpYield_type TARDIGRADE_OPTIONAL_INLINE druckerPragerSurface_iter(
+        const vonMises_type &vonMises, const meanStress_type &meanStress,
+        const dpParam_iterator &dpParam_begin, const dpParam_iterator &dpParam_end
+    );
 
     void druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatVector &dpParam, floatType &dpYield );
 
