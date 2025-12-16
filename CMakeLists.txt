@@ -23,6 +23,13 @@ set(PROJECT_LINK_LIBRARIES tardigrade_error_tools tardigrade_constitutive_tools)
 # Added a flag for whether the python bindings for stress tools get built
 set(TARDIGRADE_STRESS_TOOLS_BUILD_PYTHON_BINDINGS ON CACHE BOOL "Flag for whether the python bindings should be built")
 
+set(TARDIGRADE_HEADER_ONLY "Set this to true to build the library as a header-only project" CACHE BOOL False)
+
+if(${TARDIGRADE_HEADER_ONLY})
+  add_compile_definitions(TARDIGRADE_HEADER_ONLY)
+  message("BUILDING IN HEADER ONLY MODE")
+endif()
+
 # Add a flag for if a full build of all tardigrade repositories should be performed
 set(TARDIGRADE_FULL_BUILD OFF CACHE BOOL "Flag for whether a full build of Tardigrade should be performed (i.e., all repos pulled from git and built)")
 
@@ -33,11 +40,23 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_P
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
 set(upstream_required "")
 set(not_conda_test "true")
+if(NOT ${TARDIGRADE_HEADER_ONLY})
+    set(project_link_string ${PROJECT_NAME})
+endif()
 if(cmake_build_type_lower STREQUAL "release")
     set(upstream_required "REQUIRED")
 elseif(cmake_build_type_lower STREQUAL "conda-test")
     set(upstream_required "REQUIRED")
     set(not_conda_test "false")
+    if (NOT ${TARDIGRADE_HEADER_ONLY})
+        # Find the installed project library
+        find_file(installed_linked_library
+                  "lib${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+                  PATHS "$ENV{CONDA_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
+                  NO_CACHE
+                  REQUIRED)
+        set(project_link_string ${installed_linked_library})
+    endif()
     # Find the installed project libraries
     find_package(${PROJECT_NAME} ${upstream_required} CONFIG)
     # Find the installed project umat

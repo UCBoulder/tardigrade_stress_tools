@@ -26,7 +26,8 @@ foreach(support_module ${INTERNAL_SUPPORT_LIBRARIES})
         target_include_directories(${TEST_NAME} PUBLIC
                                    ${Boost_INCLUDE_DIRS}  # Required for MacOSX CMake builds. Not sure if it's a CMake or clang issue.
                                    ${tardigrade_vector_tools_SOURCE_DIR}/${CPP_SRC_PATH}
-                                   ${tardigrade_error_tools_SOURCE_DIR}/${CPP_SRC_PATH})
+                                   ${tardigrade_error_tools_SOURCE_DIR}/${CPP_SRC_PATH}
+                                   ${tardigrade_constitutive_tools_SOURCE_DIR}/${CPP_SRC_PATH})
     endif()
 
 endforeach(support_module)
@@ -44,7 +45,8 @@ foreach(support_module ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
         target_include_directories(${TEST_NAME} PUBLIC
                                    ${Boost_INCLUDE_DIRS}  # Required for MacOSX CMake builds. Not sure if it's a CMake or clang issue.
                                    ${tardigrade_vector_tools_SOURCE_DIR}/${CPP_SRC_PATH}
-                                   ${tardigrade_error_tools_SOURCE_DIR}/${CPP_SRC_PATH})
+                                   ${tardigrade_error_tools_SOURCE_DIR}/${CPP_SRC_PATH}
+                                   ${tardigrade_constitutive_tools_SOURCE_DIR}/${CPP_SRC_PATH})
     endif()
 
 endforeach(support_module)

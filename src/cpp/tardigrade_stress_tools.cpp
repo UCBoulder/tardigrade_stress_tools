@@ -13,6 +13,99 @@
 
 namespace tardigradeStressTools{
 
+    template<
+        unsigned int dim,
+        class stress_iterator, typename stress_type
+    >
+    void calculateMeanStress(
+        const stress_iterator &stress_begin, const stress_iterator &stress_end,
+        stress_type &meanStress
+    ){
+        /*!
+         * Compute the mean stress from a 2nd rank stress tensor stored in row major format
+         *
+         * \f$meanStress = \frac{ 1 }{ 3 }*trace( \sigma )\f$
+         *
+         * \param &stress_begin: The starting iterator of the stress tensor
+         * \param &stress_end: The stopping iterator of the stress tensor
+         * \param &meanStress: The mean stress scalar
+         */
+
+        tardigradeVectorTools::rowMajorTrace<dim,dim>(
+            stress_begin, stress_end, meanStress
+        );
+
+        meanStress /= 3.;
+
+    }
+
+    template<
+        unsigned int dim,
+        typename stress_type, class stress_iterator
+    >
+    stress_type calculateMeanStress(
+        const stress_iterator &stress_begin, const stress_iterator &stress_end
+    ){
+        /*!
+         * Compute the mean stress from a 2nd rank stress tensor stored in row major format
+         *
+         * \f$meanStress = \frac{ 1 }{ 3 }*trace( \sigma )\f$
+         *
+         * \param &stress_begin: The starting iterator of the stress tensor
+         * \param &stress_end: The stopping iterator of the stress tensor
+         * \return meanStress: The mean stress scalar
+         */
+
+        stress_type meanStress;
+        calculateMeanStress<dim>(
+            stress_begin, stress_end, meanStress
+        );
+
+        return meanStress;
+
+    }
+
+    template<
+        unsigned int dim,
+        class stress_iterator, typename stress_type,
+        class jacobian_iterator
+    >
+    void calculateMeanStress(
+        const stress_iterator &stress_begin, const stress_iterator &stress_end,
+        stress_type &meanStress,
+        jacobian_iterator jacobian_begin, jacobian_iterator jacobian_end
+    ){
+        /*!
+         * Compute the mean stress from a 2nd rank stress tensor stored in row major format
+         *
+         * \f$meanStress = \frac{ 1 }{ 3 }*trace( \sigma )\f$
+         *
+         * \param &stress_begin: The starting iterator of the stress tensor
+         * \param &stress_end: The stopping iterator of the stress tensor
+         * \param &meanStress: The mean stress scalar
+         * \param &jacobian_begin: The starting iterator of the row major jacobian w.r.t. the stress tensor
+         * \param &jacobian_end: The stopping iterator of the row major jacobian w.r.t. the stress tensor
+         */
+
+        using jacobian_type = typename std::iterator_traits<jacobian_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( jacobian_end - jacobian_begin ) == dim * dim,
+            "jacobian has a size of " + std::to_string( jacobian_end - jacobian_begin ) + " but should have a size of " + std::to_string( dim * dim )
+        );
+
+        calculateMeanStress<dim>(
+            stress_begin, stress_end, meanStress
+        );
+
+        std::fill(
+            jacobian_begin, jacobian_end, jacobian_type( )
+        );
+
+        for ( unsigned int i = 0; i < dim; ++i ){ *( jacobian_begin + dim * i + i ) = 1./3.; }
+
+    }
+
     void calculateMeanStress( const floatVector &stress, floatType &meanStress ){
         /*!
          * Compute the mean stress from a 2nd rank stress tensor stored in row major format
@@ -23,9 +116,28 @@ namespace tardigradeStressTools{
          * \param &meanStress: The mean stress scalar
          */
 
-        floatType trace;
-        tardigradeVectorTools::trace( stress, trace );
-        meanStress = 1./3.*trace;
+        const unsigned int dim = std::pow( stress.size( ), 0.5 );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( dim == 3 ) || ( dim == 2 ) || ( dim == 1 ),
+            "The dimension of the stress is " + std::to_string( dim ) + " but must be 1, 2, or 3"
+        );
+
+        if ( dim == 3 ){
+            calculateMeanStress< 3 >(
+                std::begin( stress ), std::end( stress ), meanStress
+            );
+        }
+        else if ( dim == 2 ){
+            calculateMeanStress< 2 >(
+                std::begin( stress ), std::end( stress ), meanStress
+            );
+        }
+        else if ( dim == 1 ){
+            calculateMeanStress< 1 >(
+                std::begin( stress ), std::end( stress ), meanStress
+            );
+        }
 
         return;
     }
@@ -39,11 +151,31 @@ namespace tardigradeStressTools{
          * \param &stress: The stress tensor
          * \return meanStress: The mean stress scalar
          */
+        const unsigned int dim = std::pow( stress.size( ), 0.5 );
 
-        floatType meanStress;
-        TARDIGRADE_ERROR_TOOLS_CATCH( calculateMeanStress( stress, meanStress ) )
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( dim == 3 ) || ( dim == 2 ) || ( dim == 1 ),
+            "The dimension of the stress is " + std::to_string( dim ) + " but must be 1, 2, or 3"
+        );
 
-        return meanStress;
+        if ( dim == 3 ){
+            return calculateMeanStress< 3, floatType >(
+                std::begin( stress ), std::end( stress )
+            );
+        }
+        else if ( dim == 2 ){
+            return calculateMeanStress< 2, floatType >(
+                std::begin( stress ), std::end( stress )
+            );
+        }
+        else if ( dim == 1 ){
+            return calculateMeanStress< 1, floatType >(
+                std::begin( stress ), std::end( stress )
+            );
+        }
+
+        return 0; //Default value. You never want to get here!
+
     }
 
     void calculateMeanStress( const floatMatrix &stress, floatType &meanStress ){
@@ -56,11 +188,30 @@ namespace tardigradeStressTools{
          * \param &meanStress: The mean stress scalar
          */
 
-        floatType trace;
-        tardigradeVectorTools::trace( stress, trace );
-        meanStress = 1./3.*trace;
+        const unsigned int dim = stress.size( );
 
-        return;
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( dim == 3 ) || ( dim == 2 ) || ( dim == 1 ),
+            "The dimension of the stress is " + std::to_string( dim ) + " but must be 1, 2, or 3"
+        );
+
+        floatVector _stress = tardigradeVectorTools::appendVectors( stress );
+
+        if ( dim == 3 ){
+            return calculateMeanStress< 3 >(
+                std::begin( _stress ), std::end( _stress ), meanStress
+            );
+        }
+        else if ( dim == 2 ){
+            return calculateMeanStress< 2 >(
+                std::begin( _stress ), std::end( _stress ), meanStress
+            );
+        }
+        else if ( dim == 1 ){
+            return calculateMeanStress< 1 >(
+                std::begin( _stress ), std::end( _stress ), meanStress
+            );
+        }
     }
 
     floatType calculateMeanStress( const floatMatrix &stress ){
@@ -90,23 +241,142 @@ namespace tardigradeStressTools{
          * \param &jacobian: The row major jacobian w.r.t. the stress tensor
          */
 
-        //Check vector lengths
-        const unsigned int length = stress.size( );
-        TARDIGRADE_ERROR_TOOLS_CHECK( length == jacobian.size( ), "The stress tensor and jacobian tensor sizes must match." );
+        const unsigned int dim = std::pow( stress.size( ), 0.5 );
 
-        //Calculate the mean stress
-        meanStress = 0.;
-        std::fill( jacobian.begin( ), jacobian.end( ), 0. );
-        TARDIGRADE_ERROR_TOOLS_CATCH( calculateMeanStress( stress, meanStress ) )
+        jacobian = floatVector( dim * dim, 0 );
 
-        //Initialize the identity matrix
-        floatVector I( length, 0. );
-        tardigradeVectorTools::eye<floatType>( I );
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( dim == 3 ) || ( dim == 2 ) || ( dim == 1 ),
+            "The dimension of the stress is " + std::to_string( dim ) + " but must be 1, 2, or 3"
+        );
 
-        //Calculate the jacobian
-        jacobian = 1./3.*I;
+        if ( dim == 3 ){
+            calculateMeanStress< 3 >(
+                std::begin( stress ),   std::end( stress ), meanStress,
+                std::begin( jacobian ), std::end( jacobian )
+            );
+        }
+        else if ( dim == 2 ){
+            calculateMeanStress< 2 >(
+                std::begin( stress ),   std::end( stress ), meanStress,
+                std::begin( jacobian ), std::end( jacobian )
+            );
+        }
+        else if ( dim == 1 ){
+            calculateMeanStress< 1 >(
+                std::begin( stress ),   std::end( stress ), meanStress,
+                std::begin( jacobian ), std::end( jacobian )
+            );
+        }
 
         return;
+
+    }
+
+    template<
+        unsigned int dim,
+        class stress_iterator, class deviatoric_iterator
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress(
+        const stress_iterator &stress_begin,  const stress_iterator &stress_end,
+        deviatoric_iterator deviatoric_begin, deviatoric_iterator deviatoric_end
+    ){
+        /*!
+         * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
+         *
+         * \f$\sigma^{ deviatoric } = \sigma - \sigma^{ mean }I\f$
+         *
+         * \param &stress_begin: The starting iterator of the stress tensor in row major format
+         * \param &stress_end: The stopping iterator of the stress tensor in row major format
+         * \param deviatoric_begin: The starting iterator of the deviatoric stress tensor in row major format
+         * \param deviatoric_end: The stopping iterator of the deviatoric stress tensor in row major format
+         */
+
+        using stress_type = typename std::iterator_traits<stress_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( stress_end - stress_begin ) == dim * dim,
+            "The stress has a size of " + std::to_string( ( unsigned int )( stress_end - stress_begin ) ) + " but must have a size of " + std::to_string( dim * dim )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( deviatoric_end - deviatoric_begin ) == dim * dim,
+            "The deviatoric stress has a size of " + std::to_string( ( unsigned int )( deviatoric_end - deviatoric_begin ) ) + " but must have a size of " + std::to_string( dim * dim )
+        );
+
+        stress_type meanStress;
+
+        calculateMeanStress< dim >(
+            stress_begin, stress_end, meanStress
+        );
+
+        std::copy(
+            stress_begin, stress_end, deviatoric_begin
+        );
+
+        for ( unsigned int i = 0; i < dim; ++i ){ *( deviatoric_begin + dim * i + i ) -= meanStress; }
+
+        return;
+
+    }
+
+    template<
+        unsigned int dim,
+        class stress_iterator, class deviatoric_iterator,
+        class jacobian_iterator
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress(
+        const stress_iterator &stress_begin,  const stress_iterator &stress_end,
+        deviatoric_iterator deviatoric_begin, deviatoric_iterator deviatoric_end,
+        jacobian_iterator jacobian_begin,     jacobian_iterator jacobian_end
+    ){
+        /*!
+         * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
+         *
+         * \f$\sigma^{ deviatoric } = \sigma - \sigma^{ mean }I\f$
+         *
+         * \param &stress_begin: The starting iterator of the stress tensor in row major format
+         * \param &stress_end: The stopping iterator of the stress tensor in row major format
+         * \param deviatoric_begin: The starting iterator of the deviatoric stress tensor in row major format
+         * \param deviatoric_end: The stopping iterator of the deviatoric stress tensor in row major format
+         * \param jacobian_begin: The starting iterator of the row-major Jacobian
+         * \param jacobian_end: The stopping iterator of the row-major Jacobian
+         */
+
+        using stress_type = typename std::iterator_traits<stress_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( jacobian_end - jacobian_begin ) == dim * dim * dim * dim,
+            "The jacobian has a size of " + std::to_string( ( unsigned int )( jacobian_end - jacobian_begin ) ) + " but must have a size of " + std::to_string( dim * dim * dim * dim )
+        );
+
+        calculateDeviatoricStress< dim >(
+            stress_begin, stress_end, deviatoric_begin, deviatoric_end
+        );
+
+        std::fill(
+            jacobian_begin, jacobian_end, stress_type( )
+        );
+
+        for ( unsigned int i = 0; i < dim * dim; ++i ){
+
+            *( jacobian_begin + dim * dim * i + i ) += 1;
+
+
+        }
+
+        for ( unsigned int i = 0; i < dim; ++i ){
+
+            for ( unsigned int j = 0; j < dim; ++j ){
+
+                *( jacobian_begin + dim * dim * dim * i + dim * dim * i + dim * j + j ) -= 1./3;
+
+            }
+
+        }
+
+        return;
+
     }
 
     void calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric ){
@@ -119,19 +389,88 @@ namespace tardigradeStressTools{
          * \param &deviatoric: The deviatoric stress tensor in row major format
          */
 
-        //Check vector lengths
-        unsigned int length = stress.size( );
-        TARDIGRADE_ERROR_TOOLS_CHECK( length == deviatoric.size( ), "The tensor and deviatoric tensor sizes must match." );
+        const unsigned int dim = std::pow( stress.size( ), 0.5 );
 
-        //Initialize the identity matrix
-        floatVector I( length, 0. );
-        tardigradeVectorTools::eye<floatType>( I );
+        deviatoric = floatVector( dim * dim, 0 );
 
-        //Calculate deviatoric stress tensor
-        floatType meanStress = calculateMeanStress( stress );
-        deviatoric = stress - meanStress*I;
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( dim == 3 ) || ( dim == 2 ) || ( dim == 1 ),
+            "The dimension of the stress is " + std::to_string( dim ) + " but must be 1, 2, or 3"
+        );
+
+        if ( dim == 3 ){
+            calculateDeviatoricStress< 3 >(
+                std::begin( stress ),     std::end( stress ),
+                std::begin( deviatoric ), std::end( deviatoric )
+            );
+        }
+        else if ( dim == 2 ){
+            calculateDeviatoricStress< 2 >(
+                std::begin( stress ),     std::end( stress ),
+                std::begin( deviatoric ), std::end( deviatoric )
+            );
+        }
+        else if ( dim == 1 ){
+            calculateDeviatoricStress< 1 >(
+                std::begin( stress ),     std::end( stress ),
+                std::begin( deviatoric ), std::end( deviatoric )
+            );
+        }
 
         return;
+
+    }
+
+    void calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric, floatVector &jacobian ){
+        /*!
+         * Compute the deviatoric stress tensor from a 2nd rank stress tensor stored in row major format
+         *
+         * \f$\sigma^{ deviatoric } = \sigma - \sigma^{ mean }I\f$
+         *
+         * Also return the jacobian
+         *
+         * \f$\frac{ \partial \sigma_{ ij }^{ deviatoric } }{ \partial \sigma_{ kl } } = \delta_{ ik }\delta{ jl } - \frac{ \partial
+         * \bar{ \sigma } }{ \partial \sigma_{ kl } } \delta_{ ij }\f$
+         *
+         * \param &stress: The stress tensor in row major format
+         * \param &deviatoric: The deviatoric stress tensor in row major format
+         * \param &jacobian: The jacobian of the deviatoric stress tensor w.r.t. the stress in row-major format
+         */
+
+        const unsigned int dim = std::pow( stress.size( ), 0.5 );
+
+        deviatoric = floatVector( dim * dim, 0 );
+        jacobian   = floatVector( dim * dim * dim * dim, 0 );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( dim == 3 ) || ( dim == 2 ) || ( dim == 1 ),
+            "The dimension of the stress is " + std::to_string( dim ) + " but must be 1, 2, or 3"
+        );
+
+        if ( dim == 3 ){
+            calculateDeviatoricStress< 3 >(
+                std::begin( stress ),     std::end( stress ),
+                std::begin( deviatoric ), std::end( deviatoric ),
+                std::begin( jacobian ),   std::end( jacobian )
+            );
+        }
+        else if ( dim == 2 ){
+            calculateDeviatoricStress< 2 >(
+                std::begin( stress ),     std::end( stress ),
+                std::begin( deviatoric ), std::end( deviatoric ),
+                std::begin( jacobian ),   std::end( jacobian )
+            );
+        }
+        else if ( dim == 1 ){
+            calculateDeviatoricStress< 1 >(
+                std::begin( stress ),     std::end( stress ),
+                std::begin( deviatoric ), std::end( deviatoric ),
+                std::begin( jacobian ),   std::end( jacobian )
+            );
+        }
+
+        return;
+
     }
 
     void calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric, floatMatrix &jacobian ){
@@ -150,17 +489,14 @@ namespace tardigradeStressTools{
          * \param &jacobian: The jacobian of the deviatoric stress tensor w.r.t. the stress.
          */
 
-        //Compute the deviatoric stress.
-        deviatoric.resize( stress.size( ) );
-        TARDIGRADE_ERROR_TOOLS_CATCH( calculateDeviatoricStress( stress, deviatoric ) )
+        floatVector _jacobian;
 
-        //Compute the jacobian
-        floatVector eye( stress.size( ), 0 );
-        tardigradeVectorTools::eye( eye );
+        TARDIGRADE_ERROR_TOOLS_CATCH( calculateDeviatoricStress( stress, deviatoric, _jacobian ) );
 
-        jacobian = tardigradeVectorTools::eye<floatType>( stress.size( ) ) - 1./3 * tardigradeVectorTools::dyadic( eye, eye );
+        jacobian = tardigradeVectorTools::inflate( _jacobian, stress.size( ), stress.size( ) ); 
 
         return;
+
     }
 
     floatVector calculateDeviatoricStress( const floatVector &stress ){
@@ -195,10 +531,111 @@ namespace tardigradeStressTools{
          * \return deviatoric: The deviatoric part of the stress tensor in row major format
          */
 
-        floatVector deviatoric( stress.size( ) );
-        TARDIGRADE_ERROR_TOOLS_CATCH( calculateDeviatoricStress( stress, deviatoric, jacobian ) )
+        floatVector deviatoric, _jacobian;
+
+        TARDIGRADE_ERROR_TOOLS_CATCH( calculateDeviatoricStress( stress, deviatoric, _jacobian ) );
+
+        jacobian = tardigradeVectorTools::inflate( _jacobian, stress.size( ), stress.size( ) ); 
 
         return deviatoric;
+
+    }
+
+    template<
+        unsigned int dim,
+        class stress_iterator, typename vonMises_type
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateVonMisesStress(
+        const stress_iterator &stress_begin, const stress_iterator &stress_end,
+        vonMises_type &vonMises
+    ){
+        /*!
+         * Compute the von Mises stress from a 2nd rank stress tensor stored in row major format
+         *
+         * \f$\sigma^{ vonMises } = \sqrt{ \frac{ 3 }{ 2 }*\sigma^{ deviatoric }\sigma^{ deviatoric } }\f$
+         *
+         * \f$\sigma^{ deviatoric } = \sigma - \sigma^{ mean }I\f$
+         *
+         * \param &stress_begin: The starting iterator of the row major stress tensor
+         * \param &stress_end: The stopping iterator of the row major stress tensor
+         * \param &vonMises: The von-Mises stress
+         */
+
+        using stress_type = typename std::iterator_traits<stress_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( stress_end - stress_begin ) == dim * dim,
+            "The stress tensor has a size of " + std::to_string( ( unsigned int )( stress_end - stress_begin ) ) + " but should have a size of " + std::to_string( dim * dim )
+        );
+
+        std::array< stress_type, dim * dim > deviatoric;
+        calculateDeviatoricStress<dim>(
+            stress_begin, stress_end,
+            std::begin( deviatoric ), std::end( deviatoric )
+        );
+
+        vonMises = std::sqrt(
+            1.5 * std::inner_product( std::begin( deviatoric ), std::end( deviatoric ), std::begin( deviatoric ), stress_type( ) )
+        );
+
+    }
+
+    template<
+        unsigned int dim,
+        class stress_iterator, typename vonMises_type,
+        class jacobian_iterator
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateVonMisesStress(
+        const stress_iterator &stress_begin, const stress_iterator &stress_end,
+        vonMises_type &vonMises,
+        jacobian_iterator jacobian_begin, jacobian_iterator jacobian_end
+    ){
+        /*!
+         * Compute the von Mises stress from a 2nd rank stress tensor stored in row major format
+         *
+         * \f$\sigma^{ vonMises } = \sqrt{ \frac{ 3 }{ 2 }*\sigma^{ deviatoric }\sigma^{ deviatoric } }\f$
+         *
+         * \f$\sigma^{ deviatoric } = \sigma - \sigma^{ mean }I\f$
+         *
+         * \param &stress_begin: The starting iterator of the row major stress tensor
+         * \param &stress_end: The stopping iterator of the row major stress tensor
+         * \param &vonMises: The von-Mises stress
+         * \param jacobian_begin: The starting iterator of the Jacobian
+         * \param jacobian_end: The stopping iterator of the Jacobian
+         */
+
+        using stress_type = typename std::iterator_traits<stress_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( stress_end - stress_begin ) == dim * dim,
+            "The stress tensor has a size of " + std::to_string( ( unsigned int )( stress_end - stress_begin ) ) + " but should have a size of " + std::to_string( dim * dim )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( stress_end - stress_begin ) == dim * dim,
+            "The jacobian has a size of " + std::to_string( ( unsigned int )( jacobian_end - jacobian_begin ) ) + " but should have a size of " + std::to_string( dim * dim )
+        );
+
+        std::array< stress_type, dim * dim > deviatoric;
+        calculateDeviatoricStress<dim>(
+            stress_begin, stress_end,
+            std::begin( deviatoric ), std::end( deviatoric )
+        );
+
+        vonMises = std::sqrt(
+            1.5 * std::inner_product( std::begin( deviatoric ), std::end( deviatoric ), std::begin( deviatoric ), stress_type( ) )
+        );
+
+        tardigradeConstitutiveTools::computeUnitNormal(
+            std::begin( deviatoric ), std::end( deviatoric ),
+            jacobian_begin,           jacobian_end
+        );
+
+        std::transform(
+            jacobian_begin, jacobian_end, jacobian_begin,
+             std::bind( std::multiplies< >( ), std::placeholders::_1, std::sqrt( 1.5 ) ) 
+        );
+
     }
 
     void calculateVonMisesStress( const floatVector &stress, floatType &vonMises ){
@@ -213,10 +650,34 @@ namespace tardigradeStressTools{
          * \param &vonMises: The von-Mises stress
          */
 
-        floatVector deviatoric = calculateDeviatoricStress( stress );
-        vonMises = std::sqrt( 3./2.*tardigradeVectorTools::inner( deviatoric, deviatoric ) );
+        const unsigned int dim = std::pow( stress.size( ), 0.5 );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( dim == 3 ) || ( dim == 2 ) || ( dim == 1 ),
+            "The dimension of the stress is " + std::to_string( dim ) + " but must be 1, 2, or 3"
+        );
+
+        if ( dim == 3 ){
+            calculateVonMisesStress< 3 >(
+                std::begin( stress ),     std::end( stress ),
+                vonMises
+            );
+        }
+        else if ( dim == 2 ){
+            calculateVonMisesStress< 2 >(
+                std::begin( stress ),     std::end( stress ),
+                vonMises
+            );
+        }
+        else if ( dim == 1 ){
+            calculateVonMisesStress< 1 >(
+                std::begin( stress ),     std::end( stress ),
+                vonMises
+            );
+        }
 
         return;
+
     }
 
     floatType calculateVonMisesStress( const floatVector &stress ){
@@ -250,27 +711,50 @@ namespace tardigradeStressTools{
          * \param &jacobian: The row major mean stress jacobian tensor w.r.t. the stress tensor
          */
 
-        //Check vector lengths
-        unsigned int length = stress.size( );
-        TARDIGRADE_ERROR_TOOLS_CHECK( length == jacobian.size( ), "The stress tensor and jacobian tensor sizes must match." );
+        const unsigned int dim = std::pow( stress.size( ), 0.5 );
 
-        //Calculate the vonMises stress
-        calculateVonMisesStress( stress, vonMises );
+        jacobian = floatVector( dim * dim, 0 );
 
-        //Calculate the deviatoric stress
-        floatVector deviatoric( stress.size( ), 0. );
-        calculateDeviatoricStress( stress, deviatoric );
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( dim == 3 ) || ( dim == 2 ) || ( dim == 1 ),
+            "The dimension of the stress is " + std::to_string( dim ) + " but must be 1, 2, or 3"
+        );
 
-        floatVector normal;
-        tardigradeConstitutiveTools::computeUnitNormal( deviatoric, normal );
-
-        //Calculate the jacobian
-        jacobian = std::sqrt( 3./2. ) * normal;
+        if ( dim == 3 ){
+            calculateVonMisesStress< 3 >(
+                std::begin( stress ),   std::end( stress ),
+                vonMises,
+                std::begin( jacobian ), std::end( jacobian )
+            );
+        }
+        else if ( dim == 2 ){
+            calculateVonMisesStress< 2 >(
+                std::begin( stress ),     std::end( stress ),
+                vonMises,
+                std::begin( jacobian ), std::end( jacobian )
+            );
+        }
+        else if ( dim == 1 ){
+            calculateVonMisesStress< 1 >(
+                std::begin( stress ),     std::end( stress ),
+                vonMises,
+                std::begin( jacobian ), std::end( jacobian )
+            );
+        }
 
         return;
+
     }
 
-    void druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatType &A, const floatType &B, floatType &dpYield ){
+    template<
+        typename vonMises_type, typename meanStress_type,
+        class dpParam_iterator, typename dpYield_type
+    >
+    void druckerPragerSurface_iter(
+        const vonMises_type &vonMises, const meanStress_type &meanStress,
+        const dpParam_iterator &dpParam_begin, const dpParam_iterator &dpParam_end,
+        dpYield_type &dpYield
+    ){
         /*!
          * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
          *
@@ -281,14 +765,56 @@ namespace tardigradeStressTools{
          *
          * \param &vonMises: The von Mises stress
          * \param &meanStress: The mean Stress
-         * \param &A: The first Drucker-Prager material parameter
-         * \param &B: The second Drucker-Prager material parameter
+         * \param &dpParam_begin: The starting iterator of the Drucker-Prager material parameters
+         * \param &dpParam_end: The stopping iterator of the Drucker-Prager material parameters
          * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
          */
 
-        dpYield = vonMises + A*meanStress - B;
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( dpParam_end - dpParam_begin ) == 2,
+            "The Drucker-Prager parameter vector has a size of " + std::to_string( ( unsigned int )( dpParam_end - dpParam_begin ) ) + " but must have a size of 2"
+        );
 
-        return;
+        druckerPragerSurface(
+            vonMises, meanStress,
+            *( dpParam_begin + 0 ), *( dpParam_begin + 1 ),
+            dpYield
+        );
+
+    }
+
+    template<
+        typename vonMises_type, typename meanStress_type,
+        class dpParam_iterator, typename dpYield_type
+    >
+    dpYield_type druckerPragerSurface_iter(
+        const vonMises_type &vonMises, const meanStress_type &meanStress,
+        const dpParam_iterator &dpParam_begin, const dpParam_iterator &dpParam_end
+    ){
+        /*!
+         * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
+         *
+         * \f$f = \sigma^{ vonMises } + A*\sigma^{ mean } - B\f$
+         *
+         * TODO: find the common name for which material parameter, if a common
+         * name exists to distinguish between the two DP parameters.
+         *
+         * \param &vonMises: The von Mises stress
+         * \param &meanStress: The mean Stress
+         * \param &dpParam_begin: The starting iterator of the Drucker-Prager material parameters
+         * \param &dpParam_end: The stopping iterator of the Drucker-Prager material parameters
+         * \return dpYield: The Drucker-Prager yield stress/criterion/surface
+         */
+
+        dpYield_type dpYield;
+
+        druckerPragerSurface_iter(
+            vonMises, meanStress, dpParam_begin, dpParam_end,
+            dpYield
+        );
+
+        return dpYield;
+
     }
 
     void druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatVector &dpParam, floatType &dpYield ){
@@ -303,10 +829,7 @@ namespace tardigradeStressTools{
          * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
          */
 
-        //Check Drucker-Prager parameter vector length
-        TARDIGRADE_ERROR_TOOLS_CHECK( dpParam.size( ) == 2, "Two parameters are required for the Drucker-Prager surface." );
-
-        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( vonMises, meanStress, dpParam[ 0 ], dpParam[ 1 ], dpYield ) )
+        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface_iter( vonMises, meanStress, std::begin( dpParam ), std::end( dpParam ), dpYield ) )
 
         return;
     }
@@ -327,12 +850,8 @@ namespace tardigradeStressTools{
          * \return dpYield: The Drucker-Prager yield stress/criterion/surface
          */
 
-        floatType dpYield = 0;
+        return druckerPragerSurface<floatType,floatType,floatType,floatType,floatType>( vonMises, meanStress, A, B );
 
-        //Calculate DP yield criterion
-        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( vonMises, meanStress, A, B, dpYield ) );
-
-        return dpYield;
     }
 
     floatType druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatVector &dpParam ){
@@ -347,10 +866,10 @@ namespace tardigradeStressTools{
          * \return dpYield: The Drucker-Prager yield stress/criterion/surface
          */
 
-        floatType dpYield = 0;
-        TARDIGRADE_ERROR_TOOLS_CATCH( druckerPragerSurface( vonMises, meanStress, dpParam, dpYield ) );
+        return druckerPragerSurface_iter<floatType,floatType,floatVector::const_iterator,floatType>(
+            vonMises, meanStress, std::begin( dpParam ), std::end( dpParam )
+        );
 
-        return dpYield;
     }
 
     void druckerPragerSurface( const floatVector &stress, const floatType &A, const floatType &B, floatType &dpYield ){

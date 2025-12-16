@@ -24,25 +24,93 @@ namespace tardigradeStressTools{
     typedef tardigradeConstitutiveTools::floatVector floatVector; //!< Define a vector of floats
     typedef tardigradeConstitutiveTools::floatMatrix floatMatrix; //!< Define a matrix of floats
 
-    void calculateMeanStress( const floatVector &stress, floatType &meanStress );
+    template<
+        unsigned int dim,
+        class stress_iterator, typename stress_type
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateMeanStress(
+        const stress_iterator &stress_begin, const stress_iterator &stress_end,
+        stress_type &meanStress
+    );
 
-    floatType calculateMeanStress( const floatVector &stress );
+    template<
+        unsigned int dim,
+        typename stress_type, class stress_iterator
+    >
+    stress_type TARDIGRADE_OPTIONAL_INLINE calculateMeanStress(
+        const stress_iterator &stress_begin, const stress_iterator &stress_end
+    );
 
-    void calculateMeanStress( const floatMatrix &stress, floatType &meanStress );
+    template<
+        unsigned int dim,
+        class stress_iterator, typename stress_type,
+        class jacobian_iterator
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateMeanStress(
+        const stress_iterator &stress_begin, const stress_iterator &stress_end,
+        stress_type &meanStress,
+        jacobian_iterator jacobian_begin, jacobian_iterator jacobian_end
+    );
 
-    floatType calculateMeanStress( const floatMatrix &stress );
+    void TARDIGRADE_OPTIONAL_INLINE calculateMeanStress( const floatVector &stress, floatType &meanStress );
 
-    void calculateMeanStress( const floatVector &stress, floatType &meanStress, floatVector &jacobian );
+    floatType TARDIGRADE_OPTIONAL_INLINE calculateMeanStress( const floatVector &stress );
 
-    void calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric );
+    void TARDIGRADE_OPTIONAL_INLINE calculateMeanStress( const floatMatrix &stress, floatType &meanStress );
 
-    void calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric, floatMatrix &jacobian );
+    floatType TARDIGRADE_OPTIONAL_INLINE calculateMeanStress( const floatMatrix &stress );
 
-    void calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric, floatMatrix &jacobian );
+    void TARDIGRADE_OPTIONAL_INLINE calculateMeanStress( const floatVector &stress, floatType &meanStress, floatVector &jacobian );
 
-    floatVector calculateDeviatoricStress( const floatVector &stress );
+    template<
+        unsigned int dim,
+        class stress_iterator, class deviatoric_iterator
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress(
+        const stress_iterator &stress_begin,  const stress_iterator &stress_end,
+        deviatoric_iterator deviatoric_begin, deviatoric_iterator deviatoric_end
+    );
 
-    floatVector calculateDeviatoricStress( const floatVector &stress, floatMatrix &jacobian );
+    template<
+        unsigned int dim,
+        class stress_iterator, class deviatoric_iterator,
+        class jacobian_iterator
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress(
+        const stress_iterator &stress_begin,  const stress_iterator &stress_end,
+        deviatoric_iterator deviatoric_begin, deviatoric_iterator deviatoric_end,
+        jacobian_iterator jacobian_begin,     jacobian_iterator jacobian_end
+    );
+
+    void TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric );
+
+    void TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric, floatVector &jacobian );
+
+    void TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress( const floatVector &stress, floatVector &deviatoric, floatMatrix &jacobian );
+
+    floatVector TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress( const floatVector &stress );
+
+    floatVector TARDIGRADE_OPTIONAL_INLINE calculateDeviatoricStress( const floatVector &stress, floatMatrix &jacobian );
+
+    template<
+        unsigned int dim,
+        class stress_iterator, typename vonMises_type
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateVonMisesStress(
+        const stress_iterator &stress_begin, const stress_iterator &stress_end,
+        vonMises_type &vonMises
+    );
+
+    template<
+        unsigned int dim,
+        class stress_iterator, typename vonMises_type,
+        class jacobian_iterator
+    >
+    void TARDIGRADE_OPTIONAL_INLINE calculateVonMisesStress(
+        const stress_iterator &stress_begin, const stress_iterator &stress_end,
+        vonMises_type &vonMises,
+        jacobian_iterator jacobian_begin, jacobian_iterator jacobian_end
+    );
 
     void calculateVonMisesStress( const floatVector &stress, floatType &vonMises );
 
@@ -50,7 +118,84 @@ namespace tardigradeStressTools{
 
     void calculateVonMisesStress( const floatVector &stress, floatType &vonMises, floatVector &jacobian );
 
-    void druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatType &A, const floatType &B, floatType &dpYield );
+    template<
+        typename vonMises_type, typename meanStress_type,
+        typename A_type, typename B_type,
+        typename dpYield_type
+    >
+    void TARDIGRADE_OPTIONAL_INLINE druckerPragerSurface(
+        const vonMises_type &vonMises, const meanStress_type &meanStress,
+        const A_type &A, const B_type &B, dpYield_type &dpYield
+    ){
+        /*!
+         * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
+         *
+         * \f$f = \sigma^{ vonMises } + A*\sigma^{ mean } - B\f$
+         *
+         * TODO: find the common name for which material parameter, if a common
+         * name exists to distinguish between the two DP parameters.
+         *
+         * \param &vonMises: The von Mises stress
+         * \param &meanStress: The mean Stress
+         * \param &A: The first Drucker-Prager material parameter
+         * \param &B: The second Drucker-Prager material parameter
+         * \param &dpYield: The Drucker-Prager yield stress/criterion/surface
+         */
+
+        dpYield = vonMises + A*meanStress - B;
+
+    }
+
+    template<
+        typename vonMises_type, typename meanStress_type,
+        class dpParam_iterator, typename dpYield_type
+    >
+    void TARDIGRADE_OPTIONAL_INLINE druckerPragerSurface_iter(
+        const vonMises_type &vonMises, const meanStress_type &meanStress,
+        const dpParam_iterator &dpParam_begin, const dpParam_iterator &dpParam_end,
+        dpYield_type &dpYield
+    );
+
+    template<
+        typename vonMises_type, typename meanStress_type,
+        typename A_type, typename B_type,
+        typename dpYield_type
+    >
+    dpYield_type TARDIGRADE_OPTIONAL_INLINE druckerPragerSurface(
+        const vonMises_type &vonMises, const meanStress_type &meanStress,
+        const A_type &A, const B_type &B
+    ){
+        /*!
+         * Compute the Drucker-Prager yield criterion from the von Mises and mean stress
+         *
+         * \f$f = \sigma^{ vonMises } + A*\sigma^{ mean } - B\f$
+         *
+         * TODO: find the common name for which material parameter, if a common
+         * name exists to distinguish between the two DP parameters.
+         *
+         * \param &vonMises: The von Mises stress
+         * \param &meanStress: The mean Stress
+         * \param &A: The first Drucker-Prager material parameter
+         * \param &B: The second Drucker-Prager material parameter
+         * \return dpYield: The Drucker-Prager yield stress/criterion/surface
+         */
+
+        dpYield_type dpYield;
+
+        druckerPragerSurface( vonMises, meanStress, A, B, dpYield );
+
+        return dpYield;
+
+    }
+
+    template<
+        typename vonMises_type, typename meanStress_type,
+        class dpParam_iterator, typename dpYield_type
+    >
+    dpYield_type TARDIGRADE_OPTIONAL_INLINE druckerPragerSurface_iter(
+        const vonMises_type &vonMises, const meanStress_type &meanStress,
+        const dpParam_iterator &dpParam_begin, const dpParam_iterator &dpParam_end
+    );
 
     void druckerPragerSurface( const floatType &vonMises, const floatType &meanStress, const floatVector &dpParam, floatType &dpYield );
 
@@ -192,5 +337,9 @@ namespace tardigradeStressTools{
     void computeJaumannStiffnessTensor( const floatVector &cauchyStress, const floatVector &currentDeformationGradient,
                                             const floatMatrix &dCauchydF, floatMatrix &C );
 }
+
+#ifdef TARDIGRADE_HEADER_ONLY
+    #include "tardigrade_stress_tools.cpp"
+#endif
 
 #endif
