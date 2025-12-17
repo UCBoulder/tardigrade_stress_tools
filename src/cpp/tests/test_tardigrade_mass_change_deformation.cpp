@@ -727,9 +727,15 @@ BOOST_AUTO_TEST_CASE(test_massChangeWeightedDirection_n, *boost::unit_test::tole
         using tardigradeStressTools::massChangeDeformation::massChangeWeightedDirection::massChangeWeightedDirection;
 
        public:
-        virtual void setDirt() override { set_dirt(dirt); set_normvt( 1. ); }
+        virtual void setDirt() override {
+            set_dirt(dirt);
+            set_normvt(1.);
+        }
 
-        virtual void setDirtp1() override { set_dirtp1(dirtp1); set_normvtp1( 1. ); }
+        virtual void setDirtp1() override {
+            set_dirtp1(dirtp1);
+            set_normvtp1(1.);
+        }
 
         virtual void setdDirtp1dVtp1() override { set_dDirtp1dVtp1(dDirtp1dVtp1); }
     };
