@@ -49,7 +49,7 @@ jobs:
         shell: bash -el {0}
         run: run-clang-tidy -config-file=.clang-tidy -p build -extra-arg="-mno-sse2"
       - name: clang-format Lint
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.tardigrade_opt == 'OFF' && matrix.header_only == 'ON' }}
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.tardigrade_opt == 'OFF' && matrix.config_zip.header_only == 'OFF' }}
         shell: bash -el {0}
         run: cmake --build build --target cpp-format-check
       - name: Build
