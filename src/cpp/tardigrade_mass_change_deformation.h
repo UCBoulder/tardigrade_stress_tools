@@ -207,9 +207,9 @@ namespace tardigradeStressTools {
            public:
             bool first = false;  //!< The flag for whether the data has been stored
 
-            T second{};  //!< The stored data
+            T second;  //!< The stored data
 
-            dataStorage() {};
+            dataStorage() : first(false), second(T()) {};
 
             /*!
              * Constructor for a data-storage object setting first and second
