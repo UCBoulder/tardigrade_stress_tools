@@ -1,5 +1,5 @@
 #===================================================================================================== PROJECT SETUP ===
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.30)
 project(tardigrade_stress_tools)
 
 # Set common project paths relative to project root directory
