@@ -124,7 +124,6 @@ BOOST_AUTO_TEST_CASE( testCalculateMeanStress, * boost::unit_test::tolerance( DE
     BOOST_TEST( meanStress == meanStressExpected );
 
     //Test for correct mean stress calculation from stressVector without pointer output
-    meanStress = 0.;
     meanStress = tardigradeStressTools::calculateMeanStress( stressVector );
     BOOST_TEST( meanStress == meanStressExpected );
 
@@ -134,7 +133,6 @@ BOOST_AUTO_TEST_CASE( testCalculateMeanStress, * boost::unit_test::tolerance( DE
     BOOST_TEST( meanStress == meanStressExpected );
 
     //Test for correct mean stress calculation from stressMatrix without pointer output
-    meanStress = 0.;
     meanStress = tardigradeStressTools::calculateMeanStress( stressMatrix );
     BOOST_TEST( meanStress == meanStressExpected );
 
@@ -237,7 +235,6 @@ BOOST_AUTO_TEST_CASE( testCalculateVonMisesStress, * boost::unit_test::tolerance
     tardigradeStressTools::calculateVonMisesStress( stressVector, vonMises );
     BOOST_TEST( vonMises == vonMisesExpected );
 
-    vonMises = 0.;
     vonMises = tardigradeStressTools::calculateVonMisesStress( stressVector );
     BOOST_TEST( vonMises == vonMisesExpected );
 
@@ -273,7 +270,6 @@ BOOST_AUTO_TEST_CASE( testCalculateVonMisesStress2, * boost::unit_test::toleranc
     tardigradeStressTools::calculateVonMisesStress( stressVector, vonMises );
     BOOST_TEST( vonMises == vonMisesExpected );
 
-    vonMises = 0.;
     vonMises = tardigradeStressTools::calculateVonMisesStress( stressVector );
     BOOST_TEST( vonMises == vonMisesExpected );
 
@@ -440,11 +436,9 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface, * boost::unit_test::tolerance( D
     tardigradeStressTools::druckerPragerSurface( vonMises, meanStress, dpParam, dpYield );
     BOOST_TEST( dpYield == dpYieldExpected );
 
-    dpYield = 0;
     dpYield = tardigradeStressTools::druckerPragerSurface( vonMises, meanStress, A, B );
     BOOST_TEST( dpYield == dpYieldExpected );
 
-    dpYield = 0;
     dpYield = tardigradeStressTools::druckerPragerSurface( vonMises, meanStress, dpParam );
     BOOST_TEST( dpYield == dpYieldExpected );
 
@@ -457,11 +451,9 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface, * boost::unit_test::tolerance( D
     tardigradeStressTools::druckerPragerSurface( stressVector, dpParam, dpYield );
     BOOST_TEST( dpYield == dpYieldExpected );
 
-    dpYield = 0;
     dpYield = tardigradeStressTools::druckerPragerSurface( stressVector, A, B );
     BOOST_TEST( dpYield == dpYieldExpected );
 
-    dpYield = 0;
     dpYield = tardigradeStressTools::druckerPragerSurface( stressVector, dpParam );
     BOOST_TEST( dpYield == dpYieldExpected );
 
@@ -696,11 +688,9 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface2, * boost::unit_test::tolerance( 
     tardigradeStressTools::druckerPragerSurface( vonMises, meanStress, dpParam, dpYield );
     BOOST_TEST( dpYield == dpYieldExpected );
 
-    dpYield = 0;
     dpYield = tardigradeStressTools::druckerPragerSurface( vonMises, meanStress, A, B );
     BOOST_TEST( dpYield == dpYieldExpected );
 
-    dpYield = 0;
     dpYield = tardigradeStressTools::druckerPragerSurface( vonMises, meanStress, dpParam );
     BOOST_TEST( dpYield == dpYieldExpected );
 
@@ -713,11 +703,9 @@ BOOST_AUTO_TEST_CASE( testDruckerPragerSurface2, * boost::unit_test::tolerance( 
     tardigradeStressTools::druckerPragerSurface( stressVector, dpParam, dpYield );
     BOOST_TEST( dpYield == dpYieldExpected );
 
-    dpYield = 0;
     dpYield = tardigradeStressTools::druckerPragerSurface( stressVector, A, B );
     BOOST_TEST( dpYield == dpYieldExpected );
 
-    dpYield = 0;
     dpYield = tardigradeStressTools::druckerPragerSurface( stressVector, dpParam );
     BOOST_TEST( dpYield == dpYieldExpected );
 
