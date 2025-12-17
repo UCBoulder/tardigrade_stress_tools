@@ -9,6 +9,14 @@ Changelog
 0.7.0 (unreleased)
 ******************
 
+New Features
+============
+- Added template interface for many of the functions (:pull:`19`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Added linting capabilities for cmake and C++ files (:pull:`20`). By `Nathan Miller`_.
+
 Breaking Changes
 ================
 - Corrected spelling of perzyna (:pull:`17`). By `Nathan Miller`_.
