@@ -7,8 +7,13 @@ file(
 )
 file(
     GLOB_RECURSE PROJECT_SOURCE_FILES
+    ${PROJECT_SOURCE_DIR}/${CPP_SRC_PATH}/*.tpp
+)
+file(
+    GLOB_RECURSE TEMP_PROJECT_SOURCE_FILES
     ${PROJECT_SOURCE_DIR}/${CPP_SRC_PATH}/*.cpp
 )
+list(APPEND PROJECT_SOURCE_FILES ${TEMP_PROJECT_SOURCE_FILES})
 
 #=================================================================== DOXYGEN ===
 # Set doxygen variables
