@@ -304,6 +304,8 @@ namespace tardigradeStressTools {
                                        const floatMatrix &dCauchydF, floatMatrix &C);
 }  // namespace tardigradeStressTools
 
+#include "tardigrade_stress_tools.tpp"
+
 #ifdef TARDIGRADE_HEADER_ONLY
 #include "tardigrade_stress_tools.cpp"
 #endif
