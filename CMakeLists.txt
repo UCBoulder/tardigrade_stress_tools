@@ -12,7 +12,11 @@ set(SPHINX_SRC_PATH "docs/sphinx")
 # Set the internal support libraries
 set(INTERNAL_SUPPORT_LIBRARIES "linear_elasticity")
 set(ADDITIONAL_HEADER_ONLY_LIBRARIES "tardigrade_mass_change_deformation")
-set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h ${PROJECT_NAME}.tpp)
+set(PROJECT_SOURCE_FILES
+    ${PROJECT_NAME}.cpp
+    ${PROJECT_NAME}.h
+    ${PROJECT_NAME}.tpp
+)
 set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
     set(PROJECT_SOURCE_FILES
