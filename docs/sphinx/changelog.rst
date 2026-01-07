@@ -16,6 +16,7 @@ New Features
 Internal Changes
 ================
 - Added linting capabilities for cmake and C++ files (:pull:`20`). By `Nathan Miller`_.
+- Updated build so that it is in line with the rest of the stack (:pull:`21`). By `Nathan Miller`_.
 
 Breaking Changes
 ================
