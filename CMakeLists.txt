@@ -1,6 +1,6 @@
 #===================================================================================================== PROJECT SETUP ===
 cmake_minimum_required(VERSION 3.30)
-project(tardigrade_stress_tools)
+project(tardigrade_stress_tools LANGUAGES CXX)
 
 # Set common project paths relative to project root directory
 set(CPP_SRC_PATH "src/cpp")
@@ -109,7 +109,7 @@ if(${not_conda_test} STREQUAL "true")
     # TODO: On osx-arm64 some c++ projects struggle to find $PREFIX/bin/python during conda-builds and others don't.
     # Trace the source and remove the hint when CMake configures with the correct python version during conda-build.
     if(DEFINED ENV{PREFIX})
-        set(Python_ROOT_DIR "$ENV{PREFIX}/bin")
+        set(Python_ROOT_DIR "$ENV{BUILD_PREFIX}/bin")
     endif()
     set(Python_FIND_STRATEGY LOCATION)
     find_package(Python COMPONENTS Interpreter REQUIRED)
