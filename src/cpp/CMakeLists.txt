@@ -15,10 +15,7 @@ if(${TARDIGRADE_HEADER_ONLY})
     )
 else()
     add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCE_FILES})
-    set_target_properties(
-        ${PROJECT_NAME}
-        PROPERTIES PUBLIC_HEADER ${PROJECT_NAME}.h
-    )
+    set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${PROJECT_NAME}.h)
     target_link_libraries(${PROJECT_NAME} ${PROJECT_LINK_LIBRARIES})
     target_compile_options(${PROJECT_NAME} PUBLIC)
 
@@ -43,15 +40,9 @@ else()
     )
 endif()
 
-install(
-    FILES ${PROJECT_PRIVATE_HEADERS}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
+install(FILES ${PROJECT_PRIVATE_HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-install(
-    FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.tpp
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
+install(FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.tpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 foreach(package ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
     install(
@@ -60,26 +51,14 @@ foreach(package ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     )
-    install(
-        FILES ${package}.h ${package}.cpp
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    )
+    install(FILES ${package}.h ${package}.cpp DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     get_target_property(target_sources ${package} SOURCES)
     foreach(source ${target_sources})
-        set_property(
-            GLOBAL
-            APPEND
-            PROPERTY CLANG_FORMAT_SOURCE_FILES "${PROJECT_SOURCE_DIR}/${source}"
-        )
+        set_property(GLOBAL APPEND PROPERTY CLANG_FORMAT_SOURCE_FILES "${PROJECT_SOURCE_DIR}/${source}")
     endforeach(source)
 endforeach(package)
 
 get_target_property(target_sources ${PROJECT_NAME} SOURCES)
 foreach(source ${target_sources})
-    set_property(
-        GLOBAL
-        APPEND
-        PROPERTY
-            CLANG_FORMAT_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}"
-    )
+    set_property(GLOBAL APPEND PROPERTY CLANG_FORMAT_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
 endforeach(source)

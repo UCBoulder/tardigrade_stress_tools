@@ -15,20 +15,16 @@ build:
   script:
     - set -x
     # Build and install c++ libraries
-    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_LIBDIR=lib
-    - cmake --build build --target tardigrade_stress_tools tardigrade_stress_tools_PYTHON
+    - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_LIBDIR=lib  # Conda-forge feedstock must replace ``-DCMAKE_INSTALL_LIBDIR=lib`` with ``${CMAKE_ARGS}``
+    - cmake --build build --target tardigrade_solver_tools
     - cmake --install build --prefix ${PREFIX}
-    # Build and install Conda package
-    - $PYTHON -m pip install build/src/python/dist/$PKG_NAME-$PKG_VERSION.tar.gz --no-deps --ignore-installed -v --no-build-isolation
-    - $PYTHON -m pip show $PKG_NAME
   skip: true  # [win]
 
 requirements:
-  host:
+  build:
     - python
     - cross-python_{{ target_platform }}    # [build_platform != target_platform]
-    - cython #Maybe we don't need this?
-    - {{ compiler('cxx') }}
+    - {{ compiler('cxx') }}  # Conda-forge feedstock also requires ``{{ stdlib('c') }}`, but this breaks the in-repo recipe.
     - make
     - cmake >=3.30
     - breathe >=4.3.0
@@ -42,18 +38,21 @@ requirements:
     - sphinx >=3.0.4
     - sphinx_rtd_theme >=0.4.3
     - sphinxcontrib-bibtex
+  host:
+    - python {{ python }}
+    - pip
+    - cython
+    - setuptools >=77
+    - setuptools_scm >=8
     - eigen >=3.3.7
     - tardigrade_error_tools >=0.9.8
     - tardigrade_vector_tools >=0.8.7
     - tardigrade_constitutive_tools >=0.8.5
   run:
     - eigen >=3.3.7
-    - tardigrade_constitutive_tools >=0.7
-    - tardigrade_error_tools >=0.7
-    - tardigrade_vector_tools >=0.7
-    - libgcc-ng     # [linux]
-    - libstdcxx-ng  # [linux]
-    - libcxx        # [osx]
+    - tardigrade_error_tools >=0.9.8
+    - tardigrade_vector_tools >=0.8.7
+    - tardigrade_constitutive_tools >=0.8.5
 
 test:
   requires:
@@ -68,11 +67,10 @@ test:
     - CMakeLists.txt
     - src/cpp/tests/*
   commands:
-    - mkdir build-tests
-    - cd build-tests
-    - cmake .. -DCMAKE_BUILD_TYPE=conda-test -DCMAKE_INSTALL_LIBDIR=lib
-    - cmake --build . --target all --verbose
-    - ctest --test-dir build --output-on-failure -R 'test_'
+    - set -x
+    - cmake -S . -B build -DCMAKE_BUILD_TYPE=conda-test -DCMAKE_INSTALL_LIBDIR=lib
+    - cmake --build build --target all --verbose --parallel 4
+    - ctest --test-dir build --output-on-failure -R 'test_' --parallel 4
 
 about:
   home: https://github.com/UCBoulder/tardigrade_stress_tools
