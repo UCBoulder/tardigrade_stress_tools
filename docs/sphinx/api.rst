@@ -11,6 +11,12 @@ tardigrade_stress_tools.cpp
 
 .. doxygenfile:: tardigrade_stress_tools.cpp
 
+***************************
+tardigrade_stress_tools.tpp
+***************************
+
+.. doxygenfile:: tardigrade_stress_tools.tpp
+
 *************************
 tardigrade_stress_tools.h
 *************************
