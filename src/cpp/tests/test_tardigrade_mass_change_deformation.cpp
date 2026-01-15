@@ -1023,7 +1023,7 @@ BOOST_AUTO_TEST_CASE(test_massChangeWeightedDirection_n5, *boost::unit_test::tol
     BOOST_TEST(dNtp1dVtp1 == *massChange.get_dNtp1dVtp1(), CHECK_PER_ELEMENT);
 
     thirdOrderTensor zeros;
-    std::fill(std::begin(zeros), std::begin(zeros), 0);
+    std::fill(std::begin(zeros), std::end(zeros), 0);
 
     BOOST_TEST(zeros != *massChange.get_dNtp1dVtp1(), CHECK_PER_ELEMENT);
 }
