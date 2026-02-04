@@ -11,12 +11,25 @@ Changelog
 
 New Features
 ============
+- Added ability to build in TARDIGRADE_ERROR_TOOLS_OPT mode (:pull:`27`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Removed python and cython as build-time requirements (:pull:`26`). By `Nathan Miller`_.
+
+******************
+0.6.3 (2026-01-15)
+******************
+
+New Features
+============
 - Added template interface for many of the functions (:pull:`19`). By `Nathan Miller`_.
 
 Internal Changes
 ================
 - Added linting capabilities for cmake and C++ files (:pull:`20`). By `Nathan Miller`_.
 - Updated build so that it is in line with the rest of the stack (:pull:`21`). By `Nathan Miller`_.
+- Updated recipe to use tardigrade_constitutive_tools from conda-forge (:pull:`24`). By `Nathan Miller`_.
 
 Breaking Changes
 ================
@@ -25,6 +38,11 @@ Breaking Changes
 Bug Fixes
 =========
 - Corrected bug in the calculation of the von Mises stress and the Drucker Prager yield surface jacobians (:pull:`18`). By `Nathan Miller`_.
+- Corrected typo in recipe (:pull:`23`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version 0.6.3 (:pull:`25`). By `Nathan Miller`_.
 
 ******************
 0.6.2 (2025-05-14)
