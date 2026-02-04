@@ -103,7 +103,7 @@ namespace tardigradeStressTools {
          * \return meanStress: The mean stress scalar
          */
 
-        floatType meanStress;
+        floatType meanStress = 0;
         TARDIGRADE_ERROR_TOOLS_CATCH(calculateMeanStress(stress, meanStress))
 
         return meanStress;
@@ -523,7 +523,7 @@ namespace tardigradeStressTools {
          */
 
         // Check vector lengths
-        unsigned int length = stress.size();
+        TARDIGRADE_ERROR_TOOLS_EVAL(unsigned int length = stress.size();)
         TARDIGRADE_ERROR_TOOLS_CHECK(length == jacobian.size(),
                                      "The stress tensor and jacobian tensor sizes must match.");
 
@@ -591,7 +591,7 @@ namespace tardigradeStressTools {
          */
 
         // Check vector lengths
-        unsigned int length = stress.size();
+        TARDIGRADE_ERROR_TOOLS_EVAL(unsigned int length = stress.size();)
         TARDIGRADE_ERROR_TOOLS_CHECK(length == jacobian.size(),
                                      "The stress tensor and jacobian tensor sizes must match.");
 
@@ -1494,8 +1494,8 @@ namespace tardigradeStressTools {
          *
          */
 
-        constexpr unsigned int dim     = 3;
-        constexpr unsigned int sot_dim = dim * dim;
+        constexpr unsigned int dim = 3;
+        TARDIGRADE_ERROR_TOOLS_EVAL(constexpr unsigned int sot_dim = dim * dim;)
 
         // Check the size of the deformation gradient
         TARDIGRADE_ERROR_TOOLS_CHECK(deformationGradient.size() == sot_dim, "deformation gradient must have nine terms")
@@ -1525,15 +1525,15 @@ namespace tardigradeStressTools {
          *     of deformation.
          */
 
-        constexpr unsigned int dim     = 3;
-        constexpr unsigned int sot_dim = dim * dim;
+        constexpr unsigned int dim = 3;
+        TARDIGRADE_ERROR_TOOLS_EVAL(constexpr unsigned int sot_dim = dim * dim;)
 
         // Check the size of the deformation gradient
         TARDIGRADE_ERROR_TOOLS_CHECK(deformationGradient.size() == sot_dim, "deformation gradient must have nine terms")
 
         // Compute the determinant of the deformation gradient
         floatType J;
-        J = tardigradeVectorTools::determinant(deformationGradient, 3, 3);
+        J = tardigradeVectorTools::determinant(deformationGradient, dim, dim);
 
         return volumetricNeoHookean(J, bulkModulus, meanStress, dmeanStressdJ);
     }
