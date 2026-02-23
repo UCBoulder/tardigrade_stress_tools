@@ -16,6 +16,7 @@ New Features
 Internal Changes
 ================
 - Removed python and cython as build-time requirements (:pull:`26`). By `Nathan Miller`_.
+- Added a minor version run_exports pin (:pull:`28`). By `Nathan Miller`_.
 
 ******************
 0.6.3 (2026-01-15)
