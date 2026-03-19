@@ -183,7 +183,7 @@ namespace tardigradeStressTools {
                                          std::to_string((unsigned int)(stress_end - stress_begin)) +
                                          " but should have a size of " + std::to_string(dim * dim));
 
-        std::array<stress_type, dim * dim> deviatoric;
+        std::array<stress_type, dim * dim> deviatoric = {};
         calculateDeviatoricStress<dim>(stress_begin, stress_end, std::begin(deviatoric), std::end(deviatoric));
 
         vonMises = std::sqrt(1.5 * std::inner_product(std::begin(deviatoric), std::end(deviatoric),
@@ -221,7 +221,7 @@ namespace tardigradeStressTools {
                                          std::to_string((unsigned int)(jacobian_end - jacobian_begin)) +
                                          " but should have a size of " + std::to_string(dim * dim));
 
-        std::array<stress_type, dim * dim> deviatoric;
+        std::array<stress_type, dim * dim> deviatoric = {};
         calculateDeviatoricStress<dim>(stress_begin, stress_end, std::begin(deviatoric), std::end(deviatoric));
 
         vonMises = std::sqrt(1.5 * std::inner_product(std::begin(deviatoric), std::end(deviatoric),

@@ -16,7 +16,7 @@ if(${TARDIGRADE_HEADER_ONLY})
 else()
     add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCE_FILES})
     set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${PROJECT_NAME}.h)
-    target_link_libraries(${PROJECT_NAME} ${PROJECT_LINK_LIBRARIES})
+    target_link_libraries(${PROJECT_NAME} ${PROJECT_LINK_LIBRARIES} Eigen3::Eigen)
     target_compile_options(${PROJECT_NAME} PUBLIC)
 
     # Local builds of upstream projects require local include paths
