@@ -74,12 +74,7 @@ endif()
 
 if(${not_conda_test} STREQUAL "true")
     foreach(package ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
-        add_library(
-            ${package}
-            INTERFACE
-            "${CPP_SRC_PATH}/${package}.cpp"
-            "${CPP_SRC_PATH}/${package}.h"
-        )
+        add_library(${package} INTERFACE "${CPP_SRC_PATH}/${package}.cpp" "${CPP_SRC_PATH}/${package}.h")
     endforeach(package)
 endif()
 
