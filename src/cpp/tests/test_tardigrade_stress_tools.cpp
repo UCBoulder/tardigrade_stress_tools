@@ -509,7 +509,7 @@ BOOST_AUTO_TEST_CASE(testDruckerPragerSurface, *boost::unit_test::tolerance(DEFA
         gradCol = (uvp - uvm) / (2 * delta[i]);
 
         for (unsigned int j = 0; j < gradCol.size(); j++) {
-            BOOST_TEST(tolerantCheck(unitDirectionJacobian[j][i], gradCol[j]));
+            BOOST_TEST(unitDirectionJacobian[j][i] - gradCol[j] == 0);
         }
     }
 
@@ -542,7 +542,7 @@ BOOST_AUTO_TEST_CASE(testDruckerPragerSurface, *boost::unit_test::tolerance(DEFA
         gradCol = (uvp - uvm) / (2 * delta[i]);
 
         for (unsigned int j = 0; j < gradCol.size(); j++) {
-            BOOST_TEST(tolerantCheck(unitDirectionJacobian[j][i], gradCol[j]));
+            BOOST_TEST(unitDirectionJacobian[j][i] - gradCol[j] == 0);
         }
     }
 }

@@ -741,9 +741,7 @@ namespace tardigradeStressTools {
 
         // Calculate the Drucker-Prager unit normal flow direction as the normalized jacobian
         unitDirection = floatVector(jacobian.size(), 0);
-        auto norm     = tardigradeVectorTools::l2norm<floatType>(std::begin(jacobian), std::end(jacobian));
-        std::transform(std::begin(jacobian), std::end(jacobian), std::begin(unitDirection),
-                       std::bind(std::multiplies<floatType>(), std::placeholders::_1, 1. / (norm + tol)));
+        tardigradeConstitutiveTools::computeUnitNormal(std::begin(jacobian), std::end(jacobian), std::begin(unitDirection), std::end(unitDirection));
 
         return;
     }
@@ -767,9 +765,8 @@ namespace tardigradeStressTools {
         TARDIGRADE_ERROR_TOOLS_CATCH(druckerPragerSurface(stress, dpParam, dpYield, jacobian))
 
         // Calculate the Drucker-Prager unit normal flow direction as the normalized jacobian
-        auto norm = tardigradeVectorTools::l2norm<floatType>(std::begin(jacobian), std::end(jacobian));
-        std::transform(std::begin(jacobian), std::end(jacobian), std::begin(unitDirection),
-                       std::bind(std::multiplies<floatType>(), std::placeholders::_1, 1. / (norm + tol)));
+        unitDirection = floatVector(jacobian.size(), 0);
+        tardigradeConstitutiveTools::computeUnitNormal(std::begin(jacobian), std::end(jacobian), std::begin(unitDirection), std::end(unitDirection));
 
         return;
     }
