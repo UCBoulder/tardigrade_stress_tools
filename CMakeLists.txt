@@ -79,7 +79,7 @@ if(${not_conda_test} STREQUAL "true")
             INTERFACE
             "${CPP_SRC_PATH}/${package}.cpp"
             "${CPP_SRC_PATH}/${package}.h"
-            "${CPP_SRC_PATH}${package}.tpp"
+            "${CPP_SRC_PATH}/${package}.tpp"
         )
     endforeach(package)
 endif()
