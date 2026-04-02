@@ -6,6 +6,18 @@ Changelog
 #########
 
 ******************
+0.6.5 (2026-04-01)
+******************
+
+Bug Fixes
+=========
+- Made the unit normal calculations in the Drucker-Prager yield surface consistent with the value calculations (:pull:`32`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version (:pull:`33`). By `Nathan Miller`_.
+
+******************
 0.6.4 (2026-03-19)
 ******************
 
